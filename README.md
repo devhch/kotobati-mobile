@@ -1,16 +1,10 @@
-# kotobati
+# Kotobati
 
-A new Flutter project.
+![](./assets/images/kotobati.png)
 
-## Getting Started
+- Boss: Lahsen Dghoughi
 
-This project is a starting point for a Flutter application.
+- Developed By Hamza Chaouki, Mobile App Developer: Flutter (Android/iOS) at Mirai Devs.
+- Mirai Devs is a technology company that specializes in providing high-quality software solutions for businesses. Our focus areas include UI/UX Design, Mobile App Development, and Web Development. Our team of skilled designers and developers is passionate about delivering custom solutions that meet the unique needs of our clients.
 
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![](./assets/images/miraidevs.png)
