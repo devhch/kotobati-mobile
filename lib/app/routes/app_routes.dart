@@ -3,14 +3,28 @@ part of 'app_pages.dart';
 
 abstract class Routes {
   Routes._();
-  static const navigation = _Paths.navigation;
-  static const splash = _Paths.splash;
-  static const home = _Paths.home;
+
+  static const String navigation = _Paths.navigation;
+  static const String splash = _Paths.splash;
+  static const String home = _Paths.home;
+  static const String reading = _Paths.reading;
+  static const String planing = _Paths.planing;
+  static const String notes = _Paths.notes;
+  static const String pdfReader = _Paths.pdfReader;
+  static const String settings = _Paths.settings;
+  static const String search = _Paths.search;
 }
 
 abstract class _Paths {
   _Paths._();
-  static const navigation = '/navigation';
-  static const splash = '/splash';
-  static const home = '/home';
+
+  static const String navigation = '/navigation';
+  static const String splash = '/splash';
+  static const String home = '/home';
+  static const String reading = '/reading';
+  static const String planing = '/planing';
+  static const String notes = '/notes';
+  static const String pdfReader = '/pdf-reader';
+  static const String settings = '/settings';
+  static const String search = '/search';
 }
