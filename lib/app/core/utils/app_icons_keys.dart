@@ -6,7 +6,7 @@
 class AppIconsKeys {
   AppIconsKeys._();
 
-  static const String _path = "assets/icons";
+  static const String _path = "assets/icon";
 
   static const String books = "$_path/books.svg";
   static const String arrowBottom = "$_path/arrow_bottom.svg";

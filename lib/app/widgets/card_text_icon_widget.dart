@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:mirai_responsive/mirai_responsive.dart';
 
 class CardTextIconWidget extends StatelessWidget {
   const CardTextIconWidget({
@@ -30,19 +31,34 @@ class CardTextIconWidget extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Container(
-            padding: EdgeInsets.symmetric(
+            padding: const EdgeInsets.symmetric(
               horizontal: 16,
               vertical: 10,
             ),
-            decoration: BoxDecoration(
+            decoration: const BoxDecoration(
               color: AppTheme.keyAppColor,
-              borderRadius: BorderRadius.circular(18),
+              borderRadius: BorderRadius.only(
+                bottomRight: Radius.circular(28),
+                topRight: Radius.circular(28),
+              ),
             ),
-            child: SvgPicture.asset(icon),
+            child: SvgPicture.asset(
+              icon,
+              fit: BoxFit.fill,
+              width: MiraiSize.iconSize24,
+              height: MiraiSize.iconSize24,
+            ),
           ),
-          Text(
-            text,
-            style: context.textTheme.bodyLarge!.copyWith(),
+          const SizedBox(width: 15),
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              horizontal: 20,
+              vertical: 26,
+            ),
+            child: Text(
+              text,
+              style: context.textTheme.bodyLarge!.copyWith(),
+            ),
           ),
         ],
       ),
