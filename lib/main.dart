@@ -5,13 +5,18 @@ import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:get/get.dart';
 
-import 'screens/home_screen.dart';
-
-// InAppLocalhostServer localhostServer = new InAppLocalhostServer();
+import 'app/core/utils/app_theme.dart';
+import 'app/routes/app_pages.dart';
 
 Future main() async {
+  await appPreLunch();
+
+  runApp(MyApp());
+}
+
+Future appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
 
@@ -43,8 +48,6 @@ Future main() async {
       );
     }
   }
-
-  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -53,38 +56,38 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'كتوباتي',
-      locale: Locale('ar', '🇲🇦'),
-      supportedLocales: [
-        const Locale('en'),
-        const Locale('ar'),
-      ],
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-        fontFamily: GoogleFonts.roboto().fontFamily,
-        scaffoldBackgroundColor: Colors.transparent,
-        primaryColor: Colors.pink,
-        brightness: Brightness.light,
-        useMaterial3: true,
-      ),
-      home: MyHomePage(),
-      localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      localeResolutionCallback:
-          (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
-        for (Locale locale in supportedLocales) {
-          if (locale.languageCode == deviceLocale?.languageCode &&
-              locale.countryCode == deviceLocale?.countryCode) {
-            return deviceLocale;
-          }
-        }
-        return supportedLocales.first;
+    return GestureDetector(
+      onTap: () {
+        FocusManager.instance.primaryFocus?.unfocus();
       },
+      child: GetMaterialApp(
+        title: 'كتوباتي',
+        debugShowCheckedModeBanner: false,
+        smartManagement: SmartManagement.full,
+        theme: AppTheme.themeData,
+        initialRoute: AppPages.initial,
+        getPages: AppPages.routes,
+        locale: Locale('ar', '🇲🇦'),
+        supportedLocales: [
+          const Locale('en'),
+          const Locale('ar'),
+        ],
+        localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
+          GlobalMaterialLocalizations.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+        ],
+        localeResolutionCallback:
+            (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
+          for (Locale locale in supportedLocales) {
+            if (locale.languageCode == deviceLocale?.languageCode &&
+                locale.countryCode == deviceLocale?.countryCode) {
+              return deviceLocale;
+            }
+          }
+          return supportedLocales.first;
+        },
+      ),
     );
   }
 }
