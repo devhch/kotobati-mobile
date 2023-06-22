@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="32.172" height="20.473" viewBox="0 0 32.172 20.473">
+  <g id="Group_84" data-name="Group 84" transform="translate(0)">
+    <rect id="Rectangle_16" data-name="Rectangle 16" width="14" height="18" transform="translate(3.586 1.237)" fill="#fff"/>
+    <path id="Icon_material-recent-actors" data-name="Icon material-recent-actors" d="M30.747,7.5V27.973h2.925V7.5ZM24.9,27.973h2.925V7.5H24.9ZM20.511,7.5H2.962A1.467,1.467,0,0,0,1.5,8.962V26.511a1.467,1.467,0,0,0,1.462,1.462H20.511a1.467,1.467,0,0,0,1.462-1.462V8.962A1.467,1.467,0,0,0,20.511,7.5Zm-8.774,4.021a3.29,3.29,0,1,1-3.29,3.29A3.3,3.3,0,0,1,11.737,11.521Zm6.581,13.527H5.156v-1.1c0-2.194,4.387-3.29,6.581-3.29s6.581,1.1,6.581,3.29Z" transform="translate(-1.5 -7.5)" fill="#fff"/>
+    <g id="Icon_ionic-md-time" data-name="Icon ionic-md-time" transform="translate(5.09 4.543)">
+      <path id="Path_8" data-name="Path 8" d="M9.064,3.375a5.694,5.694,0,1,0,5.7,5.694A5.692,5.692,0,0,0,9.064,3.375Zm.005,10.249a4.555,4.555,0,1,1,4.555-4.555A4.555,4.555,0,0,1,9.069,13.624Z" transform="translate(-3.375 -3.375)" fill="#232323"/>
+      <path id="Path_9" data-name="Path 9" d="M17.392,10.688h-.854V14.1L19.527,15.9l.427-.7-2.562-1.519Z" transform="translate(-11.413 -7.84)" fill="#232323"/>
+    </g>
+  </g>
+</svg>
