@@ -24,7 +24,7 @@ Future appPreLunch() async {
   SystemChrome.setSystemUIOverlayStyle(
     SystemUiOverlayStyle(
       statusBarColor: Colors.transparent,
-      systemNavigationBarColor: Colors.white,
+      systemNavigationBarColor: AppTheme.keyAppBlackColor,
     ),
   );
 

@@ -19,10 +19,16 @@ abstract class AppTheme {
 
   static Duration shimmerDuration = const Duration(milliseconds: 1200);
 
+  static const String fontRegular = 'AlmaraiRegular';
+  static const String fontBold = 'AlmaraiBold';
+
   /// ThemeData
   static ThemeData get themeData => ThemeData(
-        backgroundColor: keyAppColor,
-        fontFamily: 'UniviaPro',
+        // backgroundColor: keyAppColor,
+        colorScheme: const ColorScheme.dark(
+          background: keyAppBlackColor,
+        ),
+        fontFamily: fontRegular,
         appBarTheme: const AppBarTheme(color: keyAppColor),
         scaffoldBackgroundColor: Colors.white,
         primaryColor: keyAppColor,

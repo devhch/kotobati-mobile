@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
-import 'package:kotobati/app/widgets/card_text_icon_widget.dart';
+import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 
 import '../controllers/splash_controller.dart';
@@ -12,45 +11,47 @@ class SplashView extends GetView<SplashController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('SplashView'),
-        centerTitle: true,
-      ),
-      body: Column(
-        children: [
-          const Center(
-            child: Text(
-              'SplashView is working',
-              style: TextStyle(fontSize: 20),
+      backgroundColor: AppTheme.keyAppBlackColor,
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(26),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text(
+                  'مرحبا بك',
+                  style: context.textTheme.displayLarge!.copyWith(
+                    fontSize: 34,
+                  ),
+                ),
+                const SizedBox(height: 55),
+                Text(
+                  """مع نسخة كوتوباتي للقارئ يمكنك تنظيم قراءتك وتحسين مستواك الفكري و الثقافي.""",
+                  style: context.textTheme.displayLarge!.copyWith(
+                    fontSize: 24,
+                  ),
+                  textDirection: TextDirection.rtl,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 98),
+                MiraiElevatedButtonWidget(
+                  onTap: () {
+                    Get.offNamed(Routes.navigation);
+                  },
+                  rounded: true,
+                  child: Text(
+                    "متابعة",
+                    style: context.textTheme.displayLarge!.copyWith(
+                      color: AppTheme.keyAppBlackColor,
+                      fontSize: 20,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
-          const SizedBox(height: 25),
-          MiraiElevatedButtonWidget(
-            onTap: () {},
-            child: Text(
-              "Button",
-              style: context.textTheme.bodySmall!.copyWith(
-                color: AppTheme.keyAppGrayColor,
-              ),
-            ),
-          ),
-          const SizedBox(height: 25),
-          MiraiElevatedButtonWidget(
-            onTap: () {},
-            rounded: true,
-            child: Text(
-              "Button",
-              style: context.textTheme.bodySmall!.copyWith(
-                color: AppTheme.keyAppBlackColor,
-              ),
-            ),
-          ),
-          const SizedBox(height: 25),
-          const CardTextIconWidget(
-            text: "كتب  أقرأها",
-            icon: AppIconsKeys.readLater,
-          ),
-        ],
+        ),
       ),
     );
   }
