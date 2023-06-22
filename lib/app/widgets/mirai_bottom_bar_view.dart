@@ -8,11 +8,12 @@ import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/mirai_tab_icon.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
+import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
-import 'package:ndiro_five/app/core/models/mirai_tab_icon.dart';
-import 'package:ndiro_five/app/core/utils/app_icons_keys.dart';
-import 'package:ndiro_five/app/core/utils/app_theme.dart';
-import 'package:ndiro_five/app/widgets/mirai_elevated_button_widget.dart';
+
+import 'mirai_elevated_button_widget.dart';
 
 class MiraiBottomBarView extends StatefulWidget {
   const MiraiBottomBarView({
@@ -160,6 +161,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
 
   SizedBox buildColumn(BuildContext context) {
     return SizedBox(
+        //
         height: Platform.isIOS
             ? MiraiSize.bottomNavBarHeight94
             : MiraiSize.bottomNavBarHeight70,
@@ -180,38 +182,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
             Expanded(child: _buildTabIcons(index: 2)),
             Expanded(child: _buildTabIcons(index: 3)),
           ],
-        )
-        /* widget.orientation == Orientation.portrait
-          ? */ /* :
-          Column(
-        children: <Widget>[
-          Expanded(
-            child: _buildTabIcons(index: 0),
-          ),
-          Expanded(
-            child: _buildTabIcons(index: 1),
-          ),
-          if (!(AppRepositoryProfile.mUser != null &&
-              AppRepositoryProfile.mUser!.role == RolesEnum.student))
-            SizedBox(
-              width: Tween<double>(begin: 0.0, end: 1.0)
-                      .animate(
-                        CurvedAnimation(
-                            parent: animationController,
-                            curve: Curves.fastOutSlowIn),
-                      )
-                      .value *
-                  64.0,
-            ),
-          Expanded(
-            child: _buildTabIcons(index: 2),
-          ),
-          Expanded(
-            child: _buildTabIcons(index: 3),
-          ),
-        ],
-      ),*/
-        );
+        ));
   }
 
   TabIcons _buildTabIcons({
@@ -266,8 +237,8 @@ class _BuildAddContainer extends StatelessWidget {
         ),
       ],
       child: SvgPicture.asset(
-        AppIconsKeys.keyAddBoxIcon,
-        color: Colors.white,
+        AppIconsKeys.edit,
+        // color: Colors.white,
         width: MiraiSize.iconSize30,
       ),
     );
@@ -361,19 +332,9 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                           ? widget.tabIconData.isSelectedIconHasAColor
                               ? null
                               : AppTheme.keyAppColor
-                          : AppTheme.keyDarkBlueColor, /**/
+                          : AppTheme.keyAppBlackColor, /**/
                     ),
                     SizedBox(height: MiraiSize.space16),
-                    if (widget.tabIconData.title != null)
-                      Text(
-                        widget.tabIconData.title!,
-                        style: Get.theme.textTheme.bodyText2?.copyWith(
-                          color: widget.tabIconData.isSelected
-                              ? AppTheme.keyAppColor
-                              : AppTheme.keyDarkBlueColor,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      )
                   ],
                 ),
               ),
@@ -397,7 +358,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                     width: 8,
                     height: 8,
                     decoration: const BoxDecoration(
-                      color: AppTheme.keyLightOrange,
+                      color: AppTheme.keyAppBlackColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -423,7 +384,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                     width: 4,
                     height: 4,
                     decoration: const BoxDecoration(
-                      color: AppTheme.keyLightOrange,
+                      color: AppTheme.keyAppColor,
                       shape: BoxShape.circle,
                     ),
                   ),
@@ -449,7 +410,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                     width: 6,
                     height: 6,
                     decoration: const BoxDecoration(
-                      color: AppTheme.keyLightOrange,
+                      color: AppTheme.keyAppColor,
                       shape: BoxShape.circle,
                     ),
                   ),

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/mirai_tab_icon.dart';
-import 'package:kotobati/app/modules/events/views/events_view.dart';
 import 'package:kotobati/app/modules/home/views/home_view.dart';
-import 'package:kotobati/app/modules/partners/views/partners_view.dart';
-import 'package:kotobati/app/modules/profile/views/profile_view.dart';
+import 'package:kotobati/app/modules/notes/views/notes_view.dart';
+import 'package:kotobati/app/modules/planing/views/planing_view.dart';
+import 'package:kotobati/app/modules/reading/views/reading_view.dart';
 
 class NavigationController extends GetxController {
   /// Drawer Key
@@ -75,11 +75,11 @@ class NavigationController extends GetxController {
     _setSelectedTab(index, MiraiTabIcon.tabIconsList);
     previousIndex = index;
     if (index == 1) {
-      tabBody = const EventsView();
+      tabBody = const ReadingView();
     } else if (index == 2) {
-      tabBody = const PartnersView();
+      tabBody = const PlaningView();
     } else if (index == 3) {
-      tabBody = const ProfileView();
+      tabBody = const NotesView();
     } else {
       tabBody = const HomeView();
     }

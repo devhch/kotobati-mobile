@@ -10,20 +10,20 @@ import 'package:get/get.dart';
 import 'app/core/utils/app_theme.dart';
 import 'app/routes/app_pages.dart';
 
-Future main() async {
+Future<void> main() async {
   await appPreLunch();
 
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
-Future appPreLunch() async {
+Future<void> appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
 
   /// Change NavigationBarColor and statusBarColor.
   SystemChrome.setSystemUIOverlayStyle(
-    SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
+    const SystemUiOverlayStyle(
+      statusBarColor: AppTheme.keyAppBlackColor,
       systemNavigationBarColor: AppTheme.keyAppBlackColor,
     ),
   );
@@ -31,9 +31,10 @@ Future appPreLunch() async {
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 
-    var swAvailable = await AndroidWebViewFeature.isFeatureSupported(
+    bool swAvailable = await AndroidWebViewFeature.isFeatureSupported(
         AndroidWebViewFeature.SERVICE_WORKER_BASIC_USAGE);
-    var swInterceptAvailable = await AndroidWebViewFeature.isFeatureSupported(
+
+    bool swInterceptAvailable = await AndroidWebViewFeature.isFeatureSupported(
         AndroidWebViewFeature.SERVICE_WORKER_SHOULD_INTERCEPT_REQUEST);
 
     if (swAvailable && swInterceptAvailable) {
@@ -41,7 +42,7 @@ Future appPreLunch() async {
           AndroidServiceWorkerController.instance();
 
       serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
-        shouldInterceptRequest: (request) async {
+        shouldInterceptRequest: (WebResourceRequest request) async {
           print(request);
           return null;
         },

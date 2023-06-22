@@ -14,8 +14,6 @@ import '../modules/reading/bindings/reading_binding.dart';
 import '../modules/reading/views/reading_view.dart';
 import '../modules/search/bindings/search_binding.dart';
 import '../modules/search/views/search_view.dart';
-import '../modules/serach/bindings/serach_binding.dart';
-import '../modules/serach/views/serach_view.dart';
 import '../modules/settings/bindings/settings_binding.dart';
 import '../modules/settings/views/settings_view.dart';
 import '../modules/splash/bindings/splash_binding.dart';
@@ -45,32 +43,32 @@ class AppPages {
       binding: HomeBinding(),
     ),
     GetPage(
-      name: _Paths.READING,
+      name: _Paths.reading,
       page: () => const ReadingView(),
       binding: ReadingBinding(),
     ),
     GetPage(
-      name: _Paths.PLANING,
+      name: _Paths.planing,
       page: () => const PlaningView(),
       binding: PlaningBinding(),
     ),
     GetPage(
-      name: _Paths.NOTES,
+      name: _Paths.notes,
       page: () => const NotesView(),
       binding: NotesBinding(),
     ),
     GetPage(
-      name: _Paths.PDF_READER,
+      name: _Paths.pdfReader,
       page: () => const PdfReaderView(),
       binding: PdfReaderBinding(),
     ),
     GetPage(
-      name: _Paths.SETTINGS,
+      name: _Paths.settings,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
     ),
     GetPage(
-      name: _Paths.SEARCH,
+      name: _Paths.search,
       page: () => const SearchView(),
       binding: SearchBinding(),
     ),

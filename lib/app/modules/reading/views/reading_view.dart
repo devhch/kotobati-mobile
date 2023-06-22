@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/widgets/common_scaffold.dart';
 
 import '../controllers/reading_controller.dart';
 
@@ -7,15 +8,10 @@ class ReadingView extends GetView<ReadingController> {
   const ReadingView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('ReadingView'),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Text(
-          'ReadingView is working',
-          style: TextStyle(fontSize: 20),
+    return const CommonScaffold(
+      child: SingleChildScrollView(
+        child: Column(
+          children: <Widget>[],
         ),
       ),
     );

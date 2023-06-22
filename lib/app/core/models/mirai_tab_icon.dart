@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:ndiro_five/app/core/utils/app_icons_keys.dart';
-import 'package:ndiro_five/app/core/utils/app_language_keys.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 
 /*
 * Created By Mirai Devs.
@@ -15,7 +13,6 @@ class MiraiTabIcon {
     this.index = 0,
     this.isSelected = false,
     this.isSelectedIconHasAColor = false,
-    this.title,
     this.animationController,
   });
 
@@ -24,41 +21,36 @@ class MiraiTabIcon {
   bool isSelectedIconHasAColor;
   bool isSelected;
   int? index;
-  String? title;
   AnimationController? animationController;
 
   static List<MiraiTabIcon> tabIconsList = <MiraiTabIcon>[
     MiraiTabIcon(
       index: 0,
-      title: AppLanguagesKeys.keyHome.tr,
-      icon: AppIconsKeys.keyHomeIcon,
-      selectedIcon: AppIconsKeys.keySelectedHomeIcon,
+      icon: AppIconsKeys.world,
+      selectedIcon: AppIconsKeys.world,
       isSelected: true,
       animationController: null,
     ),
     MiraiTabIcon(
       index: 1,
-      title: AppLanguagesKeys.keyEvents.tr,
-      icon: AppIconsKeys.keyEventsIcon,
-      selectedIcon: AppIconsKeys.keySelectedEventsIcon,
+      icon: AppIconsKeys.books,
+      selectedIcon: AppIconsKeys.books,
       isSelectedIconHasAColor: true,
       isSelected: false,
       animationController: null,
     ),
     MiraiTabIcon(
       index: 2,
-      title: AppLanguagesKeys.keyPartners.tr,
-      icon: AppIconsKeys.keyPartnersIcon,
-      selectedIcon: AppIconsKeys.keySelectedPartnersIcon,
+      icon: AppIconsKeys.recent,
+      selectedIcon: AppIconsKeys.recent,
       isSelectedIconHasAColor: true,
       isSelected: false,
       animationController: null,
     ),
     MiraiTabIcon(
-      icon: AppIconsKeys.keyProfileIcon,
-      selectedIcon: AppIconsKeys.keyProfileIcon,
+      icon: AppIconsKeys.file,
+      selectedIcon: AppIconsKeys.file,
       index: 3,
-      title: AppLanguagesKeys.keyProfile.tr,
       isSelected: false,
       animationController: null,
     ),
