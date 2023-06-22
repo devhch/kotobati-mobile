@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/widgets/common_app_bar_widget.dart';
 
 import '../controllers/navigation_controller.dart';
 
@@ -9,15 +10,11 @@ class NavigationView extends GetView<NavigationController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('NavigationView'),
-        centerTitle: true,
-      ),
-      body: const Center(
-        child: Text(
-          'NavigationView is working',
-          style: TextStyle(fontSize: 20),
-        ),
+      backgroundColor: AppTheme.keyAppBlackColor,
+      body: Column(
+        children: [
+          const CommonAppBarWidget(),
+        ],
       ),
     );
   }

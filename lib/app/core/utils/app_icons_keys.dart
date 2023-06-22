@@ -25,5 +25,7 @@ class AppIconsKeys {
   static const String readLater = "$_path/read_later.svg";
   static const String readed = "$_path/readed.svg";
   static const String reading = "$_path/reading.svg";
+  static const String ktobatiIcon = "$_path/ktobati_icon.svg";
+  static const String appBar = "$_path/appbar.svg";
   // static const String x = "$_path/.svg";
 }
