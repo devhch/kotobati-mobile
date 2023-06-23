@@ -44,8 +44,7 @@ class MiraiBottomBarView extends StatefulWidget {
   State<MiraiBottomBarView> createState() => _MiraiBottomBarViewState();
 }
 
-class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
-    with TickerProviderStateMixin {
+class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProviderStateMixin {
   late AnimationController animationController;
 
   @override
@@ -116,7 +115,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
                                         )
                                         .value *
                                     38.0),
-                            color: Colors.white,
+                            color: AppTheme.keyAppBlackColor,
                             child: buildColumn(context),
                           ),
                         );
@@ -162,9 +161,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
   SizedBox buildColumn(BuildContext context) {
     return SizedBox(
         //
-        height: Platform.isIOS
-            ? MiraiSize.bottomNavBarHeight94
-            : MiraiSize.bottomNavBarHeight70,
+        height: Platform.isIOS ? MiraiSize.bottomNavBarHeight94 : MiraiSize.bottomNavBarHeight70,
         child: Row(
           children: <Widget>[
             Expanded(child: _buildTabIcons(index: 0)),
@@ -172,9 +169,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView>
             SizedBox(
               width: Tween<double>(begin: 0.0, end: 1.0)
                       .animate(
-                        CurvedAnimation(
-                            parent: animationController,
-                            curve: Curves.fastOutSlowIn),
+                        CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn),
                       )
                       .value *
                   64.0,
