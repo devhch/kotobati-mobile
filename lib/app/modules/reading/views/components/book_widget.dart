@@ -136,14 +136,21 @@ class BookWidget extends StatelessWidget {
 }
 
 class ContainerDivider extends StatelessWidget {
-  const ContainerDivider({Key? key}) : super(key: key);
+  const ContainerDivider({
+    Key? key,
+    this.height = 16,
+    this.width = 2,
+  }) : super(key: key);
+
+  final double height;
+  final double width;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 12),
-      height: 16,
-      width: 2,
+      height: height,
+      width: width,
       color: AppTheme.keyAppGrayColorDark,
     );
   }

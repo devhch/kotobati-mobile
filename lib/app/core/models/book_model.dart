@@ -8,11 +8,15 @@ class BookModel {
   String? title;
   String? author;
   String? image;
+  List<String> notes;
+  List<String> quotes;
 
   BookModel({
     this.id,
     this.title,
     this.author,
     this.image,
+    this.notes = const <String>[],
+    this.quotes = const <String>[],
   });
 }

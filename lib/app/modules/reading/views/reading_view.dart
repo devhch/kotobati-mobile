@@ -24,6 +24,12 @@ class ReadingView extends GetView<ReadingController> {
                   title: "ماجدولين ",
                   author: "مصطفى لطفي المنفلوطي",
                   image: AppIconsKeys.edit,
+                  notes: <String>[
+                    "xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx",
+                    "dedede dedede dedede dedede dedede dedede dedede",
+                    "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
+                  ],
+                  quotes: <String>["erererererererer"],
                 ),
               ),
               BookWidget(
@@ -32,38 +38,12 @@ class ReadingView extends GetView<ReadingController> {
                   title: "ماجدولين ",
                   author: "مصطفى لطفي المنفلوطي",
                   image: AppIconsKeys.edit,
-                ),
-              ),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
-                ),
-              ),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
-                ),
-              ),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
-                ),
-              ),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
+                  notes: <String>[
+                    "xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx",
+                    "dedede dedede dedede dedede dedede dedede dedede",
+                    "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
+                  ],
+                  quotes: <String>["erererererererer"],
                 ),
               ),
               const SizedBox(height: 100),

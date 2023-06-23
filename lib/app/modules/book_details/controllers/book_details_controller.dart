@@ -1,11 +1,14 @@
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/book_model.dart';
 
 class BookDetailsController extends GetxController {
-  //TODO: Implement BookDetailsController
+  late final BookModel bookModel;
 
-  final count = 0.obs;
+  RxBool notes = false.obs;
+
   @override
   void onInit() {
+    bookModel = Get.arguments['book'];
     super.onInit();
   }
 
@@ -15,9 +18,7 @@ class BookDetailsController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
+  void dispose() {
+    super.dispose();
   }
-
-  void increment() => count.value++;
 }
