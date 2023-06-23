@@ -10,7 +10,8 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 
 class CommonAppBarWidget extends StatelessWidget {
-  const CommonAppBarWidget({Key? key}) : super(key: key);
+  const CommonAppBarWidget({Key? key,this.backButton = false,}) : super(key: key);
+  final bool backButton;
 
   @override
   Widget build(BuildContext context) {
@@ -29,7 +30,14 @@ class CommonAppBarWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                IconButton(
+                if(backButton)
+                  IconButton(
+                    onPressed: () {
+                      Get.back();
+                    },
+                    icon: SvgPicture.asset(AppIconsKeys.backArrowCircle),
+                  )
+                else IconButton(
                   onPressed: () {
                     Get.toNamed(Routes.search);
                   },

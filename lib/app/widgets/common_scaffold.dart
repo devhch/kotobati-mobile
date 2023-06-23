@@ -8,7 +8,12 @@ import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'common_app_bar_widget.dart';
 
 class CommonScaffold extends StatelessWidget {
-  const CommonScaffold({Key? key, required this.child}) : super(key: key);
+  const CommonScaffold({
+    Key? key,
+    required this.child,
+    this.backButton = false,
+  }) : super(key: key);
+  final bool backButton;
   final Widget child;
 
   @override
@@ -17,7 +22,7 @@ class CommonScaffold extends StatelessWidget {
       backgroundColor: AppTheme.keyAppBlackColor,
       body: Column(
         children: <Widget>[
-          const CommonAppBarWidget(),
+          CommonAppBarWidget(backButton: backButton),
           const SizedBox(height: 8),
           Expanded(child: child),
         ],

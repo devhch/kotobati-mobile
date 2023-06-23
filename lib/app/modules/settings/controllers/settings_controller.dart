@@ -1,9 +1,8 @@
 import 'package:get/get.dart';
 
 class SettingsController extends GetxController {
-  //TODO: Implement SettingsController
+  RxDouble zoneDistance = 25.0.obs;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -15,9 +14,7 @@ class SettingsController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
+  void dispose() {
+    super.dispose();
   }
-
-  void increment() => count.value++;
 }
