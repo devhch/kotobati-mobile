@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    createAppFolder();
+    // createAppFolder();
 
     contextMenu = ContextMenu(
         menuItems: [
@@ -125,7 +125,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // requestPermission();
 
     IsolateNameServer.registerPortWithName(
-        _port.sendPort, 'downloader_send_port');
+      _port.sendPort,
+      'downloader_send_port',
+    );
+
     _port.listen((dynamic data) {
       String id = data[0];
       DownloadTaskStatus status = DownloadTaskStatus(data[1]);

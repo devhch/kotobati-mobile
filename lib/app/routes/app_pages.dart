@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 
+import '../modules/book_details/bindings/book_details_binding.dart';
+import '../modules/book_details/views/book_details_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/navigation/bindings/navigation_binding.dart';
@@ -24,53 +26,58 @@ part 'app_routes.dart';
 class AppPages {
   AppPages._();
 
-  static const initial = Routes.splash;
+  static const String initial = Routes.splash;
 
-  static final routes = [
-    GetPage(
+  static final List<GetPage<void>> routes = <GetPage<void>>[
+    GetPage<void>(
       name: _Paths.navigation,
       page: () => const NavigationView(),
       binding: NavigationBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.splash,
       page: () => const SplashView(),
       binding: SplashBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.home,
       page: () => const HomeView(),
       binding: HomeBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.reading,
       page: () => const ReadingView(),
       binding: ReadingBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.planing,
       page: () => const PlaningView(),
       binding: PlaningBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.notes,
       page: () => const NotesView(),
       binding: NotesBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.pdfReader,
       page: () => const PdfReaderView(),
       binding: PdfReaderBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.settings,
       page: () => const SettingsView(),
       binding: SettingsBinding(),
     ),
-    GetPage(
+    GetPage<void>(
       name: _Paths.search,
       page: () => const SearchView(),
       binding: SearchBinding(),
+    ),
+    GetPage<void>(
+      name: _Paths.bookDetails,
+      page: () => const BookDetailsView(),
+      binding: BookDetailsBinding(),
     ),
   ];
 }

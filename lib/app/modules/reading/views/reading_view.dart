@@ -1,17 +1,74 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
 
 import '../controllers/reading_controller.dart';
+import 'components/book_widget.dart';
 
 class ReadingView extends GetView<ReadingController> {
   const ReadingView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return const CommonScaffold(
+    return CommonScaffold(
       child: SingleChildScrollView(
-        child: Column(
-          children: <Widget>[],
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            children: <Widget>[
+              const SizedBox(height: 15),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              BookWidget(
+                bookModel: BookModel(
+                  id: "dede",
+                  title: "ماجدولين ",
+                  author: "مصطفى لطفي المنفلوطي",
+                  image: AppIconsKeys.edit,
+                ),
+              ),
+              const SizedBox(height: 100),
+            ],
+          ),
         ),
       ),
     );

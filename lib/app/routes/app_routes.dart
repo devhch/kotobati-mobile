@@ -13,6 +13,7 @@ abstract class Routes {
   static const String pdfReader = _Paths.pdfReader;
   static const String settings = _Paths.settings;
   static const String search = _Paths.search;
+  static const String bookDetails = _Paths.bookDetails;
 }
 
 abstract class _Paths {
@@ -27,4 +28,5 @@ abstract class _Paths {
   static const String pdfReader = '/pdf-reader';
   static const String settings = '/settings';
   static const String search = '/search';
+  static const String bookDetails = '/book-details';
 }
