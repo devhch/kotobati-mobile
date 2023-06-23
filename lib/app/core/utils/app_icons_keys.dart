@@ -20,6 +20,7 @@ class AppIconsKeys {
   static const String search = "$_path/search.svg";
   static const String setting = "$_path/setting.svg";
   static const String shareCircle = "$_path/share_circle.svg";
+  static const String share = "$_path/share.svg";
   static const String whatsapp = "$_path/whatsapp.svg";
   static const String world = "$_path/world.svg";
   static const String readLater = "$_path/read_later.svg";
@@ -27,5 +28,9 @@ class AppIconsKeys {
   static const String reading = "$_path/reading.svg";
   static const String ktobatiIcon = "$_path/ktobati_icon.svg";
   static const String appBar = "$_path/appbar.svg";
+  static const String addCollection = "$_path/add_collection.svg";
+  static const String settingPoint = "$_path/setting_point.svg";
+  static const String bookIcon = "$_path/book_icon.svg";
+  static const String backArrowCircle = "$_path/back_arrow_circle.svg";
   // static const String x = "$_path/.svg";
 }

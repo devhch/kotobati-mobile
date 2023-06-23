@@ -36,6 +36,7 @@ class CardTextIconWidget extends StatelessWidget {
               vertical: 10,
             ),
             height: 78,
+            width: 66,
             decoration: const BoxDecoration(
               color: AppTheme.keyAppColor,
               borderRadius: BorderRadius.only(
@@ -46,20 +47,19 @@ class CardTextIconWidget extends StatelessWidget {
             child: SvgPicture.asset(
               icon,
               // fit: BoxFit.fill,
-              width: MiraiSize.iconSize22,
-              height: MiraiSize.iconSize22,
+              width: MiraiSize.iconSize24,
+              height: MiraiSize.iconSize24,
               color: AppTheme.keyAppBlackColor,
             ),
           ),
           const SizedBox(width: 15),
           Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 20,
-              vertical: 26,
-            ),
+            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
             child: Text(
               text,
-              style: context.textTheme.bodyLarge!.copyWith(),
+              style: context.textTheme.headlineMedium!.copyWith(
+                fontSize: 24,
+              ),
             ),
           ),
         ],
