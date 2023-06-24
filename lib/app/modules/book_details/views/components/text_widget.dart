@@ -26,7 +26,7 @@ class TextWidget extends StatelessWidget {
       ),
       child: Text(
         text,
-        style: context.textTheme.bodyMedium!.copyWith(),
+        style: context.textTheme.bodyLarge!.copyWith(),
       ),
     );
   }

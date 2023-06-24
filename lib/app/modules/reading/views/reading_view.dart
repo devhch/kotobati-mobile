@@ -25,11 +25,16 @@ class ReadingView extends GetView<ReadingController> {
                   author: "مصطفى لطفي المنفلوطي",
                   image: AppIconsKeys.edit,
                   notes: <String>[
-                    "xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx",
-                    "dedede dedede dedede dedede dedede dedede dedede",
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
                     "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
                   ],
-                  quotes: <String>["erererererererer"],
+                  quotes: <String>[
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
+                  ],
                 ),
               ),
               BookWidget(
@@ -39,11 +44,16 @@ class ReadingView extends GetView<ReadingController> {
                   author: "مصطفى لطفي المنفلوطي",
                   image: AppIconsKeys.edit,
                   notes: <String>[
-                    "xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx xxxxxx",
-                    "dedede dedede dedede dedede dedede dedede dedede",
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
                     "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
                   ],
-                  quotes: <String>["erererererererer"],
+                  quotes: <String>[
+                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
+                  ],
                 ),
               ),
               const SizedBox(height: 100),
