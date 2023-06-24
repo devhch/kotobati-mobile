@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="62.071" height="46.045" viewBox="0 0 62.071 46.045">
+  <defs>
+    <filter id="Rectangle_16" x="4.535" y="2.022" width="38" height="42" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur"/>
+      <feFlood flood-color="#f65656"/>
+      <feComposite operator="in" in2="blur"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+    <filter id="Icon_material-recent-actors" x="0" y="0" width="62.071" height="46.045" filterUnits="userSpaceOnUse">
+      <feOffset dy="3" input="SourceAlpha"/>
+      <feGaussianBlur stdDeviation="3" result="blur-2"/>
+      <feFlood flood-color="#f65656"/>
+      <feComposite operator="in" in2="blur-2"/>
+      <feComposite in="SourceGraphic"/>
+    </filter>
+  </defs>
+  <g id="recent_selected" transform="translate(-82.465 -800.978)">
+    <g transform="matrix(1, 0, 0, 1, 82.46, 800.98)" filter="url(#Rectangle_16)">
+      <rect id="Rectangle_16-2" data-name="Rectangle 16" width="20" height="24" transform="translate(13.54 8.02)" fill="#f65656"/>
+    </g>
+    <g transform="matrix(1, 0, 0, 1, 82.46, 800.98)" filter="url(#Icon_material-recent-actors)">
+      <path id="Icon_material-recent-actors-2" data-name="Icon material-recent-actors" d="M41.565,7.5V35.545h4.006V7.5ZM33.552,35.545h4.006V7.5H33.552ZM27.542,7.5H3.5a2.009,2.009,0,0,0-2,2V33.542a2.009,2.009,0,0,0,2,2H27.542a2.009,2.009,0,0,0,2-2V9.5A2.009,2.009,0,0,0,27.542,7.5ZM15.523,13.009a4.507,4.507,0,1,1-4.507,4.507A4.514,4.514,0,0,1,15.523,13.009Zm9.015,18.53H6.508v-1.5c0-3,6.01-4.507,9.015-4.507s9.015,1.5,9.015,4.507Z" transform="translate(7.5 -1.5)" fill="#f65656"/>
+    </g>
+    <g id="Group_87" data-name="Group 87" transform="translate(-38.899 -18.299)">
+      <rect id="Rectangle_16-3" data-name="Rectangle 16" width="20" height="24" transform="translate(134.899 827.3)" fill="#fff"/>
+      <path id="Icon_material-recent-actors-3" data-name="Icon material-recent-actors" d="M41.565,7.5V35.545h4.006V7.5ZM33.552,35.545h4.006V7.5H33.552ZM27.542,7.5H3.5a2.009,2.009,0,0,0-2,2V33.542a2.009,2.009,0,0,0,2,2H27.542a2.009,2.009,0,0,0,2-2V9.5A2.009,2.009,0,0,0,27.542,7.5ZM15.523,13.009a4.507,4.507,0,1,1-4.507,4.507A4.514,4.514,0,0,1,15.523,13.009Zm9.015,18.53H6.508v-1.5c0-3,6.01-4.507,9.015-4.507s9.015,1.5,9.015,4.507Z" transform="translate(128.864 817.777)" fill="#fff"/>
+      <g id="Icon_ionic-md-time" data-name="Icon ionic-md-time" transform="translate(137.337 831.5)">
+        <path id="Path_8" data-name="Path 8" d="M11.168,3.375a7.8,7.8,0,1,0,7.808,7.8A7.8,7.8,0,0,0,11.168,3.375Zm.008,14.04a6.24,6.24,0,1,1,6.24-6.24A6.24,6.24,0,0,1,11.175,17.415Z" transform="translate(-3.375 -3.375)" fill="#232323"/>
+        <path id="Path_9" data-name="Path 9" d="M17.708,10.688h-1.17v4.68l4.1,2.456.585-.96-3.51-2.081Z" transform="translate(-9.517 -6.787)" fill="#232323"/>
+      </g>
+    </g>
+  </g>
+</svg>
