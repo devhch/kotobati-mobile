@@ -1,11 +1,32 @@
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 
 class NotesController extends GetxController {
-  //TODO: Implement NotesController
+  RxBool notes = false.obs;
 
-  final count = 0.obs;
+  late BookModel bookModel;
+
   @override
   void onInit() {
+    bookModel = BookModel(
+      id: "dede",
+      title: "ماجدولين ",
+      author: "مصطفى لطفي المنفلوطي",
+      image: AppIconsKeys.edit,
+      notes: <String>[
+        """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+        """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+        "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
+      ],
+      quotes: <String>[
+        """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
+      ],
+    );
+
     super.onInit();
   }
 
@@ -15,9 +36,7 @@ class NotesController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
+  void dispose() {
+    super.dispose();
   }
-
-  void increment() => count.value++;
 }
