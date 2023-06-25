@@ -13,6 +13,12 @@ class NavigationController extends GetxController {
   /// tabIconsList
   List<MiraiTabIcon> tabIconsList = MiraiTabIcon.tabIconsList;
 
+  /// Page View Controller
+  final PageController pageController = PageController();
+
+  /// current page view.
+  ValueNotifier<int> currentPage = ValueNotifier<int>(0);
+
   /// tab body
   Widget tabBody = Container(color: Colors.transparent);
 
@@ -29,16 +35,24 @@ class NavigationController extends GetxController {
   /// start animating from bottom.
   ValueNotifier<bool> isFabBarAdding = ValueNotifier<bool>(false);
 
+  /// Pages
+  final List<Widget> pages = <Widget>[
+    const HomeView(),
+    const ReadingView(),
+    const PlaningView(),
+    const NotesView(),
+  ];
+
   @override
   void onInit() {
     super.onInit();
     debugPrint("NavigationController onInit");
-    setIndex(index: 0);
   }
 
   @override
   void onReady() {
     super.onReady();
+    setIndex(index: 0);
     debugPrint("NavigationController onReady");
   }
 
@@ -63,6 +77,10 @@ class NavigationController extends GetxController {
     update();
   }
 
+  void setCurrentPage(int index) {
+    currentPage.value = index;
+  }
+
   void _setSelectedTab(int index, List<MiraiTabIcon> tabIcons) {
     tabIconsList = List<MiraiTabIcon>.from(tabIcons);
     for (MiraiTabIcon tab in tabIcons) {
@@ -74,14 +92,24 @@ class NavigationController extends GetxController {
   void _changeBody(int index) {
     _setSelectedTab(index, MiraiTabIcon.tabIconsList);
     previousIndex = index;
-    if (index == 1) {
-      tabBody = const ReadingView();
-    } else if (index == 2) {
-      tabBody = const PlaningView();
-    } else if (index == 3) {
-      tabBody = const NotesView();
-    } else {
-      tabBody = const HomeView();
-    }
+    pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 400),
+      curve: Curves.easeInOutQuint,
+    );
   }
+
+  // void _changeBody(int index) {
+  //   _setSelectedTab(index, MiraiTabIcon.tabIconsList);
+  //   previousIndex = index;
+  //   if (index == 1) {
+  //     tabBody = const ReadingView();
+  //   } else if (index == 2) {
+  //     tabBody = const PlaningView();
+  //   } else if (index == 3) {
+  //     tabBody = const NotesView();
+  //   } else {
+  //     tabBody = const HomeView();
+  //   }
+  // }
 }

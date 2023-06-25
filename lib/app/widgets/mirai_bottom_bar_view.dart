@@ -6,14 +6,11 @@ import 'dart:io';
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/mirai_tab_icon.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
-
-import 'mirai_elevated_button_widget.dart';
 
 class MiraiBottomBarView extends StatefulWidget {
   const MiraiBottomBarView({
@@ -106,16 +103,17 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
                           child: PhysicalShape(
                             elevation: 0,
                             clipper: TabClipper(
-                                radius: Tween<double>(begin: 0.0, end: 1.0)
-                                        .animate(
-                                          CurvedAnimation(
-                                            parent: animationController,
-                                            curve: Curves.fastOutSlowIn,
-                                          ),
-                                        )
-                                        .value *
-                                    38.0),
-                            color: AppTheme.keyAppBlackColor,
+                              radius: Tween<double>(begin: 0.0, end: 1.0)
+                                      .animate(
+                                        CurvedAnimation(
+                                          parent: animationController,
+                                          curve: Curves.fastOutSlowIn,
+                                        ),
+                                      )
+                                      .value *
+                                  28.0,
+                            ),
+                            color: AppTheme.keyBlackGreyColor,
                             child: buildColumn(context),
                           ),
                         );
@@ -135,7 +133,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
                         : (Platform.isIOS
                                 ? MiraiSize.bottomNavBarHeight94
                                 : MiraiSize.bottomNavBarHeight70) -
-                            MiraiSize.iconSize58 / 2,
+                            MiraiSize.iconSize70 / 2,
                     child: ScaleTransition(
                       alignment: Alignment.center,
                       scale: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -160,24 +158,24 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
 
   SizedBox buildColumn(BuildContext context) {
     return SizedBox(
-        //
-        height: Platform.isIOS ? MiraiSize.bottomNavBarHeight94 : MiraiSize.bottomNavBarHeight70,
-        child: Row(
-          children: <Widget>[
-            Expanded(child: _buildTabIcons(index: 0)),
-            Expanded(child: _buildTabIcons(index: 1)),
-            SizedBox(
-              width: Tween<double>(begin: 0.0, end: 1.0)
-                      .animate(
-                        CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn),
-                      )
-                      .value *
-                  64.0,
-            ),
-            Expanded(child: _buildTabIcons(index: 2)),
-            Expanded(child: _buildTabIcons(index: 3)),
-          ],
-        ));
+      height: Platform.isIOS ? MiraiSize.bottomNavBarHeight94 : MiraiSize.bottomNavBarHeight70,
+      child: Row(
+        children: <Widget>[
+          Expanded(child: _buildTabIcons(index: 0)),
+          Expanded(child: _buildTabIcons(index: 1)),
+          SizedBox(
+            width: Tween<double>(begin: 0.0, end: 1.0)
+                    .animate(
+                      CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn),
+                    )
+                    .value *
+                64.0,
+          ),
+          Expanded(child: _buildTabIcons(index: 2)),
+          Expanded(child: _buildTabIcons(index: 3)),
+        ],
+      ),
+    );
   }
 
   TabIcons _buildTabIcons({
@@ -216,27 +214,51 @@ class _BuildAddContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MiraiElevatedButtonWidget(
+    return InkWell(
       onTap: addClick,
-      width: MiraiSize.iconSize58,
-      height: MiraiSize.iconSize58,
-      shape: const CircleBorder(),
-      containerShape: BoxShape.circle,
-      overlayColor: Colors.white.withOpacity(.2),
-      backgroundColor: Theme.of(context).primaryColor,
-      boxShadow: <BoxShadow>[
-        BoxShadow(
-          color: Colors.black.withOpacity(0.4),
-          offset: const Offset(0.0, 3.0),
-          blurRadius: 2.0,
-        ),
-      ],
-      child: SvgPicture.asset(
-        AppIconsKeys.edit,
-        // color: Colors.white,
-        width: MiraiSize.iconSize30,
+
+      //shape: const CircleBorder(),
+      // containerShape: BoxShape.circle,
+      // overlayColor: Colors.white.withOpacity(.2),
+      // backgroundColor: AppTheme.keyAppColor,
+      // boxShadow: <BoxShadow>[
+      //   BoxShadow(
+      //     color: AppTheme.keyAppColor,
+      //     offset: const Offset(0.0, 3.0),
+      //     blurRadius: 2.0,
+      //   ),
+      // ],
+      child: Image.asset(
+        AppIconsKeys.addBooks,
+        width: MiraiSize.iconSize70,
+        height: MiraiSize.iconSize70,
+        //color: Colors.white,
+        // width: MiraiSize.iconSize30,
+        fit: BoxFit.fill,
       ),
     );
+    // return MiraiElevatedButtonWidget(
+    //   onTap: addClick,
+    //   width: MiraiSize.iconSize58,
+    //   height: MiraiSize.iconSize58,
+    //   shape: const CircleBorder(),
+    //   containerShape: BoxShape.circle,
+    //   overlayColor: Colors.white.withOpacity(.2),
+    //   // backgroundColor: Theme.of(context).primaryColor,
+    //   boxShadow: <BoxShadow>[
+    //     BoxShadow(
+    //       color: Colors.black.withOpacity(0.4),
+    //       offset: const Offset(0.0, 3.0),
+    //       blurRadius: 2.0,
+    //     ),
+    //   ],
+    //   child: Image.asset(
+    //     AppIconsKeys.addBooks,
+    //     // color: Colors.white,
+    //     // width: MiraiSize.iconSize30,
+    //     fit: BoxFit.fill,
+    //   ),
+    // );
   }
 }
 
@@ -284,135 +306,121 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    return AspectRatio(
-      aspectRatio: 1,
-      child: InkWell(
-        splashColor: Colors.transparent,
-        focusColor: Colors.transparent,
-        highlightColor: Colors.transparent,
-        hoverColor: Colors.transparent,
-        onTap: () {
-          if (!widget.tabIconData.isSelected) {
-            setAnimation();
-          }
-        },
-        child: IgnorePointer(
-          child: Stack(
-            alignment: AlignmentDirectional.center,
-            children: <Widget>[
-              ScaleTransition(
+    return InkWell(
+      splashColor: Colors.transparent,
+      focusColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      onTap: () {
+        if (!widget.tabIconData.isSelected) {
+          setAnimation();
+        }
+      },
+      child: IgnorePointer(
+        child: Stack(
+          alignment: AlignmentDirectional.bottomCenter,
+          children: <Widget>[
+            ScaleTransition(
+              alignment: Alignment.center,
+              scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+                CurvedAnimation(
+                  parent: widget.tabIconData.animationController!,
+                  curve: const Interval(
+                    0.1,
+                    1.0,
+                    curve: Curves.fastOutSlowIn,
+                  ),
+                ),
+              ),
+              child: Image.asset(
+                widget.tabIconData.isSelected
+                    ? widget.tabIconData.selectedIcon
+                    : widget.tabIconData.icon,
+                fit: BoxFit.fill,
+                key: ValueKey<bool>(widget.tabIconData.isSelected),
+                width: (widget.tabIconData.isSelected ? 20 : 0) + widget.tabIconData.size.width,
+                height: (widget.tabIconData.isSelected ? 20 : 0) + widget.tabIconData.size.height,
+              ),
+            ),
+            Positioned(
+              top: 4,
+              left: 6,
+              right: 0,
+              child: ScaleTransition(
                 alignment: Alignment.center,
-                scale: Tween<double>(begin: 0.88, end: 1.0).animate(
+                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
                   CurvedAnimation(
                     parent: widget.tabIconData.animationController!,
                     curve: const Interval(
-                      0.1,
+                      0.2,
                       1.0,
                       curve: Curves.fastOutSlowIn,
                     ),
                   ),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: <Widget>[
-                    SizedBox(height: MiraiSize.space10),
-                    SvgPicture.asset(
-                      widget.tabIconData.isSelected
-                          ? widget.tabIconData.selectedIcon
-                          : widget.tabIconData.icon,
-                      fit: BoxFit.fill,
-                      width: MiraiSize.iconSize28,
-                      height: MiraiSize.iconSize28,
-                      color: widget.tabIconData.isSelected
-                          ? widget.tabIconData.isSelectedIconHasAColor
-                              ? null
-                              : AppTheme.keyAppColor
-                          : AppTheme.keyAppBlackColor, /**/
-                    ),
-                    SizedBox(height: MiraiSize.space16),
-                  ],
-                ),
-              ),
-              Positioned(
-                top: 4,
-                left: 6,
-                right: 0,
-                child: ScaleTransition(
-                  alignment: Alignment.center,
-                  scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: widget.tabIconData.animationController!,
-                      curve: const Interval(
-                        0.2,
-                        1.0,
-                        curve: Curves.fastOutSlowIn,
-                      ),
-                    ),
-                  ),
-                  child: Container(
-                    width: 8,
-                    height: 8,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.keyAppBlackColor,
-                      shape: BoxShape.circle,
-                    ),
+                child: Container(
+                  width: 8,
+                  height: 8,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.keyAppBlackColor,
+                    shape: BoxShape.circle,
                   ),
                 ),
               ),
-              Positioned(
-                top: 0,
-                left: 6,
-                bottom: 8,
-                child: ScaleTransition(
-                  alignment: Alignment.center,
-                  scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: widget.tabIconData.animationController!,
-                      curve: const Interval(
-                        0.5,
-                        0.8,
-                        curve: Curves.fastOutSlowIn,
-                      ),
-                    ),
-                  ),
-                  child: Container(
-                    width: 4,
-                    height: 4,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.keyAppColor,
-                      shape: BoxShape.circle,
+            ),
+            Positioned(
+              top: 0,
+              left: 6,
+              bottom: 8,
+              child: ScaleTransition(
+                alignment: Alignment.center,
+                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                    parent: widget.tabIconData.animationController!,
+                    curve: const Interval(
+                      0.5,
+                      0.8,
+                      curve: Curves.fastOutSlowIn,
                     ),
                   ),
                 ),
-              ),
-              Positioned(
-                top: 6,
-                right: 8,
-                bottom: 0,
-                child: ScaleTransition(
-                  alignment: Alignment.center,
-                  scale: Tween<double>(begin: 0.0, end: 1.0).animate(
-                    CurvedAnimation(
-                      parent: widget.tabIconData.animationController!,
-                      curve: const Interval(
-                        0.5,
-                        0.6,
-                        curve: Curves.fastOutSlowIn,
-                      ),
-                    ),
-                  ),
-                  child: Container(
-                    width: 6,
-                    height: 6,
-                    decoration: const BoxDecoration(
-                      color: AppTheme.keyAppColor,
-                      shape: BoxShape.circle,
-                    ),
+                child: Container(
+                  width: 4,
+                  height: 4,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.keyAppColor,
+                    shape: BoxShape.circle,
                   ),
                 ),
               ),
-            ],
-          ),
+            ),
+            Positioned(
+              top: 6,
+              right: 8,
+              bottom: 0,
+              child: ScaleTransition(
+                alignment: Alignment.center,
+                scale: Tween<double>(begin: 0.0, end: 1.0).animate(
+                  CurvedAnimation(
+                    parent: widget.tabIconData.animationController!,
+                    curve: const Interval(
+                      0.5,
+                      0.6,
+                      curve: Curves.fastOutSlowIn,
+                    ),
+                  ),
+                ),
+                child: Container(
+                  width: 6,
+                  height: 6,
+                  decoration: const BoxDecoration(
+                    color: AppTheme.keyAppColor,
+                    shape: BoxShape.circle,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -444,14 +452,14 @@ class TabClipper extends CustomClipper<Path> {
         radius + 10,
       ),
       degreeToRadians(270),
-      degreeToRadians(70),
+      degreeToRadians(60),
       false,
     );
 
     path.arcTo(
       Rect.fromLTWH((size.width / 2) - v / 2, -v / 2, v, v),
-      degreeToRadians(160),
-      degreeToRadians(-140),
+      degreeToRadians(150),
+      degreeToRadians(-120),
       false,
     );
 
@@ -463,14 +471,14 @@ class TabClipper extends CustomClipper<Path> {
         radius + 10,
       ),
       degreeToRadians(200),
-      degreeToRadians(70),
+      degreeToRadians(60),
       false,
     );
 
     path.arcTo(
       Rect.fromLTWH(size.width - radius, 0, radius, radius),
       degreeToRadians(270),
-      degreeToRadians(90),
+      degreeToRadians(80),
       false,
     );
     path.lineTo(size.width, 0);

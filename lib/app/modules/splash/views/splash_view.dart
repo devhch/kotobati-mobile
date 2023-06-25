@@ -29,7 +29,8 @@ class SplashView extends GetView<SplashController> {
                 Text(
                   """مع نسخة كوتوباتي للقارئ يمكنك تنظيم قراءتك وتحسين مستواك الفكري و الثقافي.""",
                   style: context.textTheme.displayLarge!.copyWith(
-                    fontSize: 24,
+                    fontFamily: AppTheme.fontBold,
+                    fontSize: 20,
                   ),
                   textDirection: TextDirection.rtl,
                   textAlign: TextAlign.center,
@@ -40,11 +41,14 @@ class SplashView extends GetView<SplashController> {
                     Get.offNamed(Routes.navigation);
                   },
                   rounded: true,
+                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
+                  overlayColor: Colors.white.withOpacity(.2),
                   child: Text(
                     "متابعة",
                     style: context.textTheme.displayLarge!.copyWith(
                       color: AppTheme.keyAppBlackColor,
-                      fontSize: 20,
+                      fontFamily: AppTheme.fontBold,
+                      fontSize: 16,
                     ),
                   ),
                 ),

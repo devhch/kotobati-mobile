@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_bottom_bar_view.dart';
 
@@ -12,9 +14,11 @@ class NavigationView extends StatefulWidget {
   State<NavigationView> createState() => _NavigationViewState();
 }
 
-class _NavigationViewState extends State<NavigationView> with TickerProviderStateMixin {
+class _NavigationViewState extends State<NavigationView>
+    with TickerProviderStateMixin {
   /// NavigationController
-  final NavigationController _navigationController = Get.find<NavigationController>();
+  final NavigationController _navigationController =
+      Get.find<NavigationController>();
 
   /// AnimationController
   late AnimationController _controller;
@@ -48,41 +52,72 @@ class _NavigationViewState extends State<NavigationView> with TickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      key: _navigationController.drawerKey,
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Colors.white,
-      body: GetBuilder<NavigationController>(
-        init: _navigationController,
-        builder: (NavigationController navigationController) {
-          return Stack(
-            children: <Widget>[
-              Positioned.fill(child: navigationController.tabBody),
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: _BottomNavigationBar(
-                  orientation: Orientation.portrait,
-                  navigationController: navigationController,
-                  controller: _controller,
-                  animationScaleIn: _animationScaleIn,
-                  animationScaleOut: _animationScaleOut,
-                ),
-              ),
-            ],
-          );
-        },
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: const SystemUiOverlayStyle(
+        systemNavigationBarColor: AppTheme.keyBlackGreyColor,
       ),
-      // drawer: const SideMenuView(),
-      //  onDrawerChanged: (bool isOpened) {
-      //    if (!isOpened) {
-      //      /// Navigate to the previous page
-      //      _navigationController.setIndex(
-      //        index: _navigationController.previousIndex,
-      //      );
-      //    }
-      //  },
+      child: Scaffold(
+        key: _navigationController.drawerKey,
+        resizeToAvoidBottomInset: false,
+        backgroundColor: Colors.white,
+        body: GetBuilder<NavigationController>(
+          init: _navigationController,
+          builder: (NavigationController navigationController) {
+            return Stack(
+              children: <Widget>[
+                // Positioned.fill(
+                //   child: AnimatedSwitcher(
+                //     duration: const Duration(microseconds: 1000),
+                //     child: navigationController.tabBody,
+                //   ),
+                // ),
+                Positioned.fill(
+                  child: Column(
+                    children: <Widget>[
+                      Expanded(
+                        child: PageView.builder(
+                          scrollDirection: Axis.horizontal,
+                          physics: const NeverScrollableScrollPhysics(),
+                          onPageChanged: (int index) {
+                            _navigationController.setCurrentPage(index);
+                          },
+                          controller: _navigationController.pageController,
+                          itemCount: _navigationController.pages.length,
+                          itemBuilder: (_, int index) {
+                            return _navigationController.pages[index];
+                          },
+                        ),
+                      ),
+                      //  SizedBox(height: MiraiSize.bottomNavBarHeight70),
+                    ],
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  child: _BottomNavigationBar(
+                    orientation: Orientation.portrait,
+                    navigationController: navigationController,
+                    controller: _controller,
+                    animationScaleIn: _animationScaleIn,
+                    animationScaleOut: _animationScaleOut,
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        // drawer: const SideMenuView(),
+        //  onDrawerChanged: (bool isOpened) {
+        //    if (!isOpened) {
+        //      /// Navigate to the previous page
+        //      _navigationController.setIndex(
+        //        index: _navigationController.previousIndex,
+        //      );
+        //    }
+        //  },
+      ),
     );
   }
 }

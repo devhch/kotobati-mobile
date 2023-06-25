@@ -5,7 +5,6 @@ import 'dart:isolate';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
@@ -22,6 +21,7 @@ import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   const HomeView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return MyHomePage();
@@ -147,17 +147,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @pragma('vm:entry-point')
   static void downloadCallback(String id, int status, int progress) {
-    final SendPort? send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
+    final SendPort? send = IsolateNameServer.lookupPortByName('downloader_send_port');
     send?.send([id, status, progress]);
   }
 
   @override
   Widget build(BuildContext context) {
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle(statusBarColor: AppTheme.keyAppColorDark),
+    return AnimatedSwitcher(
+      duration: Duration(milliseconds: 100),
       child: Scaffold(
-        backgroundColor: Colors.white,
+        key: ValueKey<bool>(progress < 1.0),
+        backgroundColor: progress < 1.0 ? AppTheme.keyAppBlackColor : Colors.white,
         body: Padding(
           padding: EdgeInsets.only(
             top: context.topPadding,
@@ -168,8 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
               InAppWebView(
                 key: webViewKey,
                 // contextMenu: contextMenu,
-                initialUrlRequest:
-                    URLRequest(url: Uri.parse(AppConfig.WEB_URL)),
+                initialUrlRequest: URLRequest(url: Uri.parse(AppConfig.WEB_URL)),
                 // initialFile: "assets/index.html",
                 initialUserScripts: UnmodifiableListView<UserScript>([]),
                 initialOptions: options,
@@ -185,22 +184,18 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
 
                 onDownloadStartRequest: onDownloadStartRequest,
-                androidOnPermissionRequest:
-                    (controller, origin, resources) async {
+                androidOnPermissionRequest: (controller, origin, resources) async {
                   return PermissionRequestResponse(
-                      resources: resources,
-                      action: PermissionRequestResponseAction.GRANT);
+                      resources: resources, action: PermissionRequestResponseAction.GRANT);
                 },
                 shouldOverrideUrlLoading: shouldOverrideUrlLoading,
-                onLoadStop:
-                    (InAppWebViewController controller, Uri? url) async {
+                onLoadStop: (InAppWebViewController controller, Uri? url) async {
                   print("URI URL path: ${url?.toString()}");
                   // if (url != null && url.toString().contains('/recon?')) {
                   print("onLoadStop");
                   // if JavaScript is enabled, you can use
                   var html = await webViewController?.evaluateJavascript(
-                      source:
-                          "window.document.getElementsByTagName('html')[0].outerHTML;");
+                      source: "window.document.getElementsByTagName('html')[0].outerHTML;");
                   // await webViewController?.evaluateJavascript(source: "window.document.body.innerText;");
 
                   log("html: $html");
@@ -233,13 +228,21 @@ class _MyHomePageState extends State<MyHomePage> {
                   print(consoleMessage);
                 },
               ),
-              progress < 1.0
-                  ? LinearProgressIndicator(
-                      value: progress,
-                      color: AppTheme.keyAppColorDark,
-                      backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
-                    )
-                  : Container(),
+              if (progress < 1.0)
+                Container(
+                  color: AppTheme.keyAppBlackColor,
+                  child: Center(
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
+                    ),
+                  ),
+                ),
+
+              // LinearProgressIndicator(
+              //   value: progress,
+              //   color: AppTheme.keyAppColorDark,
+              //   backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
+              // ),
             ],
           ),
         ),
@@ -294,12 +297,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<NavigationActionPolicy?> shouldOverrideUrlLoading(
-      InAppWebViewController controller,
-      NavigationAction navigationAction) async {
+      InAppWebViewController controller, NavigationAction navigationAction) async {
     var uri = navigationAction.request.url!;
 
-    if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
-        .contains(uri.scheme)) {
+    if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
       if (await canLaunch(url)) {
         // Launch the App
         await launch(url);
@@ -311,8 +312,8 @@ class _MyHomePageState extends State<MyHomePage> {
     return NavigationActionPolicy.ALLOW;
   }
 
-  void onDownloadStartRequest(InAppWebViewController controller,
-      DownloadStartRequest downloadStartRequest) async {
+  void onDownloadStartRequest(
+      InAppWebViewController controller, DownloadStartRequest downloadStartRequest) async {
     await requestPermission();
     print("<========================>");
     print("DownloadStartRequest: ${downloadStartRequest.toString()}");
@@ -379,10 +380,8 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Text('PDF file saved successfully.'),
                 Text('getTemporaryDirectory .${getTemporaryDirectory()}'),
-                Text(
-                    'getApplicationSupportDirectory .${getApplicationSupportDirectory()}'),
-                Text(
-                    'getApplicationDocumentsDirectory .${getApplicationDocumentsDirectory()}'),
+                Text('getApplicationSupportDirectory .${getApplicationSupportDirectory()}'),
+                Text('getApplicationDocumentsDirectory .${getApplicationDocumentsDirectory()}'),
                 // Text('getApplicationDocumentsDirectory .${getAppl()}'),
                 Text('App Folder Location:'),
                 Text(appFolderPath),

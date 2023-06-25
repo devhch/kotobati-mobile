@@ -23,7 +23,7 @@ Future<void> appPreLunch() async {
   /// Change NavigationBarColor and statusBarColor.
   SystemChrome.setSystemUIOverlayStyle(
     const SystemUiOverlayStyle(
-      statusBarColor: AppTheme.keyAppBlackColor,
+      statusBarColor: Colors.transparent,
       systemNavigationBarColor: AppTheme.keyAppBlackColor,
     ),
   );
@@ -78,8 +78,7 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        localeResolutionCallback:
-            (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
+        localeResolutionCallback: (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
           for (Locale locale in supportedLocales) {
             if (locale.languageCode == deviceLocale?.languageCode &&
                 locale.countryCode == deviceLocale?.countryCode) {

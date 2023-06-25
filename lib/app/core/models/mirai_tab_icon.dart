@@ -10,6 +10,7 @@ class MiraiTabIcon {
   MiraiTabIcon({
     required this.icon,
     required this.selectedIcon,
+    required this.size,
     this.index = 0,
     this.isSelected = false,
     this.isSelectedIconHasAColor = false,
@@ -21,35 +22,40 @@ class MiraiTabIcon {
   bool isSelectedIconHasAColor;
   bool isSelected;
   int? index;
+  Size size;
   AnimationController? animationController;
 
   static List<MiraiTabIcon> tabIconsList = <MiraiTabIcon>[
     MiraiTabIcon(
       index: 0,
-      icon: AppIconsKeys.world,
-      selectedIcon: AppIconsKeys.world,
+      size: const Size(30, 30),
+      icon: AppIconsKeys.web,
+      selectedIcon: AppIconsKeys.webSelected,
       isSelected: true,
       animationController: null,
     ),
     MiraiTabIcon(
       index: 1,
+      size: const Size(38, 30),
       icon: AppIconsKeys.books,
-      selectedIcon: AppIconsKeys.books,
+      selectedIcon: AppIconsKeys.booksSelected,
       isSelectedIconHasAColor: true,
       isSelected: false,
       animationController: null,
     ),
     MiraiTabIcon(
       index: 2,
+      size: const Size(40, 26),
       icon: AppIconsKeys.recent,
-      selectedIcon: AppIconsKeys.recent,
+      selectedIcon: AppIconsKeys.recentSelected,
       isSelectedIconHasAColor: true,
       isSelected: false,
       animationController: null,
     ),
     MiraiTabIcon(
       icon: AppIconsKeys.file,
-      selectedIcon: AppIconsKeys.file,
+      size: const Size(26, 30),
+      selectedIcon: AppIconsKeys.fileSelected,
       index: 3,
       isSelected: false,
       animationController: null,
