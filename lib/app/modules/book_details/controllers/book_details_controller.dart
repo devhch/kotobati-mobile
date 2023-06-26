@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 
 class BookDetailsController extends GetxController {
-  late final BookModel bookModel;
+  late final Book bookModel;
 
   RxBool notes = false.obs;
 

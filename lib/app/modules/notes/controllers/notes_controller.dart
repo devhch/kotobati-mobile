@@ -5,11 +5,11 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 class NotesController extends GetxController {
   RxBool notes = false.obs;
 
-  late BookModel bookModel;
+  late Book bookModel;
 
   @override
   void onInit() {
-    bookModel = BookModel(
+    bookModel = Book(
       id: "dede",
       title: "ماجدولين ",
       author: "مصطفى لطفي المنفلوطي",

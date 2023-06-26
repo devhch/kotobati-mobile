@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:hive/hive.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
 
 import '../controllers/reading_controller.dart';
@@ -9,57 +11,32 @@ import 'components/book_widget.dart';
 
 class ReadingView extends GetView<ReadingController> {
   const ReadingView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
-      child: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 15),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
-                  notes: <String>[
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-                    "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
-                  ],
-                  quotes: <String>[
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
-                  ],
-                ),
+      child: ValueListenableBuilder<Box<Map<dynamic, dynamic>>>(
+        valueListenable: HiveDataStore().booksListenable(),
+        builder: (_, Box<Map<dynamic, dynamic>> box, __) {
+          final List<Map<dynamic, dynamic>> books = box.values.toList();
+
+          if (books.isNotEmpty) {
+            return ListView.builder(
+              padding: const EdgeInsets.only(
+                left: 16,
+                right: 16,
+                bottom: 90,
               ),
-              BookWidget(
-                bookModel: BookModel(
-                  id: "dede",
-                  title: "ماجدولين ",
-                  author: "مصطفى لطفي المنفلوطي",
-                  image: AppIconsKeys.edit,
-                  notes: <String>[
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-                    "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
-                  ],
-                  quotes: <String>[
-                    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
-                  ],
-                ),
-              ),
-              const SizedBox(height: 100),
-            ],
-          ),
-        ),
+              itemCount: books.length,
+              itemBuilder: (_, int index) {
+                final Book book = Book.fromJson(books[index]);
+                return BookWidget(book: book);
+              },
+            );
+          } else {
+            return const Center(child: Text('No Data'));
+          }
+        },
       ),
     );
   }

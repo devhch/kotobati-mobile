@@ -23,7 +23,7 @@ class CommonScaffold extends StatelessWidget {
       body: Column(
         children: <Widget>[
           CommonAppBarWidget(backButton: backButton),
-          const SizedBox(height: 8),
+          const SizedBox(height: 36),
           Expanded(child: child),
         ],
       ),

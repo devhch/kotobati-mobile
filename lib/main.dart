@@ -6,8 +6,10 @@ import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
 
 import 'app/core/utils/app_theme.dart';
+import 'app/data/persistence/hive_data_store.dart';
 import 'app/routes/app_pages.dart';
 
 Future<void> main() async {
@@ -28,6 +30,17 @@ Future<void> appPreLunch() async {
     ),
   );
 
+  await SystemChrome.setPreferredOrientations(
+    <DeviceOrientation>[
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+    ],
+  );
+
+  /// initialize the HiveDataStore
+  final HiveDataStore dataStore = HiveDataStore();
+  await dataStore.init();
+
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
 
@@ -43,7 +56,7 @@ Future<void> appPreLunch() async {
 
       serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
         shouldInterceptRequest: (WebResourceRequest request) async {
-          print(request);
+          miraiPrint(request);
           return null;
         },
       );

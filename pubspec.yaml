@@ -15,7 +15,7 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.5
-  google_fonts: ^5.1.0
+  google_fonts: ^4.0.4
   font_awesome_flutter: ^10.4.0
   flutter_inappwebview: ^5.7.2+3
   url_launcher: ^6.1.11
@@ -25,14 +25,22 @@ dependencies:
   path_provider: ^2.0.15
   flutter_svg: ^2.0.7
   flutter_downloader: ^1.10.4
+  html: ^0.15.4
+  dio: ^5.2.1+1
+  shimmer: ^2.0.0
+  cached_network_image: ^3.2.1
+  syncfusion_flutter_pdfviewer: ^21.2.4
 
-  syncfusion_flutter_pdfviewer: ^22.1.34
 
   pdf: ^3.10.4
   open_file: ^3.3.1
 
   # State Management
   get: ^4.6.5
+  
+  # DB Store
+  hive: ^2.2.3
+  hive_flutter: ^1.1.0
 
   mirai_responsive: any
 
