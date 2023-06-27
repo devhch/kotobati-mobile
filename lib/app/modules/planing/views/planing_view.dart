@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/modules/planing/views/components/add_dialog.dart';
 import 'package:kotobati/app/widgets/card_text_icon_widget.dart';
@@ -19,19 +20,25 @@ class PlaningView extends GetView<PlaningController> {
           child: Column(
             children: <Widget>[
               const SizedBox(height: 30),
-              const CardTextIconWidget(
-                text: "كتب  أقرأها",
-                icon: AppIconsKeys.reading,
-              ),
-              const SizedBox(height: 30),
-              const CardTextIconWidget(
-                text: "كتب سأقرأها",
-                icon: AppIconsKeys.readLater,
-              ),
-              const SizedBox(height: 30),
-              const CardTextIconWidget(
-                text: "كتب قرأتها",
-                icon: AppIconsKeys.readed,
+              Obx(
+                () {
+                  return ListView.builder(
+                    physics: const NeverScrollableScrollPhysics(),
+                    shrinkWrap: true,
+                    padding: EdgeInsets.zero,
+                    itemCount: listPlaningBooks.length,
+                    itemBuilder: (_, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 15),
+                        child: CardTextIconWidget(
+                          id: listPlaningBooks[index].id,
+                          text: listPlaningBooks[index].name,
+                          icon: listPlaningBooks[index].icon,
+                        ),
+                      );
+                    },
+                  );
+                },
               ),
               const SizedBox(height: 50),
               IconButton(
@@ -46,7 +53,7 @@ class PlaningView extends GetView<PlaningController> {
                   fit: BoxFit.fill,
                 ),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 120),
             ],
           ),
         ),

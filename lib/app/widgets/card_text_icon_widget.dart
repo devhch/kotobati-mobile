@@ -12,10 +12,12 @@ import 'package:mirai_responsive/mirai_responsive.dart';
 class CardTextIconWidget extends StatelessWidget {
   const CardTextIconWidget({
     Key? key,
+    required this.id,
     required this.text,
     required this.icon,
   }) : super(key: key);
 
+  final int id;
   final String text;
   final String icon;
 

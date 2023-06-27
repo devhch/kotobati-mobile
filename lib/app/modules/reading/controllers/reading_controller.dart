@@ -1,9 +1,6 @@
 import 'package:get/get.dart';
 
 class ReadingController extends GetxController {
-  //TODO: Implement ReadingController
-
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
@@ -15,9 +12,7 @@ class ReadingController extends GetxController {
   }
 
   @override
-  void onClose() {
-    super.onClose();
+  void dispose() {
+    super.dispose();
   }
-
-  void increment() => count.value++;
 }

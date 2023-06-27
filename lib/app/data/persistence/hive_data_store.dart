@@ -6,12 +6,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/planing_books_model.dart';
 
 import '../../core/helpers/common_function.dart';
 
 class HiveDataStore {
   /// CategoryModel Box Name
   static String booksBoxName = 'books_box_key';
+  static String planingBooksBoxName = 'planing_books_box_key';
 
   /// init
   Future<void> init() async {
@@ -21,13 +23,15 @@ class HiveDataStore {
 
     /// Books Box Name
     await Hive.openBox<Map<dynamic, dynamic>>(booksBoxName);
+
+    await Hive.openBox<Map<dynamic, dynamic>>(planingBooksBoxName);
   }
 
   /// --------------------- Books ---------------------///
   Future<void> saveBook({required Book book}) async {
     final Box<Map<dynamic, dynamic>> bookBox =
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
-  //  await bookBox.clear();
+    //  await bookBox.clear();
     await bookBox.add(book.toJson());
     if (kDebugMode) {
       print('\n<=------------------------------=>');
@@ -74,5 +78,39 @@ class HiveDataStore {
 
   ValueListenable<Box<Map<dynamic, dynamic>>> booksListenable() {
     return Hive.box<Map<dynamic, dynamic>>(booksBoxName).listenable();
+  }
+
+  Future<void> savePlaningBook({
+    required List<PlaningBooksModel> planingBooks,
+  }) async {
+    final Box<Map<dynamic, dynamic>> bookBox =
+        Hive.box<Map<dynamic, dynamic>>(planingBooksBoxName);
+
+    await bookBox.clear();
+
+    final List<Map<String, dynamic>> castedCategories =
+        planingBooks.map((PlaningBooksModel book) => book.toJson()).toList();
+
+    await bookBox.addAll(castedCategories);
+
+    miraiPrint('Books cast: ${planingBooks.cast()}');
+    debugPrint('\n=> Saved Books: ${planingBooks.toString()}\n');
+  }
+
+  List<PlaningBooksModel> getPlaningBooks() {
+    final Box<Map<dynamic, dynamic>> booksBox =
+        Hive.box<Map<dynamic, dynamic>>(planingBooksBoxName);
+
+    if (booksBox.isNotEmpty) {
+      List<PlaningBooksModel> books = booksBox.values
+          .map((Map<dynamic, dynamic> offerMsp) =>
+              PlaningBooksModel.fromJson(offerMsp))
+          .toList();
+
+      debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
+      return books;
+    } else {
+      return <PlaningBooksModel>[];
+    }
   }
 }

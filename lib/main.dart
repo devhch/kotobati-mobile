@@ -8,6 +8,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 
+import 'app/core/models/planing_books_model.dart';
 import 'app/core/utils/app_theme.dart';
 import 'app/data/persistence/hive_data_store.dart';
 import 'app/routes/app_pages.dart';
@@ -40,6 +41,15 @@ Future<void> appPreLunch() async {
   /// initialize the HiveDataStore
   final HiveDataStore dataStore = HiveDataStore();
   await dataStore.init();
+
+  /// logic for Planing book list
+  List<PlaningBooksModel> list = dataStore.getPlaningBooks();
+  if (list.isEmpty) {
+    await dataStore.savePlaningBook(planingBooks: listPlaningBooks);
+  } //
+  else {
+    listPlaningBooks.value = dataStore.getPlaningBooks();
+  }
 
   if (Platform.isAndroid) {
     await AndroidInAppWebViewController.setWebContentsDebuggingEnabled(true);
@@ -81,17 +91,18 @@ class MyApp extends StatelessWidget {
         theme: AppTheme.themeData,
         initialRoute: AppPages.initial,
         getPages: AppPages.routes,
-        locale: Locale('ar', '🇲🇦'),
-        supportedLocales: [
-          const Locale('en'),
-          const Locale('ar'),
+        locale: const Locale('ar', '🇲🇦'),
+        supportedLocales: const <Locale>[
+          Locale('en'),
+          Locale('ar'),
         ],
         localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
           GlobalMaterialLocalizations.delegate,
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        localeResolutionCallback: (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
+        localeResolutionCallback:
+            (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
           for (Locale locale in supportedLocales) {
             if (locale.languageCode == deviceLocale?.languageCode &&
                 locale.countryCode == deviceLocale?.countryCode) {

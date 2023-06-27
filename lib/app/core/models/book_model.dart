@@ -3,6 +3,8 @@
 * On 6/23/2023.
 */
 
+import 'planing_books_model.dart';
+
 class Book {
   final String? id;
   final String? title;
@@ -13,6 +15,7 @@ class Book {
   String? path;
   final List<String> notes;
   final List<String> quotes;
+  PlaningBooksModel? planingBook;
 
   Book({
     this.id,
@@ -22,6 +25,7 @@ class Book {
     this.description,
     this.image,
     this.path,
+    this.planingBook,
     this.notes = const <String>[],
     this.quotes = const <String>[],
   });
@@ -37,6 +41,7 @@ class Book {
       description: json['description'],
       image: json['image'],
       path: json['path'],
+      planingBook: json['planingBook'],
       notes: json['notes'],
       quotes: json['quotes'],
     );
@@ -50,12 +55,13 @@ class Book {
         'description': description,
         'image': image,
         'path': path,
+        'planingBook': planingBook,
         'notes': notes,
         'quotes': quotes,
       };
 
   @override
   String toString() {
-    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author description: $description, image: $image, path: $path, notes: $notes, quotes: $quotes}';
+    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author description: $description, image: $image, path: $path, planingBook:$planingBook, notes: $notes, quotes: $quotes}';
   }
 }

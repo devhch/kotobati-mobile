@@ -5,8 +5,8 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/modules/reading/views/components/book_widget.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
+import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
-import 'package:mirai_responsive/mirai_responsive.dart';
 
 import '../controllers/book_details_controller.dart';
 import 'components/text_widget.dart';
@@ -23,22 +23,34 @@ class BookDetailsView extends GetView<BookDetailsController> {
           children: <Widget>[
             const SizedBox(height: 15),
             Container(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 16,
-                vertical: 10,
-              ),
+              // padding: const EdgeInsets.symmetric(
+              //   horizontal: 16,
+              //   vertical: 10,
+              // ),
               height: 140,
               width: 96,
               decoration: const BoxDecoration(
-                color: AppTheme.keyAppColor,
-              ),
-              child: SvgPicture.asset(
-                controller.bookModel.image!,
-                // fit: BoxFit.fill,
-                width: MiraiSize.iconSize24,
-                height: MiraiSize.iconSize24,
-                color: AppTheme.keyAppBlackColor,
-              ),
+                  // color: AppTheme.keyAppColor,
+                  ),
+              child: controller.bookModel.image != null &&
+                      controller.bookModel.image!.contains(".svg")
+                  ? SvgPicture.network(
+                      controller.bookModel.image!,
+                      fit: BoxFit.contain,
+                      width: double.infinity,
+                      // width: MiraiSize.iconSize24,
+                      // height: MiraiSize.iconSize24,
+                    )
+                  : MiraiCachedImageNetworkWidget(
+                      imageUrl: controller.bookModel.image!,
+                      fit: BoxFit.fill,
+                      width: 96,
+                      //  width: double.infinity,
+                      //    width: MiraiSize.iconSize24,
+                      title: controller.bookModel.title!,
+                      // height: MiraiSize.iconSize24,
+                      // color: AppTheme.keyAppBlackColor,
+                    ),
             ),
             const SizedBox(height: 15),
             Text(
