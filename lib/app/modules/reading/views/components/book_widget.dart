@@ -8,12 +8,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
-import 'package:mirai_responsive/mirai_responsive.dart';
 
 class BookWidget extends StatelessWidget {
   const BookWidget({
@@ -53,12 +54,12 @@ class BookWidget extends StatelessWidget {
             height: 140,
             width: 96,
             decoration: const BoxDecoration(
-             // color: AppTheme.keyAppColor,
-            ),
+                // color: AppTheme.keyAppColor,
+                ),
             child: book.image != null && book.image!.contains(".svg")
                 ? SvgPicture.network(
                     book.image!,
-                     fit: BoxFit.contain,
+                    fit: BoxFit.contain,
                     width: double.infinity,
                     // width: MiraiSize.iconSize24,
                     // height: MiraiSize.iconSize24,
@@ -99,33 +100,64 @@ class BookWidget extends StatelessWidget {
                   ),
                   const SizedBox(height: 22),
                   Row(
-                    children: [
+                    children: <Widget>[
                       Expanded(
                         child: SingleChildScrollView(
                           child: Row(
                             //  mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
                               InkWell(
-                                onTap: () {},
+                                onTap: () async {
+                                  book.planingBook = listPlaningBooks[0];
+                                  await HiveDataStore().updateBook(book: book);
+                                },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.reading,
                                   width: 16,
+                                  colorFilter: book.planingBook != null &&
+                                          book.planingBook!.id == 1
+                                      ? const ColorFilter.mode(
+                                          AppTheme.keyAppColor,
+                                          BlendMode.srcOut,
+                                        )
+                                      : null,
                                 ),
                               ),
                               const ContainerDivider(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () async {
+                                  book.planingBook = listPlaningBooks[1];
+                                  await HiveDataStore().updateBook(book: book);
+                                },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.readLater,
                                   width: 16,
+                                  // color: AppTheme.keyAppColor,
+                                  colorFilter: book.planingBook != null &&
+                                          book.planingBook!.id == 2
+                                      ? const ColorFilter.mode(
+                                          AppTheme.keyAppColor,
+                                          BlendMode.srcOut,
+                                        )
+                                      : null,
                                 ),
                               ),
                               const ContainerDivider(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () async {
+                                  book.planingBook = listPlaningBooks[2];
+                                  await HiveDataStore().updateBook(book: book);
+                                },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.readed,
                                   width: 16,
+                                  colorFilter: book.planingBook != null &&
+                                          book.planingBook!.id == 3
+                                      ? const ColorFilter.mode(
+                                          AppTheme.keyAppColor,
+                                          BlendMode.srcOut,
+                                        )
+                                      : null,
                                 ),
                               ),
                               const ContainerDivider(),

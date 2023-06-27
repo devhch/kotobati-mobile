@@ -41,7 +41,9 @@ class Book {
       description: json['description'],
       image: json['image'],
       path: json['path'],
-      planingBook: json['planingBook'],
+      planingBook: json['planingBook'] != null
+          ? PlaningBooksModel.fromJson(json['planingBook'])
+          : null,
       notes: json['notes'],
       quotes: json['quotes'],
     );
@@ -55,7 +57,7 @@ class Book {
         'description': description,
         'image': image,
         'path': path,
-        'planingBook': planingBook,
+        'planingBook': planingBook?.toJson(),
         'notes': notes,
         'quotes': quotes,
       };

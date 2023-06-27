@@ -32,6 +32,11 @@ class PlaningBooksModel {
         'name': name,
         'icon': icon,
       };
+
+  @override
+  String toString() {
+    return 'PlaningBooksModel{id: $id, name: $name, icon: $icon}';
+  }
 }
 
 RxList<PlaningBooksModel> listPlaningBooks = <PlaningBooksModel>[

@@ -62,7 +62,7 @@ class HiveDataStore {
           .map((Map<dynamic, dynamic> offerMsp) => Book.fromJson(offerMsp))
           .toList();
 
-      debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
+      // debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
       return books;
     } else {
       return <Book>[];
@@ -78,6 +78,27 @@ class HiveDataStore {
 
   ValueListenable<Box<Map<dynamic, dynamic>>> booksListenable() {
     return Hive.box<Map<dynamic, dynamic>>(booksBoxName).listenable();
+  }
+
+  Future<void> updateBook({required Book book}) async {
+    final Box<Map<dynamic, dynamic>> bookBox =
+        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+
+    List<Book> books =
+        getBooks().where((Book element) => element.path != book.path).toList();
+
+    books.add(book);
+
+    final List<Map<String, dynamic>> castedCategories =
+        books.map((Book book) => book.toJson()).toList();
+
+    // miraiPrint('Books : ${books.toString()}');
+    // miraiPrint('Books: ${castedCategories.toList().toString()}');
+
+    await bookBox.clear();
+    await bookBox.addAll(castedCategories);
+
+    debugPrint('\n=> Saved Books: ${books.toString()}\n');
   }
 
   Future<void> savePlaningBook({
