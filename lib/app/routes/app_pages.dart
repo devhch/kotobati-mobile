@@ -12,6 +12,8 @@ import '../modules/pdf_reader/bindings/pdf_reader_binding.dart';
 import '../modules/pdf_reader/views/pdf_reader_view.dart';
 import '../modules/planing/bindings/planing_binding.dart';
 import '../modules/planing/views/planing_view.dart';
+import '../modules/planing_details/bindings/planing_details_binding.dart';
+import '../modules/planing_details/views/planing_details_view.dart';
 import '../modules/reading/bindings/reading_binding.dart';
 import '../modules/reading/views/reading_view.dart';
 import '../modules/search/bindings/search_binding.dart';
@@ -78,6 +80,11 @@ class AppPages {
       name: _Paths.bookDetails,
       page: () => const BookDetailsView(),
       binding: BookDetailsBinding(),
+    ),
+    GetPage<void>(
+      name: _Paths.planingDetails,
+      page: () => const PlaningDetailsView(),
+      binding: PlaningDetailsBinding(),
     ),
   ];
 }

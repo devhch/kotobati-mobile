@@ -6,29 +6,36 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/routes/app_pages.dart';
+import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
 
 class CardTextIconWidget extends StatelessWidget {
   const CardTextIconWidget({
     Key? key,
-    required this.id,
-    required this.text,
-    required this.icon,
+    required this.planingBooksModel,
   }) : super(key: key);
 
-  final int id;
-  final String text;
-  final String icon;
+  final PlaningBooksModel planingBooksModel;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: AppTheme.keyAppGrayColorDark,
-        ),
+    return MiraiElevatedButtonWidget(
+      onTap: () {
+        Get.toNamed(
+          Routes.planingDetails,
+          arguments: <String, dynamic>{
+            "planingBooksModel": planingBooksModel,
+          },
+        );
+      },
+      backgroundColor: AppTheme.keyAppBlackColor,
+      padding: EdgeInsets.zero,
+      borderRadius: BorderRadius.circular(18),
+      side: const BorderSide(
+        color: AppTheme.keyAppGrayColorDark,
       ),
       child: Row(
         children: <Widget>[
@@ -47,7 +54,7 @@ class CardTextIconWidget extends StatelessWidget {
               ),
             ),
             child: SvgPicture.asset(
-              icon,
+              planingBooksModel.icon,
               // fit: BoxFit.fill,
               width: MiraiSize.iconSize24,
               height: MiraiSize.iconSize24,
@@ -58,7 +65,7 @@ class CardTextIconWidget extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 26),
             child: Text(
-              text,
+              planingBooksModel.name,
               style: context.textTheme.headlineMedium!.copyWith(
                 fontSize: 24,
               ),

@@ -14,6 +14,7 @@ abstract class Routes {
   static const String settings = _Paths.settings;
   static const String search = _Paths.search;
   static const String bookDetails = _Paths.bookDetails;
+  static const String planingDetails = _Paths.planingDetails;
 }
 
 abstract class _Paths {
@@ -29,4 +30,5 @@ abstract class _Paths {
   static const String settings = '/settings';
   static const String search = '/search';
   static const String bookDetails = '/book-details';
+  static const String planingDetails = '/planing-details';
 }
