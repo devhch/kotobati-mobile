@@ -15,6 +15,7 @@ class SettingsView extends GetView<SettingsController> {
   Widget build(BuildContext context) {
     return CommonScaffold(
       backButton: true,
+      showSettingButton: false,
       child: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -36,18 +37,61 @@ class SettingsView extends GetView<SettingsController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          'عمودي',
-                          style: context.textTheme.labelMedium!.copyWith(
-                            color: AppTheme.keyAppWhiteColor,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
+                        Obx(() {
+                          return Text(
+                            controller.horizontal.value ? 'عمودي' : 'افقي',
+                            style: context.textTheme.labelMedium!.copyWith(
+                              color: AppTheme.keyAppWhiteColor,
+                            ),
+                          );
+                        }),
+                        PopupMenuButton<bool>(
+                          color: const Color(0xff464444),
+                          position: PopupMenuPosition.under,
                           icon: SvgPicture.asset(AppIconsKeys.arrowBottom),
-                        )
+                          onSelected: (bool value) {
+                            controller.updateHorizontal(value);
+                          },
+                          itemBuilder: (_) {
+                            return <PopupMenuItem<bool>>[
+                              PopupMenuItem<bool>(
+                                value: true,
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'عمودي',
+                                      style: context.textTheme.labelMedium!
+                                          .copyWith(
+                                        color: AppTheme.keyAppWhiteColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Divider(
+                                      color: AppTheme.keyAppWhiteColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem<bool>(
+                                value: false,
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'افقي',
+                                      style: context.textTheme.labelMedium!
+                                          .copyWith(
+                                        color: AppTheme.keyAppWhiteColor,
+                                      ),
+                                    ),
+                                    const Divider(color: Color(0xff464444)),
+                                  ],
+                                ),
+                              ),
+                            ];
+                          },
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -68,18 +112,61 @@ class SettingsView extends GetView<SettingsController> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: <Widget>[
-                        Text(
-                          'ليلي',
-                          style: context.textTheme.labelMedium!.copyWith(
-                            color: AppTheme.keyAppWhiteColor,
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: () {},
+                        Obx(() {
+                          return Text(
+                            controller.darkMode.value ? 'ليلي' : 'عادي',
+                            style: context.textTheme.labelMedium!.copyWith(
+                              color: AppTheme.keyAppWhiteColor,
+                            ),
+                          );
+                        }),
+                        PopupMenuButton<bool>(
+                          color: const Color(0xff464444),
+                          position: PopupMenuPosition.under,
                           icon: SvgPicture.asset(AppIconsKeys.arrowBottom),
-                        )
+                          onSelected: (bool value) {
+                            controller.updateMode(value);
+                          },
+                          itemBuilder: (_) {
+                            return <PopupMenuItem<bool>>[
+                              PopupMenuItem<bool>(
+                                value: true,
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'ليلي',
+                                      style: context.textTheme.labelMedium!
+                                          .copyWith(
+                                        color: AppTheme.keyAppWhiteColor,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Divider(
+                                      color: AppTheme.keyAppWhiteColor,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              PopupMenuItem<bool>(
+                                value: false,
+                                child: Column(
+                                  children: <Widget>[
+                                    Text(
+                                      'عادي',
+                                      style: context.textTheme.labelMedium!
+                                          .copyWith(
+                                        color: AppTheme.keyAppWhiteColor,
+                                      ),
+                                    ),
+                                    const Divider(color: Color(0xff464444)),
+                                  ],
+                                ),
+                              ),
+                            ];
+                          },
+                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -136,7 +223,7 @@ class SettingsView extends GetView<SettingsController> {
                             controller.zoneDistance.value = value;
                           },
                           onChangeEnd: (double value) {
-                            // controller.updateDistance(value);
+                            controller.updateSpacing(value);
                           },
                         );
                       }),

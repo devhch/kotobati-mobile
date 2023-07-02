@@ -12,8 +12,11 @@ class CommonScaffold extends StatelessWidget {
     Key? key,
     required this.child,
     this.backButton = false,
+    this.showSettingButton = true,
   }) : super(key: key);
+
   final bool backButton;
+  final bool showSettingButton;
   final Widget child;
 
   @override
@@ -22,7 +25,10 @@ class CommonScaffold extends StatelessWidget {
       backgroundColor: AppTheme.keyAppBlackColor,
       body: Column(
         children: <Widget>[
-          CommonAppBarWidget(backButton: backButton),
+          CommonAppBarWidget(
+            backButton: backButton,
+            showSettingButton: showSettingButton,
+          ),
           const SizedBox(height: 36),
           Expanded(child: child),
         ],

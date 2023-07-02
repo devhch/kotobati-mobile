@@ -10,8 +10,11 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 
 class CommonAppBarWidget extends StatelessWidget {
-  const CommonAppBarWidget({Key? key,this.backButton = false,}) : super(key: key);
+  const CommonAppBarWidget(
+      {Key? key, this.backButton = false, this.showSettingButton = true})
+      : super(key: key);
   final bool backButton;
+  final bool showSettingButton;
 
   @override
   Widget build(BuildContext context) {
@@ -30,26 +33,30 @@ class CommonAppBarWidget extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
-                if(backButton)
+                if (backButton)
                   IconButton(
                     onPressed: () {
                       Get.back();
                     },
                     icon: SvgPicture.asset(AppIconsKeys.backArrowCircle),
                   )
-                else IconButton(
-                  onPressed: () {
-                    Get.toNamed(Routes.search);
-                  },
-                  icon: SvgPicture.asset(AppIconsKeys.search),
-                ),
+                else
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.search);
+                    },
+                    icon: SvgPicture.asset(AppIconsKeys.search),
+                  ),
                 SvgPicture.asset(AppIconsKeys.ktobatiIcon),
-                IconButton(
-                  onPressed: () {
-                    Get.toNamed(Routes.settings);
-                  },
-                  icon: SvgPicture.asset(AppIconsKeys.setting),
-                ),
+                if (showSettingButton)
+                  IconButton(
+                    onPressed: () {
+                      Get.toNamed(Routes.settings);
+                    },
+                    icon: SvgPicture.asset(AppIconsKeys.setting),
+                  )
+                else
+                  const SizedBox(height: 65, width: 65),
               ],
             ),
           )

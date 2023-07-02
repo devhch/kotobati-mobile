@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
+import 'package:kotobati/app/core/models/setting_objects_model.dart';
 
 import '../../core/helpers/common_function.dart';
 
@@ -14,6 +15,7 @@ class HiveDataStore {
   /// CategoryModel Box Name
   static String booksBoxName = 'books_box_key';
   static String planingBooksBoxName = 'planing_books_box_key';
+  static String settingBoxName = 'setting_box_key';
 
   /// init
   Future<void> init() async {
@@ -25,6 +27,8 @@ class HiveDataStore {
     await Hive.openBox<Map<dynamic, dynamic>>(booksBoxName);
 
     await Hive.openBox<Map<dynamic, dynamic>>(planingBooksBoxName);
+
+    await Hive.openBox<Map<dynamic, dynamic>>(settingBoxName);
   }
 
   /// --------------------- Books ---------------------///
@@ -133,5 +137,35 @@ class HiveDataStore {
     } else {
       return <PlaningBooksModel>[];
     }
+  }
+
+  Future<SettingObjectsModel> getSettingObjects() async {
+    final Box<Map<dynamic, dynamic>> settingBox =
+        Hive.box<Map<dynamic, dynamic>>(settingBoxName);
+
+    SettingObjectsModel setting = SettingObjectsModel();
+
+    if (settingBox.isNotEmpty) {
+      setting = SettingObjectsModel.fromJson(settingBox.values.first);
+    }
+
+    debugPrint("settingObject: $setting");
+
+    return setting;
+  }
+
+  Future<SettingObjectsModel> saveSettingObjects({
+    required SettingObjectsModel settingObjectsModel,
+  }) async {
+    final Box<Map<dynamic, dynamic>> settingBox =
+        Hive.box<Map<dynamic, dynamic>>(settingBoxName);
+
+    await settingBox.clear();
+
+    await settingBox.add(settingObjectsModel.toJson());
+
+    await getSettingObjects();
+
+    return settingObjectsModel;
   }
 }
