@@ -6,6 +6,7 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/reading/views/components/book_widget.dart';
+import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
 import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
@@ -69,10 +70,18 @@ class BookDetailsView extends GetView<BookDetailsController> {
                   style: context.textTheme.bodyMedium!.copyWith(),
                 ),
                 const SizedBox(height: 15),
-                MiraiElevatedButtonWidget(
-                  child: const Text("قراءة الكتاب"),
-                  onTap: () {},
-                ),
+                if (controller.bookModel.path != null)
+                  MiraiElevatedButtonWidget(
+                    child: const Text("قراءة الكتاب"),
+                    onTap: () {
+                      Get.toNamed(
+                        Routes.pdfReader,
+                        arguments: <String, String>{
+                          "path": controller.bookModel.path!,
+                        },
+                      );
+                    },
+                  ),
                 const SizedBox(height: 15),
                 Row(
                   mainAxisSize: MainAxisSize.min,
