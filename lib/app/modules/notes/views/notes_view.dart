@@ -9,6 +9,7 @@ import '../controllers/notes_controller.dart';
 
 class NotesView extends GetView<NotesController> {
   const NotesView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
@@ -17,88 +18,90 @@ class NotesView extends GetView<NotesController> {
           children: <Widget>[
             const SizedBox(height: 30),
             Obx(
-              () {
-                if (controller.notes.value) {
-                  return Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      Container(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        decoration: const BoxDecoration(
-                            border: Border(
-                          bottom: BorderSide(
-                            color: AppTheme.keyAppColor,
-                            width: 1.0, // Underline thickness
+              () => AnimatedSwitcher(
+                duration: const Duration(milliseconds: 200),
+                child: (controller.notes.value)
+                    ? Row(
+                        key: UniqueKey(),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          Container(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              bottom: BorderSide(
+                                color: AppTheme.keyAppColor,
+                                width: 1.0, // Underline thickness
+                              ),
+                            )),
+                            child: Text(
+                              "الملاحظات",
+                              style: context.textTheme.headlineMedium!.copyWith(
+                                fontSize: 24,
+                                color: AppTheme.keyAppColor,
+                              ),
+                            ),
                           ),
-                        )),
-                        child: Text(
-                          "الملاحظات",
-                          style: context.textTheme.headlineMedium!.copyWith(
-                            fontSize: 24,
-                            color: AppTheme.keyAppColor,
-                          ),
-                        ),
-                      ),
-                      const ContainerDivider(height: 30, width: 1),
-                      TextButton(
-                        onPressed: () {
-                          controller.notes.update(
-                            (_) {
-                              controller.notes.value = false;
+                          const ContainerDivider(height: 30, width: 1),
+                          TextButton(
+                            onPressed: () {
+                              controller.notes.update(
+                                (_) {
+                                  controller.notes.value = false;
+                                },
+                              );
                             },
-                          );
-                        },
-                        child: Text(
-                          "الإقتباسات",
-                          style: context.textTheme.headlineMedium!.copyWith(
-                            fontSize: 24,
+                            child: Text(
+                              "الإقتباسات",
+                              style: context.textTheme.headlineMedium!.copyWith(
+                                fontSize: 24,
+                              ),
+                            ),
                           ),
-                        ),
+                        ],
+                      )
+                    : Row(
+                        key: UniqueKey(),
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          TextButton(
+                            onPressed: () {
+                              controller.notes.update(
+                                (_) {
+                                  controller.notes.value = true;
+                                },
+                              );
+                            },
+                            child: Text(
+                              "الملاحظات",
+                              style: context.textTheme.headlineMedium!.copyWith(
+                                fontSize: 24,
+                              ),
+                            ),
+                          ),
+                          const ContainerDivider(height: 30, width: 1),
+                          Container(
+                            padding: const EdgeInsets.only(bottom: 5),
+                            decoration: const BoxDecoration(
+                                border: Border(
+                              bottom: BorderSide(
+                                color: AppTheme.keyAppColor,
+                                width: 1.0, // Underline thickness
+                              ),
+                            )),
+                            child: Text(
+                              "الإقتباسات",
+                              style: context.textTheme.headlineMedium!.copyWith(
+                                fontSize: 24,
+                                color: AppTheme.keyAppColor,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
-                  );
-                }
-                return Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: <Widget>[
-                    TextButton(
-                      onPressed: () {
-                        controller.notes.update(
-                          (_) {
-                            controller.notes.value = true;
-                          },
-                        );
-                      },
-                      child: Text(
-                        "الملاحظات",
-                        style: context.textTheme.headlineMedium!.copyWith(
-                          fontSize: 24,
-                        ),
-                      ),
-                    ),
-                    const ContainerDivider(height: 30, width: 1),
-                    Container(
-                      padding: const EdgeInsets.only(bottom: 5),
-                      decoration: const BoxDecoration(
-                          border: Border(
-                        bottom: BorderSide(
-                          color: AppTheme.keyAppColor,
-                          width: 1.0, // Underline thickness
-                        ),
-                      )),
-                      child: Text(
-                        "الإقتباسات",
-                        style: context.textTheme.headlineMedium!.copyWith(
-                          fontSize: 24,
-                          color: AppTheme.keyAppColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
+              ),
             ),
             const SizedBox(height: 25),
             Obx(

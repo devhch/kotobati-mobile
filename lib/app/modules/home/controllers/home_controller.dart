@@ -4,17 +4,22 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
-import 'package:open_file/open_file.dart';
+
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class HomeController extends GetxController {
   /// A Value Notifier to store chosen Book...
   final ValueNotifier<Book?> chosenBook = ValueNotifier<Book?>(null);
+
+  // The app name is:
+  static const String appName = 'Kotobati';
 
   // @override
   // void onInit() {
@@ -37,6 +42,11 @@ class HomeController extends GetxController {
     final PermissionStatus status = await Permission.storage.request();
     miraiPrint("PermissionStatus $status");
     if (status == PermissionStatus.permanentlyDenied) {
+      AppMiraiDialog.snackBar(
+        title: 'Storage Permission Denied!',
+        message:
+            'Please allow storage permission to save the book that you are going to download...',
+      );
       openAppSettings();
     }
   }
@@ -48,19 +58,14 @@ class HomeController extends GetxController {
     await requestPermission();
     miraiPrint("<========================>");
     miraiPrint("DownloadStartRequest: ${downloadStartRequest.toString()}");
-    String filename = extractFilename(downloadStartRequest.contentDisposition.toString());
+    String filename = extractFilename(downloadStartRequest.contentDisposition.toString())
+        .replaceAll('.pdf', '');
     miraiPrint("DownloadStartRequest: filename $filename");
-    miraiPrint("<========================>");
     miraiPrint("onDownloadStart URL ${downloadStartRequest.url.toString()}");
     miraiPrint("<========================>");
-    //  Directory? directory = await getExternalStorageDirectory();
-    // Directory? directory = Platform.isAndroid
-    //     ? await getExternalStorageDirectory()
-    //     : await getApplicationSupportDirectory();
 
     /// Create App Folder
-    // The app name is:
-    const String appName = 'Kotobati';
+
     final String path = await createFolder(appName);
     final Book book = chosenBook.value!;
     book.path = '$path/$filename';
@@ -70,14 +75,15 @@ class HomeController extends GetxController {
     dataStore.saveBook(book: book);
 
     try {
-      /// enqueue
+      // enqueue
       final String? taskId = await FlutterDownloader.enqueue(
         url: downloadStartRequest.url.toString(),
         savedDir: path,
+        fileName: filename,
         // show download progress in status bar (for Android)
         showNotification: true,
         // click on notification to open downloaded file (for Android)
-        openFileFromNotification: true,
+        openFileFromNotification: false,
       );
       miraiPrint('FlutterDownloader taskId: $taskId');
 
@@ -88,9 +94,11 @@ class HomeController extends GetxController {
         int progress,
       ) {
         miraiPrint("FlutterDownloader: id $id, status: $status, progress: $progress");
+        // if (status == DownloadTaskStatus.complete) {
+        //   // Download completed
+        //   print('Download with ID $id completed');
+        // }
       });
-
-
     } catch (ex) {
       miraiPrint("FlutterDownloader.enqueue Exception");
     }
@@ -129,89 +137,5 @@ class HomeController extends GetxController {
     }
 
     return '';
-  }
-
-  // Future<void> downloadFile(String fileName, String url) async {
-  //   Dio dio = Dio();
-  //   Directory? dir = await getExternalStorageDirectory();
-  //   Directory knockDir =
-  //       await new Directory('${dir.path}/Kotobati').create(recursive: true);
-  //   print(url);
-  //   await dio.download(widget.url, '${knockDir.path}/${widget.fileName}.pdf',
-  //       onProgress: (rec, total) {
-  //     if (mounted) {
-  //       setState(() {
-  //         downloading = true;
-  //         progressString = ((rec / total) * 100).toStringAsFixed(0) + "%";
-  //       });
-  //     }
-  //   });
-  //   // if (mounted) {
-  //   //   setState(() {
-  //   //     downloading = false;
-  //   //     progressString = "Completed";
-  //   //     _message = "File is downloaded to your SD card 'iLearn' folder!";
-  //   //   });
-  //   // }
-  //   print("Download completed");
-  // }
-
-  Future<void> createAppFolder() async {
-    await requestPermission();
-
-    // Get the app name
-    String appName = 'Kotobati';
-
-    // Create a folder in internal storage
-    Directory? directory = Platform.isAndroid
-        ? await getExternalStorageDirectory()
-        : await getApplicationDocumentsDirectory();
-    miraiPrint("App Directory ${directory?.toString()}");
-    String appFolderPath = '${directory?.path}/$appName';
-    Directory(appFolderPath).create(recursive: true);
-
-    // Create a file path for the PDF
-    // String pdfFilePath = '$appFolderPath/your_pdf_file';
-
-    // Create a sample PDF file
-    // createSamplePDF(pdfFilePath);
-
-    // Check if the file was created
-    // bool fileExists = await File(pdfFilePath).exists();
-    // if (fileExists) {
-    //   // ignore: use_build_context_synchronously
-    //   showDialog(
-    //     context: context,
-    //     builder: (BuildContext context) {
-    //       return AlertDialog(
-    //         title: Text('Success'),
-    //         content: Column(
-    //           mainAxisSize: MainAxisSize.min,
-    //           children: [
-    //             Text('PDF file saved successfully.'),
-    //             Text('getTemporaryDirectory .${getTemporaryDirectory()}'),
-    //             Text(
-    //                 'getApplicationSupportDirectory .${getApplicationSupportDirectory()}'),
-    //             Text(
-    //                 'getApplicationDocumentsDirectory .${getApplicationDocumentsDirectory()}'),
-    //             // Text('getApplicationDocumentsDirectory .${getAppl()}'),
-    //             Text('App Folder Location:'),
-    //             Text(appFolderPath),
-    //           ],
-    //         ),
-    //         actions: <Widget>[
-    //           TextButton(
-    //             child: const Text('OK'),
-    //             onPressed: () {
-    //               Navigator.of(context).pop();
-    //               // Open the folder containing the PDF file
-    //               OpenFile.open("$pdfFilePath.pdf");
-    //             },
-    //           ),
-    //         ],
-    //       );
-    //     },
-    //   );
-    // }
   }
 }
