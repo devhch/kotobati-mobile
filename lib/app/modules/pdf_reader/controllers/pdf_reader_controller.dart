@@ -12,6 +12,9 @@ class PdfReaderController extends GetxController {
 
   File? pdfFile;
 
+  /// Saved Page
+  ValueNotifier<double> savedPage =  ValueNotifier<double>(1);
+
   @override
   void onInit() {
     pdfPath = Get.arguments['path'];

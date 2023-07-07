@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
-import 'package:kotobati/app/core/utils/app_extension.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
@@ -32,7 +32,7 @@ class PdfReaderView extends GetView<PdfReaderController> {
               ),
               onPressed: () {},
             ),
-            actions: [
+            actions: <Widget>[
               IconButton(
                 onPressed: () {
                   Get.toNamed(Routes.settings);
@@ -41,28 +41,56 @@ class PdfReaderView extends GetView<PdfReaderController> {
               )
             ],
           ),
-          body: Column(
-            children: <Widget>[
-              // Container(
-              //   decoration: BoxDecoration(),
-              //   padding: EdgeInsets.only(top: context.topPadding),
-              //   child: ,
-              // ),
-              if(controller.pdfFile != null)
-              Expanded(
-                child: SfPdfViewer.file(
-                  //   'https://cdn.syncfusion.com/content/PDFViewer/flutter-succinctly.pdf',
-                  File(controller.pdfFile!.path ),
-                  onTextSelectionChanged: (_) {},
-                  key: controller.pdfViewerKey,
-                  controller: controller.pdfViewerController,
-                  onDocumentLoaded: (_) {
-                   // controller.update();
-                  },
+          body: (controller.pdfFile != null)
+              ? Column(
+                  children: <Widget>[
+                    Expanded(
+                      child: SfPdfViewer.file(
+                        File(controller.pdfFile!.path),
+                        onTextSelectionChanged: (_) {},
+                        key: controller.pdfViewerKey,
+                        controller: controller.pdfViewerController,
+                        onDocumentLoaded: (_) {
+                          // controller.update();
+                        },
+                        onPageChanged: (PdfPageChangedDetails details) {
+                          miraiPrint('details.newPageNumber ${details.newPageNumber}');
+                          miraiPrint('details.newPageNumber ${details.oldPageNumber}');
+                          miraiPrint('details.newPageNumber ${details.isFirstPage}');
+                          miraiPrint('details.newPageNumber ${details.isLastPage}');
+                          miraiPrint(
+                              'details.newPageNumber ${controller.pdfViewerController.pageCount}');
+                          miraiPrint(
+                              'details.newPageNumber ${controller.pdfViewerController.pageNumber}');
+                        },
+                      ),
+                    ),
+                    Container(
+                      height: 78,
+                      color: AppTheme.keyAppLightGrayColor,
+                      child: ValueListenableBuilder<double>(
+                        valueListenable: controller.savedPage,
+                        builder: (_, double page, __) {
+                          return Slider.adaptive(
+                            value: page,
+                            min: 1,
+                            max: controller.pdfViewerController.pageCount.toDouble(),
+                            label: '$page',
+                            onChanged: (double newPage) {
+                              controller.savedPage.value = newPage;
+                            },
+                          );
+                        },
+                      ),
+                    )
+                  ],
+                )
+              : const Center(
+                  child: CircularProgressIndicator.adaptive(
+                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
+                    strokeWidth: 2,
+                  ),
                 ),
-              ),
-            ],
-          ),
         );
       },
     );

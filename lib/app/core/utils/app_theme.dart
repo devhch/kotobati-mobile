@@ -14,6 +14,7 @@ abstract class AppTheme {
   static const Color keyAppBarColor = Color(0xFF242424);
   static const Color keyBlackGreyColor = Color(0xFF232323);
   static const Color keyAppGrayColor = Color(0xFFA1A1A1);
+  static const Color keyAppLightGrayColor = Color(0xFF464444);
   static const Color keyAppGrayColorDark = Color(0xFF707070);
   static const Color keyAppWhiteColor = Color(0xFFFFFFFF);
 
