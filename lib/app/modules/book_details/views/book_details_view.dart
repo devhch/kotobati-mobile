@@ -28,23 +28,15 @@ class BookDetailsView extends GetView<BookDetailsController> {
               children: <Widget>[
                 const SizedBox(height: 15),
                 Container(
-                  // padding: const EdgeInsets.symmetric(
-                  //   horizontal: 16,
-                  //   vertical: 10,
-                  // ),
                   height: 140,
                   width: 96,
-                  decoration: const BoxDecoration(
-                      // color: AppTheme.keyAppColor,
-                      ),
+                  decoration: const BoxDecoration(),
                   child: controller.bookModel.image != null &&
                           controller.bookModel.image!.contains(".svg")
                       ? SvgPicture.network(
                           controller.bookModel.image!,
                           fit: BoxFit.contain,
                           width: double.infinity,
-                          // width: MiraiSize.iconSize24,
-                          // height: MiraiSize.iconSize24,
                         )
                       : MiraiCachedImageNetworkWidget(
                           imageUrl: controller.bookModel.image!,
@@ -163,12 +155,37 @@ class BookDetailsView extends GetView<BookDetailsController> {
                       ),
                     ),
                     const ContainerDivider(),
-                    InkWell(
-                      onTap: () {},
-                      child: SvgPicture.asset(
-                        AppIconsKeys.settingPoint,
-                        width: 6,
+                    PopupMenuButton<bool>(
+                      padding: EdgeInsets.zero,
+                      iconSize: 5,
+                      splashRadius: 5,
+                      color: const Color(0xff464444),
+                      position: PopupMenuPosition.under,
+                      icon: SvgPicture.asset(AppIconsKeys.settingPoint,
+                        width: 5,
                       ),
+                      onSelected: (bool value) {
+
+                      },
+                      itemBuilder: (_) {
+                        return <PopupMenuItem<bool>>[
+                          PopupMenuItem<bool>(
+                            value: false,
+                            child: Column(
+                              children: <Widget>[
+                                Text(
+                                  'حذف',
+                                  style: context.textTheme.labelMedium!
+                                      .copyWith(
+                                    color: AppTheme.keyAppWhiteColor,
+                                  ),
+                                ),
+                                const Divider(color: Color(0xff464444)),
+                              ],
+                            ),
+                          ),
+                        ];
+                      },
                     ),
                   ],
                 ),

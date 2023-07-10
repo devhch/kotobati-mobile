@@ -39,7 +39,7 @@ class BookWidget extends StatelessWidget {
         color: AppTheme.keyAppGrayColorDark,
       ),
       margin: const EdgeInsets.only(bottom: 32),
-      height: 140,
+      height: 165,
       padding: EdgeInsets.zero,
       borderRadius: const BorderRadius.only(
         topLeft: Radius.circular(28),
@@ -47,15 +47,9 @@ class BookWidget extends StatelessWidget {
       child: Row(
         children: <Widget>[
           Container(
-            // padding: const EdgeInsets.symmetric(
-            //   horizontal: 16,
-            //   vertical: 10,
-            // ),
-            height: 140,
+            height: 165,
             width: 96,
-            decoration: const BoxDecoration(
-                // color: AppTheme.keyAppColor,
-                ),
+            decoration: const BoxDecoration(),
             child: book.image != null && book.image!.contains(".svg")
                 ? SvgPicture.network(
                     book.image!,
@@ -75,7 +69,6 @@ class BookWidget extends StatelessWidget {
                     // color: AppTheme.keyAppBlackColor,
                   ),
           ),
-          // const SizedBox(width: 15),
           Expanded(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -103,6 +96,8 @@ class BookWidget extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: SingleChildScrollView(
+                          scrollDirection :Axis.horizontal,
+                          padding: EdgeInsets.zero,
                           child: Row(
                             //  mainAxisSize: MainAxisSize.min,
                             children: <Widget>[
@@ -177,12 +172,37 @@ class BookWidget extends StatelessWidget {
                                 ),
                               ),
                               const ContainerDivider(),
-                              InkWell(
-                                onTap: () {},
-                                child: SvgPicture.asset(
-                                  AppIconsKeys.settingPoint,
+                              PopupMenuButton<bool>(
+                                padding: EdgeInsets.zero,
+                                iconSize: 5,
+                                splashRadius: 5,
+                                color: const Color(0xff464444),
+                                position: PopupMenuPosition.under,
+                                icon: SvgPicture.asset(AppIconsKeys.settingPoint,
                                   width: 5,
                                 ),
+                                onSelected: (bool value) {
+
+                                },
+                                itemBuilder: (_) {
+                                  return <PopupMenuItem<bool>>[
+                                    PopupMenuItem<bool>(
+                                      value: false,
+                                      child: Column(
+                                        children: <Widget>[
+                                          Text(
+                                            'حذف',
+                                            style: context.textTheme.labelMedium!
+                                                .copyWith(
+                                              color: AppTheme.keyAppWhiteColor,
+                                            ),
+                                          ),
+                                          const Divider(color: Color(0xff464444)),
+                                        ],
+                                      ),
+                                    ),
+                                  ];
+                                },
                               ),
                             ],
                           ),
