@@ -17,6 +17,8 @@ abstract class AppTheme {
   static const Color keyAppLightGrayColor = Color(0xFF464444);
   static const Color keyAppGrayColorDark = Color(0xFF707070);
   static const Color keyAppWhiteColor = Color(0xFFFFFFFF);
+  static const Color keySliderInactiveColor = Color(0xFFD4D1D1);
+  static const Color keyIconsGreyColor = Color(0xFFD4D2D2);
 
   final Color highlightColor = keyAppColor.withOpacity(0.8);
 
@@ -29,6 +31,8 @@ abstract class AppTheme {
   static ThemeData get themeData => ThemeData(
         // backgroundColor: keyAppColor,
         colorScheme: const ColorScheme.dark(
+          secondary: keyAppColor,
+          primary: keyAppColorDark,
           background: keyAppBlackColor,
         ),
         fontFamily: fontRegular,

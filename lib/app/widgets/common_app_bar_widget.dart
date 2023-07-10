@@ -31,8 +31,9 @@ class CommonAppBarWidget extends StatelessWidget {
           ),
           Center(
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+             // mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
+                const SizedBox(width: 10),
                 if (backButton)
                   IconButton(
                     onPressed: () {
@@ -47,7 +48,7 @@ class CommonAppBarWidget extends StatelessWidget {
                     },
                     icon: SvgPicture.asset(AppIconsKeys.search),
                   ),
-                SvgPicture.asset(AppIconsKeys.ktobatiIcon),
+                Expanded(child: SvgPicture.asset(AppIconsKeys.ktobatiIcon)),
                 if (showSettingButton)
                   IconButton(
                     onPressed: () {
@@ -57,6 +58,8 @@ class CommonAppBarWidget extends StatelessWidget {
                   )
                 else
                   const SizedBox(height: 65, width: 65),
+
+                const SizedBox(width: 10),
               ],
             ),
           )

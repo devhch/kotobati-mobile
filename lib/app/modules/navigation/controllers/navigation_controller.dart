@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/mirai_tab_icon.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/home/views/home_view.dart';
 import 'package:kotobati/app/modules/notes/views/notes_view.dart';
 import 'package:kotobati/app/modules/planing/views/planing_view.dart';
@@ -43,16 +44,24 @@ class NavigationController extends GetxController {
     const NotesView(),
   ];
 
+  bool isBooksListNotEmpty = false;
+
   @override
   void onInit() {
     super.onInit();
+    isBooksListNotEmpty = HiveDataStore().getBooks().isNotEmpty;
     debugPrint("NavigationController onInit");
   }
 
   @override
   void onReady() {
     super.onReady();
-    setIndex(index: 0);
+
+    // setIndex(index: isBooksListNotEmpty? 1 : 0);
+    setIndex(
+      index: 1
+    );
+
     debugPrint("NavigationController onReady");
   }
 
@@ -63,10 +72,11 @@ class NavigationController extends GetxController {
 
   void setIndex({
     AnimationController? controller,
+    bool jump = false,
     required int index,
   }) {
     if (controller == null) {
-      _changeBody(index);
+      _changeBody(index, jump: jump);
     } else {
       controller.reverse().then<dynamic>((_) {
         _changeBody(index);
@@ -89,27 +99,31 @@ class NavigationController extends GetxController {
     tabIcons[index].isSelected = true;
   }
 
-  void _changeBody(int index) {
+  void _changeBody(int index, {bool jump = false}) {
     _setSelectedTab(index, MiraiTabIcon.tabIconsList);
     previousIndex = index;
-    pageController.animateToPage(
-      index,
-      duration: const Duration(milliseconds: 400),
-      curve: Curves.easeInOutQuint,
-    );
+    if (!jump) {
+      pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 400),
+        curve: Curves.easeInOutQuint,
+      );
+    } else {
+      pageController.jumpToPage(index);
+    }
   }
 
-  // void _changeBody(int index) {
-  //   _setSelectedTab(index, MiraiTabIcon.tabIconsList);
-  //   previousIndex = index;
-  //   if (index == 1) {
-  //     tabBody = const ReadingView();
-  //   } else if (index == 2) {
-  //     tabBody = const PlaningView();
-  //   } else if (index == 3) {
-  //     tabBody = const NotesView();
-  //   } else {
-  //     tabBody = const HomeView();
-  //   }
-  // }
+// void _changeBody(int index) {
+//   _setSelectedTab(index, MiraiTabIcon.tabIconsList);
+//   previousIndex = index;
+//   if (index == 1) {
+//     tabBody = const ReadingView();
+//   } else if (index == 2) {
+//     tabBody = const PlaningView();
+//   } else if (index == 3) {
+//     tabBody = const NotesView();
+//   } else {
+//     tabBody = const HomeView();
+//   }
+// }
 }
