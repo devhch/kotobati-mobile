@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_bottom_bar_view.dart';
+import 'package:mirai_responsive/mirai_responsive.dart';
 
 import '../controllers/navigation_controller.dart';
 
@@ -14,11 +15,9 @@ class NavigationView extends StatefulWidget {
   State<NavigationView> createState() => _NavigationViewState();
 }
 
-class _NavigationViewState extends State<NavigationView>
-    with TickerProviderStateMixin {
+class _NavigationViewState extends State<NavigationView> with TickerProviderStateMixin {
   /// NavigationController
-  final NavigationController _navigationController =
-      Get.find<NavigationController>();
+  final NavigationController _navigationController = Get.find<NavigationController>();
 
   /// AnimationController
   late AnimationController _controller;
@@ -59,7 +58,7 @@ class _NavigationViewState extends State<NavigationView>
       child: Scaffold(
         key: _navigationController.drawerKey,
         resizeToAvoidBottomInset: false,
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.transparent,
         body: GetBuilder<NavigationController>(
           init: _navigationController,
           builder: (NavigationController navigationController) {
@@ -72,24 +71,17 @@ class _NavigationViewState extends State<NavigationView>
                 //   ),
                 // ),
                 Positioned.fill(
-                  child: Column(
-                    children: <Widget>[
-                      Expanded(
-                        child: PageView.builder(
-                          scrollDirection: Axis.horizontal,
-                          physics: const NeverScrollableScrollPhysics(),
-                          onPageChanged: (int index) {
-                            _navigationController.setCurrentPage(index);
-                          },
-                          controller: _navigationController.pageController,
-                          itemCount: _navigationController.pages.length,
-                          itemBuilder: (_, int index) {
-                            return _navigationController.pages[index];
-                          },
-                        ),
-                      ),
-                      //  SizedBox(height: MiraiSize.bottomNavBarHeight70),
-                    ],
+                  child: PageView.builder(
+                    scrollDirection: Axis.horizontal,
+                    physics: const NeverScrollableScrollPhysics(),
+                    onPageChanged: (int index) {
+                      _navigationController.setCurrentPage(index);
+                    },
+                    controller: _navigationController.pageController,
+                    itemCount: _navigationController.pages.length,
+                    itemBuilder: (_, int index) {
+                      return _navigationController.pages[index];
+                    },
                   ),
                 ),
                 Positioned(

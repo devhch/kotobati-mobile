@@ -1,12 +1,16 @@
+import 'dart:io';
+
 import 'package:get/get.dart';
 
 class PlaningController extends GetxController {
-  //TODO: Implement PlaningController
+  File? pdfFile;
 
-  final count = 0.obs;
   @override
   void onInit() {
     super.onInit();
+    if (Get.arguments != null) {
+      pdfFile = Get.arguments;
+    }
   }
 
   @override
@@ -18,6 +22,4 @@ class PlaningController extends GetxController {
   void onClose() {
     super.onClose();
   }
-
-  void increment() => count.value++;
 }

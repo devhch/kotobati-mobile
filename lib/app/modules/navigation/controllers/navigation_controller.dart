@@ -58,9 +58,7 @@ class NavigationController extends GetxController {
     super.onReady();
 
     // setIndex(index: isBooksListNotEmpty? 1 : 0);
-    setIndex(
-      index: 1
-    );
+    setIndex(index: 0);
 
     debugPrint("NavigationController onReady");
   }

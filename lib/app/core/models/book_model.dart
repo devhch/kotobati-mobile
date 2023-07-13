@@ -13,8 +13,8 @@ class Book {
   final String? description;
   final String? image;
   String? path;
-  final List<String> notes;
-  final List<String> quotes;
+  List<String> notes;
+  List<String> quotes;
   PlaningBooksModel? planingBook;
 
   Book({

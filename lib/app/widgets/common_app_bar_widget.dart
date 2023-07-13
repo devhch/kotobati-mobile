@@ -19,7 +19,7 @@ class CommonAppBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: 160,
+      height: 140,
       width: context.width,
       child: Stack(
         children: <Widget>[

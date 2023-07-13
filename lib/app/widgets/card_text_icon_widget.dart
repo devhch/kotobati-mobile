@@ -12,24 +12,30 @@ import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
 
+import '../modules/planing/controllers/planing_controller.dart';
+
 class CardTextIconWidget extends StatelessWidget {
   const CardTextIconWidget({
     Key? key,
     required this.planingBooksModel,
+    required this.planingController,
   }) : super(key: key);
 
   final PlaningBooksModel planingBooksModel;
+  final PlaningController planingController;
 
   @override
   Widget build(BuildContext context) {
     return MiraiElevatedButtonWidget(
       onTap: () {
-        Get.toNamed(
-          Routes.planingDetails,
-          arguments: <String, dynamic>{
-            "planingBooksModel": planingBooksModel,
-          },
-        );
+        if (planingController.pdfFile == null) {
+          Get.toNamed(
+            Routes.planingDetails,
+            arguments: <String, dynamic>{
+              "planingBooksModel": planingBooksModel,
+            },
+          );
+        } else {}
       },
       backgroundColor: AppTheme.keyAppBlackColor,
       padding: EdgeInsets.zero,

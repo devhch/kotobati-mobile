@@ -118,7 +118,7 @@ class BookWidget extends StatelessWidget {
                                           book.planingBook!.id == 1
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
-                                          BlendMode.srcOut,
+                                          BlendMode.srcIn,
                                         )
                                       : null,
                                 ),
@@ -137,7 +137,7 @@ class BookWidget extends StatelessWidget {
                                           book.planingBook!.id == 2
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
-                                          BlendMode.srcOut,
+                                          BlendMode.srcIn,
                                         )
                                       : null,
                                 ),
@@ -155,7 +155,7 @@ class BookWidget extends StatelessWidget {
                                           book.planingBook!.id == 3
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
-                                          BlendMode.srcOut,
+                                          BlendMode.srcIn,
                                         )
                                       : null,
                                 ),
