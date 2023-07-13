@@ -38,18 +38,7 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
-  Future<void> requestPermission() async {
-    final PermissionStatus status = await Permission.storage.request();
-    miraiPrint("PermissionStatus $status");
-    if (status == PermissionStatus.permanentlyDenied) {
-      AppMiraiDialog.snackBar(
-        title: 'Storage Permission Denied!',
-        message:
-            'Please allow storage permission to save the book that you are going to download...',
-      );
-      openAppSettings();
-    }
-  }
+
 
   Future<void> onDownloadStartRequest(
     InAppWebViewController controller,

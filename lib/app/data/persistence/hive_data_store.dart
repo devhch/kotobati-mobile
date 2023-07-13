@@ -73,6 +73,21 @@ class HiveDataStore {
     }
   }
 
+  Future<bool> deleteOffer({required Book book}) async {
+    final Box<Map<dynamic, dynamic>> offerBox =
+        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    if (offerBox.isNotEmpty) {
+      final int index = offerBox.values.toList().indexWhere(
+          (Map<dynamic, dynamic> offerAtIndex) => Book.fromJson(offerAtIndex) == book);
+      if (index >= 0) {
+        await offerBox.deleteAt(index);
+        miraiPrint('\n=> Delete This Book: ${book.toString()}\n');
+        return true;
+      }
+    }
+    return false;
+  }
+
   Future<void> clearBooks() async {
     final Box<Map<dynamic, dynamic>> categoryBox =
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
@@ -128,8 +143,7 @@ class HiveDataStore {
 
     if (booksBox.isNotEmpty) {
       List<PlaningBooksModel> books = booksBox.values
-          .map((Map<dynamic, dynamic> offerMsp) =>
-              PlaningBooksModel.fromJson(offerMsp))
+          .map((Map<dynamic, dynamic> offerMsp) => PlaningBooksModel.fromJson(offerMsp))
           .toList();
 
       debugPrint('\n=> GetSaved Books: ${books.toString()}\n');

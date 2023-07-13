@@ -32,6 +32,7 @@ class PlaningView extends GetView<PlaningController> {
                         padding: const EdgeInsets.symmetric(vertical: 15),
                         child: CardTextIconWidget(
                           planingBooksModel: listPlaningBooks[index],
+                          planingController: controller,
                         ),
                       );
                     },

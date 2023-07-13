@@ -9,6 +9,17 @@ class BookDetailsController extends GetxController {
   @override
   void onInit() {
     bookModel = Get.arguments['book'];
+    bookModel.notes=  <String>[
+      """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+      """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
+      "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
+    ];
+    bookModel.quotes= <String>[
+    """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
+نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
+    ];
     super.onInit();
   }
 

@@ -3,6 +3,7 @@
 * On 06/22/2023.
 */
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
 
 import 'app_theme.dart';
@@ -12,58 +13,58 @@ class AppTextTheme {
 
   static TextTheme textTheme() {
     return TextTheme(
-      labelMedium: TextStyle(
+      labelMedium: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         fontSize: MiraiSize.textSize14,
-        fontFamily: AppTheme.fontRegular,
       ),
-      labelLarge: TextStyle(
+
+      // labelMedium: GoogleFonts.tajawal(
+      //   color: AppTheme.keyAppGrayColor,
+      //   fontSize: MiraiSize.textSize14,
+      //   fontFamily: AppTheme.fontRegular,
+      // ),
+      labelLarge: GoogleFonts.tajawal(
         color: Colors.white,
         fontWeight: FontWeight.w500,
         fontSize: MiraiSize.textSize20,
-        fontFamily: AppTheme.fontBold,
       ),
-      displayLarge: TextStyle(
+      displayLarge: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         // fontWeight: FontWeight.bold,
-        fontFamily: AppTheme.fontBold,
+
         fontSize: MiraiSize.textSize18,
       ),
-      displayMedium: TextStyle(
+      displayMedium: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         // fontWeight: FontWeight.bold,
-        fontFamily: AppTheme.fontBold,
+
         fontSize: MiraiSize.textSize16,
       ),
-      displaySmall: TextStyle(
+      displaySmall: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         //fontWeight: FontWeight.bold,
-        fontFamily: AppTheme.fontRegular,
+
         fontSize: MiraiSize.textSize14,
       ),
-      bodyLarge: TextStyle(
+      bodyLarge: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         fontSize: MiraiSize.textSize14,
         fontWeight: FontWeight.w400,
-        fontFamily: AppTheme.fontRegular,
       ),
-      bodyMedium: TextStyle(
+      bodyMedium: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         fontSize: MiraiSize.textSize12,
         fontWeight: FontWeight.w400,
-        fontFamily: AppTheme.fontRegular,
       ),
-      titleMedium: TextStyle(
+      titleMedium: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         fontWeight: FontWeight.w400,
         fontSize: MiraiSize.textSize10,
-        fontFamily: AppTheme.fontRegular,
       ),
-      titleSmall: TextStyle(
+      titleSmall: GoogleFonts.tajawal(
         color: AppTheme.keyAppGrayColor,
         fontWeight: FontWeight.w400,
         fontSize: MiraiSize.textSize8,
-        fontFamily: AppTheme.fontRegular,
       ),
     );
   }

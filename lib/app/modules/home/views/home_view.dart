@@ -261,7 +261,7 @@ class _MyHomePageState extends State<MyHomePage> {
       String title = titleRegex.firstMatch(html)?.group(1) ?? '';
 
       String? chosenTitle = widget.controller.chosenBook.value?.longTitle;
-      if (chosenTitle == null || (chosenTitle != null && chosenTitle != title)) {
+      if (chosenTitle == null || (chosenTitle != title)) {
         // Extract the description
         RegExp descriptionRegex = RegExp('<meta name="description" content="(.*?)"');
         String encodedDescription = descriptionRegex.firstMatch(html)?.group(1) ?? '';
