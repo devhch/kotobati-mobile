@@ -7,7 +7,7 @@ class PdfReaderBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<PdfReaderController>(
       () => PdfReaderController(),
-      fenix: true,
+    //  fenix: true,
     );
   }
 }

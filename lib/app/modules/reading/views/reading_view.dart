@@ -3,8 +3,11 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
+import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
+import 'package:kotobati/app/modules/navigation/controllers/navigation_controller.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
+import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 
 import '../controllers/reading_controller.dart';
 import 'components/book_widget.dart';
@@ -34,7 +37,50 @@ class ReadingView extends GetView<ReadingController> {
               },
             );
           } else {
-            return const Center(child: Text('No Data'));
+            return Center(
+                child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    'لايوجد بيانات',
+                    style: context.textTheme.displayLarge!.copyWith(
+                      color: Colors.white,
+                      fontFamily: AppTheme.fontBold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'يرجى الذهاب إلى صفحة الكتب \nوتنزيل بعض الكتب!',
+                    style: context.textTheme.displayLarge!.copyWith(
+                      color: AppTheme.keyAppWhiteGrayColor,
+                      fontFamily: AppTheme.fontBold,
+                      fontSize: 16,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 30),
+                  MiraiElevatedButtonWidget(
+                    onTap: () {
+                      Get.find<NavigationController>().setIndex(index: 0);
+                    },
+                    rounded: true,
+                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 18),
+                    overlayColor: Colors.white.withOpacity(.2),
+                    child: Text(
+                      "اكتشف الكتب المتاحة",
+                      style: context.textTheme.displayLarge!.copyWith(
+                        color: AppTheme.keyAppBlackColor,
+                        fontFamily: AppTheme.fontBold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ));
           }
         },
       ),

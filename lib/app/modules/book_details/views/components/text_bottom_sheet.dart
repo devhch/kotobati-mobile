@@ -3,6 +3,8 @@
 * On 6/24/2023.
 */
 
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -10,17 +12,26 @@ import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 
 class TextBottomSheet {
-  static Future<void> showTextBottomSheet({required String text}) async {
+  static Future<void> showTextBottomSheet({
+    required String? text,
+    required String? image,
+  }) async {
     await Get.bottomSheet(
-      TextBottomSheetWidget(text: text),
+      TextBottomSheetWidget(text: text, image: image),
     );
   }
 }
 
 class TextBottomSheetWidget extends StatelessWidget {
-  const TextBottomSheetWidget({super.key, required this.text});
+  const TextBottomSheetWidget({
+    super.key,
+    required this.text,
+    required this.image,
+  });
 
-  final String text;
+  final String? text;
+  final String? image;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -36,8 +47,7 @@ class TextBottomSheetWidget extends StatelessWidget {
               },
               child: Container(
                 height: 20,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 40, vertical: 2),
+                padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 2),
                 decoration: const BoxDecoration(
                   color: AppTheme.keyAppWhiteColor,
                   borderRadius: BorderRadius.only(
@@ -65,13 +75,22 @@ class TextBottomSheetWidget extends StatelessWidget {
                   topRight: Radius.circular(26),
                 ),
               ),
-              child: Text(
-                text,
-                style: context.textTheme.bodyLarge!.copyWith(
-                  color: AppTheme.keyAppWhiteColor,
-                ),
-                textAlign: TextAlign.center,
-              ),
+              child: text != null
+                  ? Text(
+                      text!,
+                      style: context.textTheme.bodyLarge!.copyWith(
+                        color: AppTheme.keyAppWhiteColor,
+                      ),
+                      textAlign: TextAlign.center,
+                    )
+                  : Image.file(
+                      File(image!),
+                      // width: 100,
+                      // height: 100,
+                      width: double.infinity,
+                      height: double.infinity,
+                      fit: BoxFit.fill,
+                    ),
             ),
           ),
         ],

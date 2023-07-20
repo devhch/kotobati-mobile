@@ -80,7 +80,9 @@ class HiveDataStore {
       miraiPrint('\n=> BookBox isNotEmpty\n');
       miraiPrint('\n=> Deleting this BooK ${book.toString()}\n');
       final int index = bookBox.values.toList().indexWhere(
-            (Map<dynamic, dynamic> bookAtIndex) => Book.fromJson(bookAtIndex).title == book.title && Book.fromJson(bookAtIndex).image == book.image,
+            (Map<dynamic, dynamic> bookAtIndex) =>
+                Book.fromJson(bookAtIndex).title == book.title &&
+                Book.fromJson(bookAtIndex).image == book.image,
           );
       miraiPrint('\n=> BookBox $index\n');
       if (index >= 0) {
@@ -107,21 +109,33 @@ class HiveDataStore {
     final Box<Map<dynamic, dynamic>> bookBox =
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
 
-    List<Book> books =
-        getBooks().where((Book element) => element.path != book.path).toList();
+    final List<Map<dynamic, dynamic>> list = bookBox.values.toList();
+    int index = 0;
+    for (int i = 0; i < list.length; i++) {
+      if (list[i]['path'] == book.toJson()['path']) {
+        index = i;
+        break;
+      }
+    }
+    miraiPrint('updateBook at $index');
+    await bookBox.putAt(index, book.toJson());
 
-    books.add(book);
 
-    final List<Map<String, dynamic>> castedCategories =
-        books.map((Book book) => book.toJson()).toList();
+    // List<Book> books =
+    //     getBooks().where((Book element) => element.path != book.path).toList();
+    //
+    // books.add(book);
+    //
+    // final List<Map<String, dynamic>> castedCategories =
+    //     books.map((Book book) => book.toJson()).toList();
 
     // miraiPrint('Books : ${books.toString()}');
     // miraiPrint('Books: ${castedCategories.toList().toString()}');
 
-    await bookBox.clear();
-    await bookBox.addAll(castedCategories);
+    // await bookBox.clear();
+    // await bookBox.addAll(castedCategories);
 
-    debugPrint('\n=> Saved Books: ${books.toString()}\n');
+    debugPrint('\n=> Saved Books: ${book.toString()}\n');
     return true;
   }
 
@@ -183,7 +197,7 @@ class HiveDataStore {
 
     await settingBox.add(settingObjectsModel.toJson());
 
-    await getSettingObjects();
+   // await getSettingObjects();
 
     return settingObjectsModel;
   }

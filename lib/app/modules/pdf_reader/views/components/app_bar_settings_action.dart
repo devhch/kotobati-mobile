@@ -6,8 +6,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/models/setting_objects_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/pdf_reader/controllers/pdf_reader_controller.dart';
 
 class AppBarSettingsAction extends StatelessWidget {
@@ -64,13 +67,19 @@ class AppBarSettingsAction extends StatelessWidget {
             PopupMenuItem<int>(
               value: 0,
               padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: StatefulBuilder(builder:
-                  (BuildContext context, void Function(void Function()) setState) {
+              child: StatefulBuilder(
+                  builder: (BuildContext context, void Function(void Function()) setState) {
                 return InkWell(
-                  onTap: () {
+                  onTap: () async {
                     controller.isVertical = !controller.isVertical;
                     controller.update();
                     setState(() {});
+
+                    /// Save To Hive...
+                    final HiveDataStore hive = HiveDataStore();
+                    SettingObjectsModel setting = await hive.getSettingObjects();
+                    setting.horizontal = !controller.isVertical;
+                    await hive.saveSettingObjects(settingObjectsModel: setting);
                   },
                   child: Container(
                     margin: EdgeInsets.zero,
@@ -83,8 +92,8 @@ class AppBarSettingsAction extends StatelessWidget {
                         Text(
                           'قلب الصفحة',
                           style: Get.theme.textTheme.bodyText2!.copyWith(
-                            //  color: AppTheme.keyDarkBlueColor,
-                          ),
+                              //  color: AppTheme.keyDarkBlueColor,
+                              ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
@@ -120,14 +129,20 @@ class AppBarSettingsAction extends StatelessWidget {
             PopupMenuItem<int>(
               value: 1,
               padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: StatefulBuilder(builder:
-                  (BuildContext context, void Function(void Function()) setState) {
+              child: StatefulBuilder(
+                  builder: (BuildContext context, void Function(void Function()) setState) {
                 return InkWell(
-                  onTap: () {
+                  onTap: () async {
                     controller.isDarkMode = !controller.isDarkMode;
                     controller.update();
 
                     setState(() {});
+
+                    /// Save To Hive...
+                    final HiveDataStore hive = HiveDataStore();
+                    SettingObjectsModel setting = await hive.getSettingObjects();
+                    setting.darkMode = controller.isDarkMode;
+                    await hive.saveSettingObjects(settingObjectsModel: setting);
                   },
                   child: Container(
                     margin: const EdgeInsets.only(top: 6),
@@ -140,8 +155,8 @@ class AppBarSettingsAction extends StatelessWidget {
                         Text(
                           'وضع القراءة',
                           style: Get.theme.textTheme.bodyText2!.copyWith(
-                            //  color: AppTheme.keyDarkBlueColor,
-                          ),
+                              //  color: AppTheme.keyDarkBlueColor,
+                              ),
                           overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 6),
@@ -177,8 +192,8 @@ class AppBarSettingsAction extends StatelessWidget {
             PopupMenuItem<int>(
               value: 2,
               padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: StatefulBuilder(builder:
-                  (BuildContext context, void Function(void Function()) setState) {
+              child: StatefulBuilder(
+                  builder: (BuildContext context, void Function(void Function()) setState) {
                 return Container(
                   margin: const EdgeInsets.only(top: 6),
                   padding: const EdgeInsets.only(
@@ -194,21 +209,63 @@ class AppBarSettingsAction extends StatelessWidget {
                       Text(
                         'هامش الصفحة',
                         style: Get.theme.textTheme.bodyText2!.copyWith(
-                          //  color: AppTheme.keyDarkBlueColor,
-                        ),
+                            //  color: AppTheme.keyDarkBlueColor,
+                            ),
                         overflow: TextOverflow.ellipsis,
                       ),
                       //     const SizedBox(height: 6),
                       Slider.adaptive(
-                        value: controller.pagePadding,
+                        value: controller.pagePadding.value,
                         min: 0,
                         max: 40,
-                        label: '${controller.pagePadding}',
+                        label: '${controller.pagePadding.value.floor()}',
                         inactiveColor: AppTheme.keySliderInactiveColor,
-                        onChanged: (double newPadding) {
-                          controller.pagePadding = newPadding;
-                          controller.update();
+                        onChanged: (double newPadding) async {
+                          /// Save To Hive...
+                          final HiveDataStore hive = HiveDataStore();
+                          SettingObjectsModel setting = await hive.getSettingObjects();
+
+                          controller.isPaddingChanging.value = newPadding != setting.spacing;
+                          controller.isPaddingChanging.notifyListeners();
+                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+
+                          controller.pagePadding.value = newPadding;
+                          controller.pagePadding.notifyListeners();
+                      //    controller.update();
+
                           setState(() {});
+
+
+                        },
+                        // onChangeStart: (double startValue) {
+                        //   controller.update();
+                        //   miraiPrint('=============');
+                        //   miraiPrint('onChangeStart');
+                        //   miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+                        //   miraiPrint('=============');
+                        //   controller.isPaddingChanging.value = true;
+                        //   controller.isPaddingChanging.notifyListeners();
+                        //   miraiPrint('=============');
+                        //   miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+                        //   miraiPrint('=============');
+                        // },
+                        onChangeEnd: (double endValue) async {
+                          miraiPrint('=============');
+                          miraiPrint('onChangeEnd');
+                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+                          miraiPrint('=============');
+                          controller.isPaddingChanging.value = false;
+                          controller.isPaddingChanging.notifyListeners();
+                          miraiPrint('=============');
+                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+                          miraiPrint('=============');
+                          /// Save To Hive...
+                          final HiveDataStore hive = HiveDataStore();
+                          SettingObjectsModel setting = await hive.getSettingObjects();
+
+                          setting.spacing = endValue;
+                          await hive.saveSettingObjects(settingObjectsModel: setting);
+                          controller.update();
                         },
                       ),
                     ],

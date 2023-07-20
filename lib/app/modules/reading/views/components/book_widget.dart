@@ -174,7 +174,7 @@ class BookWidget extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   /// Share File
-                                  shareFile(book.path!, book.title!);
+                                  shareFile(book.path!, subject:book.title!);
                                 },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.share,

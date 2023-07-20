@@ -43,7 +43,7 @@ class _PlaningBottomSheetBody extends StatelessWidget {
       alignment: Alignment.bottomCenter,
       child: Column(
         mainAxisSize: MainAxisSize.min,
-        children: [
+        children: <Widget>[
           InkWell(
             onTap: () {
               Get.back();

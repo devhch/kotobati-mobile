@@ -88,7 +88,6 @@ class _AddNoteToBookBody extends StatelessWidget {
                         // }
 
                         checkNotes(book.value.notes!);
-                        checkQuotes(book.value.quotes!);
                         book.value.notes?.add(textController.text);
                         book.notifyListeners();
 
