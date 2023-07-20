@@ -20,12 +20,15 @@ class SearchView extends GetView<SearchControllerC> {
 
   // Native method call using MethodChannel to get PDF files from native code
   Future<List<String>> _getPdfFilesFromNative() async {
-    const MethodChannel platform = MethodChannel('com.kotobati.pdf_reader_channel');
+    const MethodChannel platform =
+        MethodChannel('com.kotobati.pdf_reader_channel');
     try {
-      final List<dynamic> pdfFiles = await platform.invokeMethod('getPdfFilesFromNative');
+      final List<dynamic> pdfFiles =
+          await platform.invokeMethod('getPdfFilesFromNative');
       return pdfFiles.cast<String>();
     } catch (e) {
-      throw PlatformException(code: 'ERROR', message: 'Failed to communicate with native code');
+      throw PlatformException(
+          code: 'ERROR', message: 'Failed to communicate with native code');
     }
   }
 
@@ -39,7 +42,8 @@ class SearchView extends GetView<SearchControllerC> {
     Directory? downDirectory = await getExternalStorageDirectory();
     // Adjust as per your requirements
 
-    List<FileSystemEntity> downFiles = controller.searchForPDFFiles(downDirectory!);
+    List<FileSystemEntity> downFiles =
+        controller.searchForPDFFiles(downDirectory!);
     files.addAll(downFiles);
 
     miraiPrint('files $files');
@@ -49,7 +53,8 @@ class SearchView extends GetView<SearchControllerC> {
   }
 
   Future<void> loadPDFFiles() async {
-    final PermissionStatus status = await Permission.manageExternalStorage.request();
+    final PermissionStatus status =
+        await Permission.manageExternalStorage.request();
     miraiPrint("PermissionStatus $status");
     if (status == PermissionStatus.permanentlyDenied) {
       AppMiraiDialog.snackBar(
@@ -79,8 +84,6 @@ class SearchView extends GetView<SearchControllerC> {
     //   }
     // }
 
-
-
     miraiPrint('files ${controller.pdfFiles}');
     controller.update();
   }
@@ -103,81 +106,86 @@ class SearchView extends GetView<SearchControllerC> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<SearchControllerC>(builder: (_) {
-      return Scaffold(
-        backgroundColor: AppTheme.keyAppBlackColor,
-        body: SafeArea(
-          child: Column(
-            children: <Widget>[
-              const SizedBox(height: 10),
-              Row(
-                children: <Widget>[
-                  IconButton(
-                    iconSize: 55,
-                    splashRadius: 2,
-                    onPressed: () {
-                      Get.back();
-                    },
-                    icon: SvgPicture.asset(AppIconsKeys.backArrowCircle),
-                  ),
-                  Expanded(
-                    child: MiraiTextFieldWidget(
-                      controller: controller.txtController,
-                      hint: "بحث...",
-                      fillColor: const Color(0xffA1A1A1),
-                      borderColor: const Color(0xffA1A1A1),
+    return GetBuilder<SearchControllerC>(
+      builder: (_) {
+        return Scaffold(
+          backgroundColor: AppTheme.keyAppBlackColor,
+          body: SafeArea(
+            child: Column(
+              children: <Widget>[
+                const SizedBox(height: 10),
+                Row(
+                  children: <Widget>[
+                    IconButton(
+                      iconSize: 55,
+                      splashRadius: 2,
+                      onPressed: () {
+                        Get.back();
+                      },
+                      icon: SvgPicture.asset(AppIconsKeys.backArrowCircle),
                     ),
-                  ),
-                  IconButton(
-                    iconSize: 55,
-                    splashRadius: 2,
-                    onPressed: () async {
-                      // Call the native method to get PDF files and wait for the result
-                      // List<String> pdfFiles = await _getPdfFilesFromNative();
-                      // controller.pdfPaths = pdfFiles;
-                      // miraiPrint('pdfPaths ${controller.pdfPaths}');
-                      // controller.update();
+                    Expanded(
+                      child: MiraiTextFieldWidget(
+                        controller: controller.txtController,
+                        hint: "بحث...",
+                        fillColor: const Color(0xffA1A1A1),
+                        borderColor: const Color(0xffA1A1A1),
+                      ),
+                    ),
+                    IconButton(
+                      iconSize: 55,
+                      splashRadius: 2,
+                      onPressed: () async {
+                        // Call the native method to get PDF files and wait for the result
+                        // List<String> pdfFiles = await _getPdfFilesFromNative();
+                        // controller.pdfPaths = pdfFiles;
+                        // miraiPrint('pdfPaths ${controller.pdfPaths}');
+                        // controller.update();
 
-                       await loadPDFFiles();
-                    },
-                    icon: SvgPicture.asset(AppIconsKeys.search),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
+                        await loadPDFFiles();
+                      },
+                      icon: SvgPicture.asset(AppIconsKeys.search),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
 
-              Expanded(
-                child: controller.pdfFiles.isNotEmpty
-                    ? ListView.builder(
-                        itemCount: controller.pdfFiles.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          return ListTile(
-                            title: Text(controller.pdfFiles[index].path.split('/').last),
-                            onTap: () {
-                              // Implement the action when tapping on a file, e.g., open the PDF file.
-                              // You can use a PDF viewer plugin like 'flutter_pdfview' to display the PDF.
-                              // For this example, we'll simply print the file path.
-                              print('Selected PDF file: ${controller.pdfFiles[index].path}');
-                            },
-                          );
-                        },
-                      )
-                    : const Center(child: CircularProgressIndicator()),
-              ),
-              // Expanded(
-              //   child: ListView.builder(
-              //     itemCount: controller.pdfFiles.length,
-              //     itemBuilder: (_, int index) {
-              //       return ListTile(
-              //         title: Text(controller.pdfFiles[index].path),
-              //       );
-              //     },
-              //   ),
-              // ),
-            ],
+                Expanded(
+                  child: controller.pdfFiles.isNotEmpty
+                      ? ListView.builder(
+                          itemCount: controller.pdfFiles.length,
+                          itemBuilder: (BuildContext context, int index) {
+                            return ListTile(
+                              title: Text(controller.pdfFiles[index].path
+                                  .split('/')
+                                  .last),
+                              onTap: () {
+                                // Implement the action when tapping on a file, e.g., open the PDF file.
+                                // You can use a PDF viewer plugin like 'flutter_pdfview' to display the PDF.
+                                // For this example, we'll simply print the file path.
+                                print(
+                                    'Selected PDF file: ${controller.pdfFiles[index].path}');
+                              },
+                            );
+                          },
+                        )
+                      : const Center(child: CircularProgressIndicator()),
+                ),
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: controller.pdfFiles.length,
+                //     itemBuilder: (_, int index) {
+                //       return ListTile(
+                //         title: Text(controller.pdfFiles[index].path),
+                //       );
+                //     },
+                //   ),
+                // ),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      },
+    );
   }
 }
