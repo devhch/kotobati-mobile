@@ -18,27 +18,23 @@ class CardTextIconWidget extends StatelessWidget {
   const CardTextIconWidget({
     Key? key,
     required this.planingBooksModel,
-    required this.planingController,
+    required this.onTap,
+    this.margin,
   }) : super(key: key);
 
   final PlaningBooksModel planingBooksModel;
-  final PlaningController planingController;
+  final VoidCallback onTap;
+  final EdgeInsetsGeometry? margin;
+
 
   @override
   Widget build(BuildContext context) {
     return MiraiElevatedButtonWidget(
-      onTap: () {
-        if (planingController.pdfFile == null) {
-          Get.toNamed(
-            Routes.planingDetails,
-            arguments: <String, dynamic>{
-              "planingBooksModel": planingBooksModel,
-            },
-          );
-        } else {}
-      },
-      backgroundColor: AppTheme.keyAppBlackColor,
+      onTap: onTap,
+     // backgroundColor: AppTheme.keyAppBlackColor,
+      backgroundColor:Colors.transparent,
       padding: EdgeInsets.zero,
+      margin: margin,
       borderRadius: BorderRadius.circular(18),
       side: const BorderSide(
         color: AppTheme.keyAppGrayColorDark,

@@ -6,6 +6,8 @@
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 
+import 'book_model.dart';
+
 class PlaningBooksModel {
   final int id;
   final String name;
@@ -24,6 +26,7 @@ class PlaningBooksModel {
       id: json['id'],
       name: json['name'],
       icon: json['icon'],
+
     );
   }
 
@@ -31,7 +34,20 @@ class PlaningBooksModel {
         'id': id,
         'name': name,
         'icon': icon,
+
       };
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlaningBooksModel &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          name == other.name &&
+          icon == other.icon;
+
+  @override
+  int get hashCode => id.hashCode ^ name.hashCode ^ icon.hashCode;
 
   @override
   String toString() {

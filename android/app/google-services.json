@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "372770994138",
+    "project_id": "kotobati-app",
+    "storage_bucket": "kotobati-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:372770994138:android:09eff5077225f5e9ffb2e3",
+        "android_client_info": {
+          "package_name": "com.dghoughi.lahsen.kotobati"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "372770994138-tcisqdgjncr8gbqg1ml5v9knn9dhh56m.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5avEJMyXkesAnKQVKkur6yOFM86w0TA4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "372770994138-tcisqdgjncr8gbqg1ml5v9knn9dhh56m.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -11,6 +11,7 @@ import 'mirai_elevated_button_widget.dart';
 
 class MiraiVerifyingDialog {
   static Future<void> showDialog({
+    required String title,
     required VoidCallback yes,
     required String yesText,
     required VoidCallback no,
@@ -18,6 +19,7 @@ class MiraiVerifyingDialog {
   }) async {
     await Get.dialog(
       _MiraiVerifyingDialogBody(
+        title: title,
         yes: yes,
         yesText: yesText,
         no: no,
@@ -30,12 +32,14 @@ class MiraiVerifyingDialog {
 class _MiraiVerifyingDialogBody extends StatelessWidget {
   const _MiraiVerifyingDialogBody({
     Key? key,
+    required this.title,
     required this.yes,
     required this.yesText,
     required this.no,
     required this.noText,
   }) : super(key: key);
 
+  final String title;
   final VoidCallback yes;
   final String yesText;
   final VoidCallback no;
@@ -49,7 +53,7 @@ class _MiraiVerifyingDialogBody extends StatelessWidget {
       child: Center(
         child: Container(
           width: context.width - 100,
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+          padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 10),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(28),
             color: const Color(0xff343333),
@@ -65,13 +69,21 @@ class _MiraiVerifyingDialogBody extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              const SizedBox(height: 10),
+              const SizedBox(height: 20),
+              Text(
+                title,
+                style: context.textTheme.displayLarge!.copyWith(
+                  color: Colors.white,
+
+                ),
+                textAlign: TextAlign.center,
+              ),
               const SizedBox(height: 30),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   MiraiElevatedButtonWidget(
-                    onTap: () {},
+                    onTap: yes,
                     rounded: true,
                     child: Text(
                       yesText,
@@ -81,7 +93,7 @@ class _MiraiVerifyingDialogBody extends StatelessWidget {
                     ),
                   ),
                   MiraiElevatedButtonWidget(
-                    onTap: () {},
+                    onTap: no,
                     rounded: true,
                     backgroundColor: AppTheme.keyAppGrayColorDark,
                     child: Text(

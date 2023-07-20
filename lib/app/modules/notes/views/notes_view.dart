@@ -113,29 +113,29 @@ class _NotesViewState extends State<NotesView>
               controller: _tabController,
               physics: const NeverScrollableScrollPhysics(),
               children: <Widget>[
-                if (controller.bookModel.notes.isNotEmpty)
+                if (controller.bookModel.notes!.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
                     //  physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.only(bottom: MiraiSize.bottomNavBarHeight94),
-                    itemCount: controller.bookModel.notes.length,
+                    itemCount: controller.bookModel.notes!.length,
                     itemBuilder: (_, int index) {
                       return TextWidget(
-                        text: controller.bookModel.notes[index],
+                        text: controller.bookModel.notes![index],
                       );
                     },
                   )
                 else
                   const Center(child: Text('No Data')),
-                if (controller.bookModel.quotes.isNotEmpty)
+                if (controller.bookModel.quotes!.isNotEmpty)
                   ListView.builder(
                     shrinkWrap: true,
                     //   physics: const NeverScrollableScrollPhysics(),
                     padding: EdgeInsets.only(bottom: MiraiSize.bottomNavBarHeight94),
-                    itemCount: controller.bookModel.quotes.length,
+                    itemCount: controller.bookModel.quotes!.length,
                     itemBuilder: (_, int index) {
                       return TextWidget(
-                        text: controller.bookModel.quotes[index],
+                        text: controller.bookModel.quotes![index],
                       );
                     },
                   )

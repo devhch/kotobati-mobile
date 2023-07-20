@@ -5,7 +5,7 @@ publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.5 <4.0.0"
+  sdk: ">=3.0.6 <4.0.0"
 
 dependencies:
   flutter:
@@ -31,7 +31,6 @@ dependencies:
   dio: ^5.2.1+1
   shimmer: ^2.0.0
   cached_network_image: ^3.2.1
-  syncfusion_flutter_pdfviewer: ^22.1.37
   flutter_cached_pdfview: ^0.4.2
 
   # State Management
@@ -42,6 +41,9 @@ dependencies:
   hive_flutter: ^1.1.0
 
   mirai_responsive: any
+
+  # Firebase
+  firebase_core: ^2.15.0
 
 dev_dependencies:
   flutter_test:

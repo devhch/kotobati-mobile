@@ -4,7 +4,7 @@
 */
 
 class AppConfig {
-  static const String webUrl = "https://kotobati.com";
+  static const String webUrl = "https://kotobati.com/webviewapp";
   static const String instagramUrl = "https://www.instagram.com/kotobati/";
   static const String facebookUrl = "https://web.facebook.com/kotobati";
   static const String whatsappUrl = "Wa.me/212701516030";
