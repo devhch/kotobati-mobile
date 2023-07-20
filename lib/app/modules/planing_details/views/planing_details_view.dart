@@ -27,7 +27,7 @@ class PlaningDetailsView extends GetView<PlaningDetailsController> {
             final Book book = Book.fromJson(books[i]);
 
             if (book.planingBook != null &&
-                book.planingBook!.id == controller.planingBooksModel.id) {
+                book.planingBook == controller.planingBooksModel) {
               castBooks.add(Book.fromJson(books[i]));
             }
           }

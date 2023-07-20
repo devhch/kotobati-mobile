@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/modules/planing/views/components/add_dialog.dart';
+import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/card_text_icon_widget.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
 
@@ -11,6 +12,7 @@ import '../controllers/planing_controller.dart';
 
 class PlaningView extends GetView<PlaningController> {
   const PlaningView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
@@ -28,12 +30,20 @@ class PlaningView extends GetView<PlaningController> {
                     padding: EdgeInsets.zero,
                     itemCount: listPlaningBooks.length,
                     itemBuilder: (_, int index) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 15),
-                        child: CardTextIconWidget(
-                          planingBooksModel: listPlaningBooks[index],
-                          planingController: controller,
-                        ),
+                      final PlaningBooksModel planingBooks = listPlaningBooks[index];
+                      return CardTextIconWidget(
+                        planingBooksModel: planingBooks,
+                        margin: const EdgeInsets.symmetric(vertical: 15),
+                        onTap: () {
+                          if (controller.pdfFile == null) {
+                            Get.toNamed(
+                              Routes.planingDetails,
+                              arguments: <String, dynamic>{
+                                "planingBooksModel": planingBooks,
+                              },
+                            );
+                          } else {}
+                        },
                       );
                     },
                   );

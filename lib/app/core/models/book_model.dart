@@ -13,8 +13,8 @@ class Book {
   final String? description;
   final String? image;
   String? path;
-  List<String> notes;
-  List<String> quotes;
+  List<String>? notes;
+  List<String>? quotes;
   PlaningBooksModel? planingBook;
 
   Book({
@@ -26,9 +26,12 @@ class Book {
     this.image,
     this.path,
     this.planingBook,
-    this.notes = const <String>[],
-    this.quotes = const <String>[],
-  });
+    this.notes,
+    this.quotes,
+  }) {
+    notes ??= <String>[];
+    quotes ??= <String>[];
+  }
 
   factory Book.fromJson(Map<dynamic, dynamic> map) {
     final Map<String, dynamic> json = Map<String, dynamic>.from(map);
@@ -63,7 +66,36 @@ class Book {
       };
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is Book &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          title == other.title &&
+          longTitle == other.longTitle &&
+          author == other.author &&
+          description == other.description &&
+          image == other.image &&
+          path == other.path &&
+          notes == other.notes &&
+          quotes == other.quotes &&
+          planingBook == other.planingBook;
+
+  @override
+  int get hashCode =>
+      id.hashCode ^
+      title.hashCode ^
+      longTitle.hashCode ^
+      author.hashCode ^
+      description.hashCode ^
+      image.hashCode ^
+      path.hashCode ^
+      notes.hashCode ^
+      quotes.hashCode ^
+      planingBook.hashCode;
+
+  @override
   String toString() {
-    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author description: $description, image: $image, path: $path, planingBook:$planingBook, notes: $notes, quotes: $quotes}';
+    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author, description: $description, image: $image, path: $path, notes: $notes, quotes: $quotes, planingBook: $planingBook}';
   }
 }

@@ -12,7 +12,9 @@ import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
+import 'package:kotobati/app/modules/pdf_reader/views/components/planing_bottom_sheet.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
+import 'package:kotobati/app/widgets/delete_one_book_widget.dart';
 import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 
@@ -26,7 +28,9 @@ class BookWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    miraiPrint('<=======================>');
     miraiPrint('\nBook ${book.toString()}');
+    miraiPrint('<=======================>');
     return MiraiElevatedButtonWidget(
       backgroundColor: Colors.transparent,
       onTap: () {
@@ -96,7 +100,7 @@ class BookWidget extends StatelessWidget {
                     children: <Widget>[
                       Expanded(
                         child: SingleChildScrollView(
-                          scrollDirection :Axis.horizontal,
+                          scrollDirection: Axis.horizontal,
                           padding: EdgeInsets.zero,
                           child: Row(
                             //  mainAxisSize: MainAxisSize.min,
@@ -157,53 +161,28 @@ class BookWidget extends StatelessWidget {
                               ),
                               const ContainerDivider(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  PlaningBottomSheet.show(book: book);
+                                },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.addCollection,
                                   width: 16,
+                                  height: 16,
                                 ),
                               ),
                               const ContainerDivider(),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  /// Share File
+                                  shareFile(book.path!, book.title!);
+                                },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.share,
                                   width: 16,
                                 ),
                               ),
-                              const ContainerDivider(),
-                              PopupMenuButton<bool>(
-                                padding: EdgeInsets.zero,
-                                iconSize: 5,
-                                splashRadius: 5,
-                                color: const Color(0xff464444),
-                                position: PopupMenuPosition.under,
-                                icon: SvgPicture.asset(AppIconsKeys.settingPoint,
-                                  width: 5,
-                                ),
-                                onSelected: (bool value) {
-
-                                },
-                                itemBuilder: (_) {
-                                  return <PopupMenuItem<bool>>[
-                                    PopupMenuItem<bool>(
-                                      value: false,
-                                      child: Column(
-                                        children: <Widget>[
-                                          Text(
-                                            'حذف',
-                                            style: context.textTheme.labelMedium!
-                                                .copyWith(
-                                              color: AppTheme.keyAppWhiteColor,
-                                            ),
-                                          ),
-                                          const Divider(color: Color(0xff464444)),
-                                        ],
-                                      ),
-                                    ),
-                                  ];
-                                },
-                              ),
+                              const ContainerDivider(margin: EdgeInsetsDirectional.only(start: 12)),
+                              DeleteOneBookWidget(book: book),
                             ],
                           ),
                         ),
@@ -226,15 +205,17 @@ class ContainerDivider extends StatelessWidget {
     Key? key,
     this.height = 16,
     this.width = 2,
+    this.margin,
   }) : super(key: key);
 
   final double height;
   final double width;
+  final EdgeInsetsGeometry? margin;
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 12),
+      margin: margin ?? const EdgeInsets.symmetric(horizontal: 12),
       height: height,
       width: width,
       color: AppTheme.keyAppGrayColorDark,

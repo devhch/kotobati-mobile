@@ -63,7 +63,7 @@ class HiveDataStore {
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     if (booksBox.isNotEmpty) {
       List<Book> books = booksBox.values
-          .map((Map<dynamic, dynamic> offerMsp) => Book.fromJson(offerMsp))
+          .map((Map<dynamic, dynamic> bookMap) => Book.fromJson(bookMap))
           .toList();
 
       // debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
@@ -73,14 +73,18 @@ class HiveDataStore {
     }
   }
 
-  Future<bool> deleteOffer({required Book book}) async {
-    final Box<Map<dynamic, dynamic>> offerBox =
+  Future<bool> deleteBook({required Book book}) async {
+    final Box<Map<dynamic, dynamic>> bookBox =
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
-    if (offerBox.isNotEmpty) {
-      final int index = offerBox.values.toList().indexWhere(
-          (Map<dynamic, dynamic> offerAtIndex) => Book.fromJson(offerAtIndex) == book);
+    if (bookBox.isNotEmpty) {
+      miraiPrint('\n=> BookBox isNotEmpty\n');
+      miraiPrint('\n=> Deleting this BooK ${book.toString()}\n');
+      final int index = bookBox.values.toList().indexWhere(
+            (Map<dynamic, dynamic> bookAtIndex) => Book.fromJson(bookAtIndex).title == book.title && Book.fromJson(bookAtIndex).image == book.image,
+          );
+      miraiPrint('\n=> BookBox $index\n');
       if (index >= 0) {
-        await offerBox.deleteAt(index);
+        await bookBox.deleteAt(index);
         miraiPrint('\n=> Delete This Book: ${book.toString()}\n');
         return true;
       }
@@ -99,7 +103,7 @@ class HiveDataStore {
     return Hive.box<Map<dynamic, dynamic>>(booksBoxName).listenable();
   }
 
-  Future<void> updateBook({required Book book}) async {
+  Future<bool> updateBook({required Book book}) async {
     final Box<Map<dynamic, dynamic>> bookBox =
         Hive.box<Map<dynamic, dynamic>>(booksBoxName);
 
@@ -118,6 +122,7 @@ class HiveDataStore {
     await bookBox.addAll(castedCategories);
 
     debugPrint('\n=> Saved Books: ${books.toString()}\n');
+    return true;
   }
 
   Future<void> savePlaningBook({

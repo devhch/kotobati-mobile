@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -12,6 +13,7 @@ import 'app/core/models/planing_books_model.dart';
 import 'app/core/utils/app_theme.dart';
 import 'app/data/persistence/hive_data_store.dart';
 import 'app/routes/app_pages.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   await appPreLunch();
@@ -22,6 +24,10 @@ Future<void> main() async {
 Future<void> appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();
   await FlutterDownloader.initialize();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
 
   /// Change NavigationBarColor and statusBarColor.
   SystemChrome.setSystemUIOverlayStyle(
