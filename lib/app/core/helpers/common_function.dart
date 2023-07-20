@@ -21,12 +21,15 @@ void hideKeyboard(BuildContext context) {
 
 Future<void> requestPermission() async {
   final PermissionStatus status = await Permission.storage.request();
+
+  miraiPrint("isGranted: ${status.isGranted}");
   miraiPrint("PermissionStatus $status");
   if (status == PermissionStatus.permanentlyDenied) {
     AppMiraiDialog.snackBar(
       title: 'Storage Permission Denied!',
       message:
-      'Please allow storage permission to save the book that you are going to download...',
+          'Please allow storage permission to save the book that you are going to download...',
+      duration: 4,
     );
     openAppSettings();
   }
