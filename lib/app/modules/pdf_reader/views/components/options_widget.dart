@@ -5,10 +5,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/models/setting_objects_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/pdf_reader/controllers/pdf_reader_controller.dart';
 import 'package:kotobati/app/modules/pdf_reader/views/components/add_note_to_book.dart';
+import 'package:kotobati/app/modules/pdf_reader/views/components/brightness_bottom_sheet.dart';
 
 class OptionsWidget extends StatelessWidget {
   const OptionsWidget({
@@ -30,8 +34,7 @@ class OptionsWidget extends StatelessWidget {
               AnimatedContainer(
                 height: 240,
                 duration: const Duration(milliseconds: 1000),
-                padding:
-                    isExpandedOptions ? const EdgeInsets.symmetric(horizontal: 8) : null,
+                padding: isExpandedOptions ? const EdgeInsets.symmetric(horizontal: 8) : null,
                 decoration: const BoxDecoration(
                   color: AppTheme.keyAppLightGrayColor,
                   borderRadius: BorderRadius.only(
@@ -47,11 +50,29 @@ class OptionsWidget extends StatelessWidget {
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
                             const SizedBox(height: 36),
-                            SvgPicture.asset(
-                              AppIconsKeys.idea,
-                              height: 38,
-                              width: 24,
-                              fit: BoxFit.fill,
+                            InkWell(
+                              onTap: () {
+                                BrightnessBottomSheet.show(
+                                  brightness: controller.brightness,
+                                  onChanged: (double newPage) async {
+
+                                    controller.setReadingMode(newPage);
+                                    miraiPrint('BrightOnChanged $newPage');
+
+                                    final HiveDataStore hive = HiveDataStore();
+                                    SettingObjectsModel setting = await hive.getSettingObjects();
+                                    setting.brightness = newPage;
+                                    await hive.saveSettingObjects(settingObjectsModel: setting);
+                                  },
+                                );
+                                // controller.toggleReadingMode();
+                              },
+                              child: SvgPicture.asset(
+                                AppIconsKeys.idea,
+                                height: 38,
+                                width: 24,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                             const SizedBox(height: 18),
                             Container(
@@ -83,12 +104,18 @@ class OptionsWidget extends StatelessWidget {
                               width: 48,
                             ),
                             const SizedBox(height: 18),
-                            SvgPicture.asset(
-                              AppIconsKeys.edit,
-                              height: 26,
-                              width: 28,
-                              //    color: AppTheme.keyIconsGreyColor,
-                              fit: BoxFit.fill,
+                            InkWell(
+                              onTap: () async {
+                                miraiPrint('Taking a quote...');
+                                await controller.takeQuote();
+                              },
+                              child: SvgPicture.asset(
+                                AppIconsKeys.edit,
+                                height: 26,
+                                width: 28,
+                                //    color: AppTheme.keyIconsGreyColor,
+                                fit: BoxFit.fill,
+                              ),
                             ),
                             const SizedBox(height: 36),
                           ],
@@ -100,8 +127,7 @@ class OptionsWidget extends StatelessWidget {
               ),
               InkWell(
                 onTap: () {
-                  controller.isExpandedOptions.value =
-                      !controller.isExpandedOptions.value;
+                  controller.isExpandedOptions.value = !controller.isExpandedOptions.value;
 
                   // if (controller.isExpandedOptions.value) {
                   //   animationController.forward();

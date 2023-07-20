@@ -51,7 +51,7 @@ class OptionsMenuWidget extends StatelessWidget {
             case 0:
 
               /// Share File
-              shareFile(controller.pdfFile!.path, controller.book.value.title!);
+              shareFile(controller.pdfFile!.path, subject:controller.book.value.title!);
               break;
 
             case 1:

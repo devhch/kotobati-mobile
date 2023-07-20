@@ -15,8 +15,7 @@ class NotesView extends StatefulWidget {
   State<NotesView> createState() => _NotesViewState();
 }
 
-class _NotesViewState extends State<NotesView>
-    with SingleTickerProviderStateMixin {
+class _NotesViewState extends State<NotesView> with SingleTickerProviderStateMixin {
   /// NotesController
   final NotesController controller = Get.find<NotesController>();
 
@@ -33,12 +32,13 @@ class _NotesViewState extends State<NotesView>
     _tabController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
       child: Column(
         children: <Widget>[
-        //  const SizedBox(height: 30),
+          //  const SizedBox(height: 30),
 
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,6 +121,7 @@ class _NotesViewState extends State<NotesView>
                     itemCount: controller.bookModel.notes!.length,
                     itemBuilder: (_, int index) {
                       return TextWidget(
+                        title: controller.bookModel.title!,
                         text: controller.bookModel.notes![index],
                       );
                     },
@@ -134,9 +135,10 @@ class _NotesViewState extends State<NotesView>
                     padding: EdgeInsets.only(bottom: MiraiSize.bottomNavBarHeight94),
                     itemCount: controller.bookModel.quotes!.length,
                     itemBuilder: (_, int index) {
-                      return TextWidget(
-                        text: controller.bookModel.quotes![index],
-                      );
+                      return Container();
+                      // return TextWidget(
+                      //   text: controller.bookModel.quotes![index],
+                      // );
                     },
                   )
                 else

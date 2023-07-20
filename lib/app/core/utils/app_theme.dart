@@ -32,6 +32,9 @@ abstract class AppTheme {
   /// ThemeData
   static ThemeData get themeData => ThemeData(
         // backgroundColor: keyAppColor,
+        sliderTheme: const SliderThemeData(
+          showValueIndicator: ShowValueIndicator.always,
+        ),
         colorScheme: const ColorScheme.dark(
           secondary: keyAppColor,
           primary: keyAppColorDark,

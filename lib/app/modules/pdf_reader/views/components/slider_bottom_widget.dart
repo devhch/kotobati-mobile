@@ -5,6 +5,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/modules/pdf_reader/controllers/pdf_reader_controller.dart';
 
@@ -36,11 +37,13 @@ class SliderBottomWidget extends StatelessWidget {
                       value: page.toDouble(),
                       min: 0,
                       max: total.toDouble(),
-                      label: '$page',
+                      label: '${page + 1}',
                       inactiveColor: AppTheme.keySliderInactiveColor,
                       onChanged: (double newPage) {
                         controller.savedPage.value = (newPage.toInt(), total);
                         controller.pdfViewerController?.setPage(newPage.toInt());
+
+                        // controller.pdfViewerController?.jumpToPage(newPage.toInt());
                       },
                     ),
                     Text(

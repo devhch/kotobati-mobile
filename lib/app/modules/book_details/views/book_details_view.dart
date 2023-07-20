@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -205,7 +207,8 @@ class _BookDetailsViewState extends State<BookDetailsView>
                     InkWell(
                       onTap: () {
                         /// Share File
-                        shareFile(controller.pdfFile!.path, controller.book.title!);
+                        shareFile(controller.pdfFile!.path,
+                            subject: controller.book.title!);
                       },
                       child: SvgPicture.asset(
                         AppIconsKeys.share,
@@ -314,7 +317,9 @@ class _BookDetailsViewState extends State<BookDetailsView>
                                 itemCount: book.notes!.length,
                                 itemBuilder: (_, int index) {
                                   return TextWidget(
+                                    title:book.title! ,
                                     text: book.notes![index],
+                                    useCover: false,
                                   );
                                 },
                               )
@@ -327,9 +332,15 @@ class _BookDetailsViewState extends State<BookDetailsView>
                                 padding: EdgeInsets.zero,
                                 itemCount: book.quotes!.length,
                                 itemBuilder: (_, int index) {
+                                  final String imagePath = book.quotes![index];
                                   return TextWidget(
-                                    text: book.quotes![index],
+                                    title:book.title! ,
+                                    image: imagePath,
+                                    useCover: false,
                                   );
+                                  // return TextWidget(
+                                  //   text: book.quotes![index],
+                                  // );
                                 },
                               )
                             else

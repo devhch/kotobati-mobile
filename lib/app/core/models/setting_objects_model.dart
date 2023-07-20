@@ -6,12 +6,14 @@ class SettingObjectsModel {
   bool horizontal;
   bool darkMode;
   double spacing;
+  double brightness;
   bool rating;
 
   SettingObjectsModel({
     this.horizontal = false,
-    this.darkMode = true,
-    this.spacing = 25,
+    this.darkMode = false,
+    this.brightness = 0.0,
+    this.spacing = 0,
     this.rating = false,
   });
 
@@ -21,6 +23,7 @@ class SettingObjectsModel {
     return SettingObjectsModel(
       horizontal: json['horizontal'],
       darkMode: json['darkMode'],
+      brightness: json['brightness'],
       spacing: json['spacing'],
       rating: json['rating'],
     );
@@ -28,13 +31,33 @@ class SettingObjectsModel {
 
   Map<String, dynamic> toJson() => <String, dynamic>{
         'horizontal': horizontal,
+        'brightness': brightness,
         'darkMode': darkMode,
         'spacing': spacing,
         'rating': rating,
       };
 
   @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is SettingObjectsModel &&
+          runtimeType == other.runtimeType &&
+          horizontal == other.horizontal &&
+          darkMode == other.darkMode &&
+          spacing == other.spacing &&
+          brightness == other.brightness &&
+          rating == other.rating;
+
+  @override
+  int get hashCode =>
+      horizontal.hashCode ^
+      darkMode.hashCode ^
+      spacing.hashCode ^
+      brightness.hashCode ^
+      rating.hashCode;
+
+  @override
   String toString() {
-    return 'SettingObjectModel{horizontal: $horizontal, darkMode: $darkMode, spacing: $spacing, rating: $rating}';
+    return 'SettingObjectsModel{horizontal: $horizontal, darkMode: $darkMode, spacing: $spacing, brightness: $brightness, rating: $rating}';
   }
 }
