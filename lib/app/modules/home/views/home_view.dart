@@ -216,12 +216,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ),
-
-            // LinearProgressIndicator(
-            //   value: progress,
-            //   color: AppTheme.keyAppColorDark,
-            //   backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
-            // ),
           ],
         ),
       ),

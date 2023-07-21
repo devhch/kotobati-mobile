@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/utils/app_config.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
@@ -85,7 +86,7 @@ class TextWidget extends StatelessWidget {
                         onTap: () {
                           if (image != null) {
                             /// Share File
-                            shareFile(image!, text: 'إقتباس من $title تطبيق كتوباتي ، \nلتحميل التطبيق: https://play.google.com/store/apps/details?id=com.dghoughi.lahsen.kotobati  ');
+                            shareFile(image!, text: 'إقتباس من $title تطبيق كتوباتي ، \nلتحميل التطبيق: ${AppConfig.playStoreURL}  ');
                           }
                         },
                         child: SvgPicture.asset(

@@ -2,15 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/setting_objects_model.dart';
+import 'package:kotobati/app/core/utils/app_config.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../controllers/settings_controller.dart';
 import 'components/circle_thumb_shape.dart';
 
 class SettingsView extends GetView<SettingsController> {
   const SettingsView({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return CommonScaffold(
@@ -18,12 +23,12 @@ class SettingsView extends GetView<SettingsController> {
       showSettingButton: false,
       child: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.all(8.0),
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             children: <Widget>[
               Container(
                 width: context.width,
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: const BoxDecoration(
                   color: Color(0xff242424),
                 ),
@@ -60,8 +65,7 @@ class SettingsView extends GetView<SettingsController> {
                                   children: <Widget>[
                                     Text(
                                       'عمودي',
-                                      style: context.textTheme.labelMedium!
-                                          .copyWith(
+                                      style: context.textTheme.labelMedium!.copyWith(
                                         color: AppTheme.keyAppWhiteColor,
                                       ),
                                     ),
@@ -78,8 +82,7 @@ class SettingsView extends GetView<SettingsController> {
                                   children: <Widget>[
                                     Text(
                                       'افقي',
-                                      style: context.textTheme.labelMedium!
-                                          .copyWith(
+                                      style: context.textTheme.labelMedium!.copyWith(
                                         color: AppTheme.keyAppWhiteColor,
                                       ),
                                     ),
@@ -98,7 +101,7 @@ class SettingsView extends GetView<SettingsController> {
               const SizedBox(height: 20),
               Container(
                 width: context.width,
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: const BoxDecoration(
                   color: Color(0xff242424),
                 ),
@@ -135,8 +138,7 @@ class SettingsView extends GetView<SettingsController> {
                                   children: <Widget>[
                                     Text(
                                       'ليلي',
-                                      style: context.textTheme.labelMedium!
-                                          .copyWith(
+                                      style: context.textTheme.labelMedium!.copyWith(
                                         color: AppTheme.keyAppWhiteColor,
                                       ),
                                     ),
@@ -153,8 +155,7 @@ class SettingsView extends GetView<SettingsController> {
                                   children: <Widget>[
                                     Text(
                                       'عادي',
-                                      style: context.textTheme.labelMedium!
-                                          .copyWith(
+                                      style: context.textTheme.labelMedium!.copyWith(
                                         color: AppTheme.keyAppWhiteColor,
                                       ),
                                     ),
@@ -173,7 +174,7 @@ class SettingsView extends GetView<SettingsController> {
               const SizedBox(height: 20),
               Container(
                 width: context.width,
-                padding: const EdgeInsets.all(5),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 decoration: const BoxDecoration(
                   color: Color(0xff242424),
                 ),
@@ -181,15 +182,15 @@ class SettingsView extends GetView<SettingsController> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Row(
-                      children: [
+                      children: <Widget>[
                         Text(
                           'هامش الصفحة : ',
                           style: context.textTheme.bodyLarge!.copyWith(),
                         ),
                         const SizedBox(width: 15),
                         Obx(() {
-                          double distance = double.parse(
-                              controller.zoneDistance.value.toStringAsFixed(0));
+                          double distance =
+                              double.parse(controller.zoneDistance.value.toStringAsFixed(0));
 
                           return Text(
                             distance.toStringAsFixed(0),
@@ -222,8 +223,8 @@ class SettingsView extends GetView<SettingsController> {
                           onChanged: (double value) {
                             controller.zoneDistance.value = value;
                           },
-                          onChangeEnd: (double value) {
-                            controller.updateSpacing(value);
+                          onChangeEnd: (double endValue) async {
+                            controller.updateSpacing(endValue);
                           },
                         );
                       }),
@@ -253,13 +254,21 @@ class SettingsView extends GetView<SettingsController> {
                 style: context.textTheme.bodyLarge!.copyWith(),
               ),
               const SizedBox(height: 15),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  for (int i = 0; i < 5; i++)
-                    const FaIcon(FontAwesomeIcons.star),
-                ],
+              InkWell(
+                onTap: () async {
+                  Uri uri = Uri.parse(AppConfig.playStoreURL);
+                  if (!await launchUrl(uri)) {
+                    throw Exception('Could not launch $uri');
+                  }
+                },
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    for (int i = 0; i < 5; i++) const FaIcon(FontAwesomeIcons.star, size: 16),
+                  ],
+                ),
               ),
               const SizedBox(height: 25),
               Text(
@@ -274,11 +283,35 @@ class SettingsView extends GetView<SettingsController> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
-                  SvgPicture.asset(AppIconsKeys.instagram),
+                  InkWell(
+                    onTap: () async {
+                      Uri uri = Uri.parse(AppConfig.instagramUrl);
+                      if (!await launchUrl(uri)) {
+                        throw Exception('Could not launch $uri');
+                      }
+                    },
+                    child: SvgPicture.asset(AppIconsKeys.instagram),
+                  ),
                   const SizedBox(width: 35),
-                  SvgPicture.asset(AppIconsKeys.facebook),
+                  InkWell(
+                    onTap: () async {
+                      Uri uri = Uri.parse(AppConfig.facebookUrl);
+                      if (!await launchUrl(uri)) {
+                        throw Exception('Could not launch $uri');
+                      }
+                    },
+                    child: SvgPicture.asset(AppIconsKeys.facebook),
+                  ),
                   const SizedBox(width: 35),
-                  SvgPicture.asset(AppIconsKeys.whatsapp),
+                  InkWell(
+                    onTap: () async {
+                      Uri uri = Uri.parse(AppConfig.whatsappUrl);
+                      if (!await launchUrl(uri)) {
+                        throw Exception('Could not launch $uri');
+                      }
+                    },
+                    child: SvgPicture.asset(AppIconsKeys.whatsapp),
+                  ),
                 ],
               ),
               const SizedBox(height: 20),
