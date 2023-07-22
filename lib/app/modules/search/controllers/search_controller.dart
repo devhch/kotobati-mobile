@@ -6,7 +6,10 @@ import 'package:get/get.dart';
 class SearchControllerC extends GetxController {
   late final TextEditingController txtController;
 
-  List<FileSystemEntity> pdfFiles = [];
+  List<File> pdfFiles = [];
+  List<String> pdfPaths = [];
+
+//  List<FileSystemEntity> pdfFiles = [];
 
   @override
   void onInit() {
@@ -29,6 +32,7 @@ class SearchControllerC extends GetxController {
     List<FileSystemEntity> pdfFiles = [];
     directory.listSync(recursive: true).forEach((FileSystemEntity entity) {
       if (entity is File && entity.path.toLowerCase().endsWith('.pdf')) {
+        //
         pdfFiles.add(entity);
       } else if (entity is Directory) {
         pdfFiles.addAll(searchForPDFFiles(entity));

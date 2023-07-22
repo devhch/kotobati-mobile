@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_bottom_bar_view.dart';
+import 'package:kotobati/app/widgets/mirai_verifying_dialog.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
 
 import '../controllers/navigation_controller.dart';
@@ -145,7 +149,51 @@ class _BottomNavigationBar extends StatelessWidget {
       changeIndex: (int index) {
         navigationController.setIndex(index: index);
       },
-      addClick: () => Get.toNamed(Routes.notes),
+      addClick: () {
+        final PlaningBooksModel planingBooks = listPlaningBooks[0];
+
+        bool isThisPlanningBooksHasData = false;
+        final List<Book> books = HiveDataStore().getBooks();
+        if (books.isNotEmpty) {
+          for (int i = 0; i < books.length; i++) {
+            final Book book = books[i];
+
+            if (book.planingBook != null && book.planingBook == planingBooks) {
+              isThisPlanningBooksHasData = true;
+              break;
+            }
+          }
+        }
+
+        if (isThisPlanningBooksHasData) {
+          Get.toNamed(
+            Routes.planingDetails,
+            arguments: <String, dynamic>{
+              "planingBooksModel": planingBooks,
+            },
+          );
+        } else {
+          MiraiVerifyingDialog.showDialog(
+            title: ' لاتوجد بيانات... \n يرجى الذهاب إلى صفحة الكتب \nوتنزيل بعض الكتب! ',
+            yesStyle: context.textTheme.labelLarge!.copyWith(
+              color: AppTheme.keyAppBlackColor,
+            ),
+            yes: () {
+              final NavigationController controller = Get.find<NavigationController>();
+              final int currentPage = controller.currentPage.value;
+              if (currentPage != 0) {
+                controller.setIndex(index: 0);
+              }
+              Get.back();
+            },
+            yesText: 'اكتشف الكتب المتاحة',
+            showNoButton: false,
+            no: () {},
+            noText: 'لا',
+          );
+        }
+      },
+      // addClick: () => Get.toNamed(Routes.notes),
     );
   }
 }

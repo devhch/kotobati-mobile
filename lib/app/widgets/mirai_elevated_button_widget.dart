@@ -15,7 +15,7 @@ class MiraiElevatedButtonWidget extends StatelessWidget {
     this.overlayColor,
     this.boxShadow,
     this.margin,
-    this.padding = const EdgeInsets.symmetric(horizontal: 36, vertical: 10),
+    this.padding,
     this.height,
     this.width,
     this.onLongPress,
@@ -72,7 +72,7 @@ class MiraiElevatedButtonWidget extends StatelessWidget {
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
-          padding: padding,
+          padding: padding ?? const EdgeInsets.symmetric(horizontal: 36, vertical: 10),
           shape: shape ??
               RoundedRectangleBorder(
                 borderRadius: borderRadius ??

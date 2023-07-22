@@ -44,7 +44,7 @@ class ReadingView extends GetView<ReadingController> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    'لايوجد بيانات',
+                    'لاتوجد بيانات',
                     style: context.textTheme.displayLarge!.copyWith(
                       color: Colors.white,
                       fontFamily: AppTheme.fontBold,

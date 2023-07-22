@@ -18,7 +18,7 @@ class NavigationController extends GetxController {
   final PageController pageController = PageController();
 
   /// current page view.
-  ValueNotifier<int> currentPage = ValueNotifier<int>(0);
+  final ValueNotifier<int> currentPage = ValueNotifier<int>(0);
 
   /// tab body
   Widget tabBody = Container(color: Colors.transparent);
@@ -99,7 +99,7 @@ class NavigationController extends GetxController {
 
   void _changeBody(int index, {bool jump = false}) {
     _setSelectedTab(index, MiraiTabIcon.tabIconsList);
-    previousIndex = index;
+    currentPage.value = index;
     if (!jump) {
       pageController.animateToPage(
         index,
