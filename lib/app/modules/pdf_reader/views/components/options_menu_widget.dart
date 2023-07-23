@@ -46,12 +46,12 @@ class OptionsMenuWidget extends StatelessWidget {
         //  color: AppTheme.keyAppColorDark,
         //  offset: Offset(1, -240),
         position: PopupMenuPosition.under,
-        onSelected: (int index) {
-          switch (index) {
+        onSelected: (int index)async {
+          switch (index)  {
             case 0:
 
               /// Share File
-              shareFile(controller.pdfFile!.path, subject:controller.book.value.title!);
+              shareFile(controller.pdfFile!.path, subject: controller.book.value.title!);
               break;
 
             case 1:
@@ -94,6 +94,15 @@ class OptionsMenuWidget extends StatelessWidget {
               }
 
               break;
+
+            case 3:
+              await controller.overlayWindow();
+              break;
+            case 4:
+              controller.exitFullScreen();
+              controller.fullScreen.value = !controller.fullScreen.value;
+              controller.fullScreen.notifyListeners();
+              break;
           }
         },
 
@@ -127,6 +136,28 @@ class OptionsMenuWidget extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 24),
               child: Text(
                 'أضف إلى...',
+                style: Get.theme.textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            PopupMenuItem<int>(
+              value: 3,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'حماية العين',
+                style: Get.theme.textTheme.bodyLarge!.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+            PopupMenuItem<int>(
+              value: 4,
+              padding: const EdgeInsets.symmetric(horizontal: 24),
+              child: Text(
+                'تكبير الشاشة',
                 style: Get.theme.textTheme.bodyLarge!.copyWith(
                   fontWeight: FontWeight.bold,
                 ),

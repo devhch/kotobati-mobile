@@ -19,18 +19,25 @@ class SliderBottomWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder<bool>(
-      valueListenable: controller.isPdfLoaded,
-      builder: (_, bool isPdfLoaded, __) {
-        if (isPdfLoaded) {
-          return Container(
-            // height: 78,
-            color: AppTheme.keyAppLightGrayColor,
-            child: ValueListenableBuilder<(int, int)>(
-              valueListenable: controller.savedPage,
-              builder: (_, (int, int) savedPage, __) {
-                final (int page, int total) = savedPage;
-                return Column(
+    // return ValueListenableBuilder<bool>(
+    //   valueListenable: controller.isPdfLoaded,
+    //   builder: (_, bool isPdfLoaded, __) {
+    //     if (isPdfLoaded) {
+    return Container(
+      height: 100,
+      width: double.infinity,
+      color: AppTheme.keyAppLightGrayColor,
+      child: ValueListenableBuilder<(int, int)>(
+        valueListenable: controller.savedPage,
+        builder: (_, (int, int) savedPage, __) {
+          final (int page, int total) = savedPage;
+          miraiPrint('SwitchTotal: $total');
+          return total == 0
+              ? const SizedBox.shrink()
+              : Column(
+                  key: ValueKey<String>(
+                    'SliderBottomWidgetColumn${DateTime.now().toIso8601String()}',
+                  ),
                   children: <Widget>[
                     const SizedBox(height: 16),
                     Slider.adaptive(
@@ -55,13 +62,13 @@ class SliderBottomWidget extends StatelessWidget {
                     const SizedBox(height: 16),
                   ],
                 );
-              },
-            ),
-          );
-        } else {
-          return const SizedBox.shrink();
-        }
-      },
+        },
+      ),
     );
+    //     } else {
+    //       return const SizedBox.shrink();
+    //     }
+    //   },
+    // );
   }
 }

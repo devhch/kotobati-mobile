@@ -37,8 +37,7 @@ Future<void> requestPermission() async {
   if (status == PermissionStatus.permanentlyDenied) {
     AppMiraiDialog.snackBar(
       title: 'Storage Permission Denied!',
-      message:
-          'Please allow storage permission to save the book that you are going to download...',
+      message: 'Please allow storage permission to save the book that you are going to download...',
       duration: 4,
     );
     openAppSettings();
@@ -129,8 +128,7 @@ Future<Size> calculateImageDimension(File fileImage) {
 
 Future<File> uint8ListToFile(Uint8List data, String fileName, {String? tempDir}) async {
   // Get the temporary directory (app cache) or provide a custom temporary directory
-  final tempDirectory =
-      tempDir != null ? Directory(tempDir) : await getTemporaryDirectory();
+  final tempDirectory = tempDir != null ? Directory(tempDir) : await getTemporaryDirectory();
 
   // Create the temporary file
   final file = File('${tempDirectory.path}/$fileName');
@@ -147,4 +145,11 @@ Future<Image> convertFileToImage(File picture) async {
   Uint8List uint8list = base64.decode(imageAsString);
   Image image = Image.memory(uint8list);
   return image;
+}
+
+void precacheImages(List<String> imagePaths, BuildContext context) async {
+  for (String path in imagePaths) {
+    // The `precacheImage` function loads the image into the cache
+    await precacheImage(Image.asset(path).image, context);
+  }
 }

@@ -12,6 +12,7 @@ import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'app/core/models/planing_books_model.dart';
 import 'app/core/utils/app_theme.dart';
 import 'app/data/persistence/hive_data_store.dart';
+import 'app/overlays/true_caller_overlay.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
 
@@ -20,6 +21,19 @@ Future<void> main() async {
 
   runApp(const MyApp());
 }
+
+
+@pragma("vm:entry-point")
+void overlayMain() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(
+    const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: TrueCallerOverlay(),
+    ),
+  );
+}
+
 
 Future<void> appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();

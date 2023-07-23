@@ -13,6 +13,7 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/models/setting_objects_model.dart';
+import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:screen_brightness/screen_brightness.dart';
 import 'package:screenshot/screenshot.dart';
@@ -31,6 +32,7 @@ class PdfReaderController extends GetxController {
   /// Saved Page
   late ValueNotifier<(int, int)> savedPage;
 
+  late ValueNotifier<bool> fullScreen;
   late ValueNotifier<bool> isPdfLoaded;
   late ValueNotifier<bool> isPaddingChanging;
   late ValueNotifier<double> pagePadding;
@@ -45,7 +47,6 @@ class PdfReaderController extends GetxController {
 
   bool isVertical = true;
   bool isDarkMode = false;
-
 
   ///
   ValueNotifier<double> brightness = ValueNotifier<double>(0.5);
@@ -72,17 +73,23 @@ class PdfReaderController extends GetxController {
 
   @override
   void onClose() {
-    screenBrightness.setScreenBrightness(defaultBrightness);
+    close();
     super.onClose();
   }
 
   Future<void> init() async {
-    defaultBrightness = await screenBrightness.current;
+    savedPage = ValueNotifier<(int, int)>((0, 0));
+    fullScreen = ValueNotifier<bool>(false);
+    isPdfLoaded = ValueNotifier<bool>(false);
+    isPaddingChanging = ValueNotifier<bool>(true);
+    isScrolling = ValueNotifier<bool>(false);
+    isExpandedOptions = ValueNotifier<bool>(false);
+    scrollController = ScrollController();
+    pagePadding = ValueNotifier<double>(0);
+    screenshotController = ScreenshotController();
 
     SettingObjectsModel setting = await hive.getSettingObjects();
     setReadingMode(setting.brightness);
-
-    pagePadding = ValueNotifier<double>(0);
 
     isVertical = !setting.horizontal;
     isDarkMode = setting.darkMode;
@@ -90,23 +97,20 @@ class PdfReaderController extends GetxController {
 
     book.value = Get.arguments;
     pdfPath = book.value.path!;
-    //if (!pdfPath.contains('.pdf')) pdfPath += '.pdf';
-    //  pdfViewerController = PdfViewerController();
 
     miraiPrint('PdfReaderController pdfPath: $pdfPath');
     pdfFile = File(pdfPath.replaceAll('.pdf', ''));
     miraiPrint('File Path: $pdfPath');
     miraiPrint('File Exists: ${pdfFile?.existsSync()}');
 
-    savedPage = ValueNotifier<(int, int)>((0, 0));
-    isPdfLoaded = ValueNotifier<bool>(false);
-    isPaddingChanging = ValueNotifier<bool>(false);
+    defaultBrightness = await screenBrightness.current;
+  }
 
-    isScrolling = ValueNotifier<bool>(false);
-    isExpandedOptions = ValueNotifier<bool>(false);
-    scrollController = ScrollController();
+  Future<void> close() async {
+    screenBrightness.setScreenBrightness(defaultBrightness);
 
-    screenshotController = ScreenshotController();
+    /// closes overlay if open
+    FlutterOverlayWindow.closeOverlay().then((bool? value) => log('STOPPED: value: $value'));
   }
 
   void setReadingMode(double bright) async {
@@ -115,9 +119,6 @@ class PdfReaderController extends GetxController {
   }
 
   Future<void> takeQuote() async {
-    ///Just capture
-    // screenshotController.capture();
-
     ///Capture and save to a file
 
     miraiPrint('takeQuote: capture');
@@ -129,33 +130,55 @@ class PdfReaderController extends GetxController {
       File imageFile = await uint8ListToFile(imageData, 'captured_image');
 
       CroppedFile? croppedImage = await cropSquareImage(imageFile.path);
-      debugPrint('------------ crop true ------------');
-      final String size = await getFileSize(croppedImage?.path ?? '', 2);
-      debugPrint('size $size');
+
       if (croppedImage != null) {
+        debugPrint('------------ crop true ------------');
+        if (croppedImage.path.isNotEmpty) {
+          final String size = await getFileSize(croppedImage.path, 2);
+          debugPrint('size $size');
+        }
+
         calculateImageDimension(File(croppedImage.path)).then((Size size) =>
             miraiPrint("image size: width * height = ${size.width} * ${size.height}"));
-        imageFile = File(croppedImage.path);
+        //   imageFile = File(croppedImage.path);
+
+        /// Save Cropped Image to book
+        book.value.quotes?.add(croppedImage.path);
+
+        await HiveDataStore().updateBook(book: book.value);
+
+        AppMiraiDialog.snackBar(
+          duration: 4,
+          backgroundColor: Colors.green,
+          title: 'عظيم',
+          message: 'تمت إضافة إقتباس إلى ${book.value.title?.replaceAll('pdf', '')} ',
+        );
       } else {
         debugPrint('crop false');
         // imageFile;
+
+        AppMiraiDialog.snackBarError(
+          duration: 4,
+          title: 'إنتباه!',
+          message: 'لم يتمر إضافة اي إقتباس إلى ${book.value.title?.replaceAll('pdf', '')} ',
+        );
       }
-
-      /// Save Cropped Image to book
-      book.value.quotes?.add(imageFile.path);
-
-      await HiveDataStore().updateBook(book: book.value);
+    } else {
+      miraiPrint('takeQuote: imageData == null');
     }
-    miraiPrint('takeQuote: imageData == null');
   }
 
   Future<void> overlayWindow() async {
     /// check if overlay permission is granted
-    final bool status = await FlutterOverlayWindow.isPermissionGranted();
+    final bool isPermissionGranted = await FlutterOverlayWindow.isPermissionGranted();
 
-    /// request overlay permission
-    /// it will open the overlay settings page and return `true` once the permission granted.
-    final bool? requestPermission = await FlutterOverlayWindow.requestPermission();
+    if (!isPermissionGranted) {
+      /// request overlay permission
+      /// it will open the overlay settings page and return `true` once the permission granted.
+      final bool? requestPermission = await FlutterOverlayWindow.requestPermission();
+    }
+
+    if (await FlutterOverlayWindow.isActive()) return;
 
     /// Open overLay content
     ///
@@ -168,27 +191,44 @@ class PdfReaderController extends GetxController {
     /// `overlayContent` the notification message
     /// `enableDrag` to enable/disable dragging the overlay over the screen and default is "false"
     /// `positionGravity` the overlay postion after drag and default is [PositionGravity.none]
-    await FlutterOverlayWindow.showOverlay();
+    // await FlutterOverlayWindow.showOverlay();
 
-    /// closes overlay if open
-    await FlutterOverlayWindow.closeOverlay();
+    await FlutterOverlayWindow.showOverlay(
+      enableDrag: true,
+      overlayTitle: "Kotobati",
+      // overlayContent: 'Overlay Enabled',
+      flag: OverlayFlag.defaultFlag,
+      visibility: NotificationVisibility.visibilityPublic,
+      positionGravity: PositionGravity.auto,
+      // height: 500,
+      width: WindowSize.matchParent,
+    );
 
     /// broadcast data to and from overlay app
-    await FlutterOverlayWindow.shareData("Hello from the other side");
+    //  await FlutterOverlayWindow.shareData("Hello from the other side");
 
     /// streams message shared between overlay and main app
-    FlutterOverlayWindow.overlayListener.listen((event) {
-      log("Current Event: $event");
-    });
+    // FlutterOverlayWindow.overlayListener.listen((event) {
+    //   log("Current Event: $event");
+    // });
 
     /// use [OverlayFlag.focusPointer] when you want to use fields that show keyboards
-    await FlutterOverlayWindow.showOverlay(flag: OverlayFlag.focusPointer);
+    // await FlutterOverlayWindow.showOverlay(flag: OverlayFlag.focusPointer);
 
     /// update the overlay flag while the overlay in action
-    await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
+    // await FlutterOverlayWindow.updateFlag(OverlayFlag.defaultFlag);
 
     /// Update the overlay size in the screen
-    await FlutterOverlayWindow.resizeOverlay(80, 120);
+    // await FlutterOverlayWindow.resizeOverlay(80, 120);
+  }
+
+  void enterFullScreen() {
+     SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
+    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: <SystemUiOverlay>[]);
+  }
+
+  void exitFullScreen() {
+       SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 }
 

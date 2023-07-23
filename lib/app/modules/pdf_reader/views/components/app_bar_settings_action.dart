@@ -62,6 +62,12 @@ class AppBarSettingsAction extends StatelessWidget {
           // controller.changeStadiumFilter();
         },
 
+        onCanceled: () {
+          // if (controller.isPaddingChanging.value) {
+          //   controller.isPaddingChanging.value = false;
+          //   controller.isPaddingChanging.notifyListeners();
+          // }
+        },
         itemBuilder: (_) {
           return <PopupMenuEntry<int>>[
             PopupMenuItem<int>(
@@ -71,8 +77,14 @@ class AppBarSettingsAction extends StatelessWidget {
                   builder: (BuildContext context, void Function(void Function()) setState) {
                 return InkWell(
                   onTap: () async {
+                    controller.isPaddingChanging.value = false;
+                    controller.isPaddingChanging.notifyListeners();
+
+                    controller.isPdfLoaded.value = false;
+                    controller.isPaddingChanging.notifyListeners();
+
                     controller.isVertical = !controller.isVertical;
-                    controller.update();
+                    //  controller.update();
                     setState(() {});
 
                     /// Save To Hive...
@@ -80,6 +92,16 @@ class AppBarSettingsAction extends StatelessWidget {
                     SettingObjectsModel setting = await hive.getSettingObjects();
                     setting.horizontal = !controller.isVertical;
                     await hive.saveSettingObjects(settingObjectsModel: setting);
+
+                    // if (controller.isPaddingChanging.value) {
+                    //   controller.isPaddingChanging.value = false;
+                    //   controller.isPaddingChanging.notifyListeners();
+                    // }
+
+                    await Future<void>.delayed(const Duration(milliseconds: 100), () {
+                      controller.isPaddingChanging.value = true;
+                      controller.isPaddingChanging.notifyListeners();
+                    });
                   },
                   child: Container(
                     margin: EdgeInsets.zero,
@@ -133,16 +155,34 @@ class AppBarSettingsAction extends StatelessWidget {
                   builder: (BuildContext context, void Function(void Function()) setState) {
                 return InkWell(
                   onTap: () async {
+                    /// Change DarkMode state...
                     controller.isDarkMode = !controller.isDarkMode;
-                    controller.update();
 
+                    /// By
                     setState(() {});
+
+                    /// Switch to Mirai Cached Widget, then we can change the state of DarkMode in PDF...
+                    controller.isPaddingChanging.value = false;
+                    controller.isPaddingChanging.notifyListeners();
+
+                    controller.isPdfLoaded.value = false;
+                    controller.isPaddingChanging.notifyListeners();
 
                     /// Save To Hive...
                     final HiveDataStore hive = HiveDataStore();
-                    SettingObjectsModel setting = await hive.getSettingObjects();
-                    setting.darkMode = controller.isDarkMode;
+                    SettingObjectsModel setting = await hive.getSettingObjects()
+                      ..darkMode = controller.isDarkMode;
                     await hive.saveSettingObjects(settingObjectsModel: setting);
+
+                    /// Then Change The Widget to Animated Padding...
+                    /// I did this to avoid the Lag when sliding to change the padding...
+                    /// So, that why isPaddingChanging == true by default.
+                    /// For
+                    /// Am I capable right?
+                    await Future<void>.delayed(const Duration(milliseconds: 100), () {
+                      controller.isPaddingChanging.value = true;
+                      controller.isPaddingChanging.notifyListeners();
+                    });
                   },
                   child: Container(
                     margin: const EdgeInsets.only(top: 6),
@@ -192,86 +232,99 @@ class AppBarSettingsAction extends StatelessWidget {
             PopupMenuItem<int>(
               value: 2,
               padding: const EdgeInsets.symmetric(horizontal: 6),
-              child: StatefulBuilder(
-                  builder: (BuildContext context, void Function(void Function()) setState) {
-                return Container(
-                  margin: const EdgeInsets.only(top: 6),
-                  padding: const EdgeInsets.only(
-                    left: 10,
-                    right: 10,
-                    top: 10,
-                  ),
-                  color: AppTheme.keyMenuItemGrayColor,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(
-                        'هامش الصفحة',
-                        style: Get.theme.textTheme.bodyText2!.copyWith(
-                            //  color: AppTheme.keyDarkBlueColor,
-                            ),
-                        overflow: TextOverflow.ellipsis,
+              child: ValueListenableBuilder<double>(
+                  valueListenable: controller.pagePadding,
+                  builder: (_, double pagePadding, __) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 6),
+                      padding: const EdgeInsets.only(
+                        left: 10,
+                        right: 10,
+                        top: 10,
                       ),
-                      //     const SizedBox(height: 6),
-                      Slider.adaptive(
-                        value: controller.pagePadding.value,
-                        min: 0,
-                        max: 40,
-                        label: '${controller.pagePadding.value.floor()}',
-                        inactiveColor: AppTheme.keySliderInactiveColor,
-                        onChanged: (double newPadding) async {
-                          /// Save To Hive...
-                          final HiveDataStore hive = HiveDataStore();
-                          SettingObjectsModel setting = await hive.getSettingObjects();
+                      color: AppTheme.keyMenuItemGrayColor,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(
+                            'هامش الصفحة',
+                            style: Get.theme.textTheme.bodyText2!.copyWith(
+                                //  color: AppTheme.keyDarkBlueColor,
+                                ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          //     const SizedBox(height: 6),
+                          Slider.adaptive(
+                            value: pagePadding,
+                            min: 0,
+                            max: 100,
+                            label: '${pagePadding.floor()}',
+                            inactiveColor: AppTheme.keySliderInactiveColor,
+                            onChanged: (double newPadding) async {
+                              // setState(() {});
 
-                          controller.isPaddingChanging.value = newPadding != setting.spacing;
-                          controller.isPaddingChanging.notifyListeners();
-                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
+                              controller.pagePadding.value = newPadding;
+                              controller.pagePadding.notifyListeners();
 
-                          controller.pagePadding.value = newPadding;
-                          controller.pagePadding.notifyListeners();
-                      //    controller.update();
+                              /// Save To Hive...
+                              // final HiveDataStore hive = HiveDataStore();
+                              // SettingObjectsModel setting = await hive.getSettingObjects();
+                              //
+                              // controller.isPaddingChanging.value = newPadding != setting.spacing;
+                              // controller.isPaddingChanging.notifyListeners();
+                              // miraiPrint(
+                              //     'isPaddingChanging: ${controller.isPaddingChanging.value}');
 
-                          setState(() {});
+                              //    controller.update();
+                            },
+                            onChangeStart: (double startValue) {
+                              // controller.update();
+                              miraiPrint('=============');
+                              miraiPrint('onChangeStart');
+                              miraiPrint(
+                                'isPaddingChanging: ${controller.isPaddingChanging.value}',
+                              );
+                              miraiPrint('=============');
+                              if (!controller.isPaddingChanging.value) {
+                                controller.isPaddingChanging.value = true;
+                                controller.isPaddingChanging.notifyListeners();
+                              }
 
+                              miraiPrint('=============');
+                              miraiPrint(
+                                  'isPaddingChanging: ${controller.isPaddingChanging.value}');
+                              miraiPrint('=============');
+                            },
+                            onChangeEnd: (double endValue) async {
+                              miraiPrint('=============');
+                              miraiPrint('onChangeEnd');
+                              miraiPrint(
+                                  'isPaddingChanging: ${controller.isPaddingChanging.value}');
+                              miraiPrint('=============');
+                              // controller.isPaddingChanging.value = false;
+                              // controller.isPaddingChanging.notifyListeners();
 
-                        },
-                        // onChangeStart: (double startValue) {
-                        //   controller.update();
-                        //   miraiPrint('=============');
-                        //   miraiPrint('onChangeStart');
-                        //   miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
-                        //   miraiPrint('=============');
-                        //   controller.isPaddingChanging.value = true;
-                        //   controller.isPaddingChanging.notifyListeners();
-                        //   miraiPrint('=============');
-                        //   miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
-                        //   miraiPrint('=============');
-                        // },
-                        onChangeEnd: (double endValue) async {
-                          miraiPrint('=============');
-                          miraiPrint('onChangeEnd');
-                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
-                          miraiPrint('=============');
-                          controller.isPaddingChanging.value = false;
-                          controller.isPaddingChanging.notifyListeners();
-                          miraiPrint('=============');
-                          miraiPrint('isPaddingChanging: ${controller.isPaddingChanging.value}');
-                          miraiPrint('=============');
-                          /// Save To Hive...
-                          final HiveDataStore hive = HiveDataStore();
-                          SettingObjectsModel setting = await hive.getSettingObjects();
+                              // controller.pagePadding.value = endValue;
+                              // controller.pagePadding.notifyListeners();
+                              miraiPrint('=============');
+                              miraiPrint(
+                                  'isPaddingChanging: ${controller.isPaddingChanging.value}');
+                              miraiPrint('=============');
 
-                          setting.spacing = endValue;
-                          await hive.saveSettingObjects(settingObjectsModel: setting);
-                          controller.update();
-                        },
+                              /// Save To Hive...
+                              final HiveDataStore hive = HiveDataStore();
+                              SettingObjectsModel setting = await hive.getSettingObjects();
+
+                              setting.spacing = endValue;
+                              await hive.saveSettingObjects(settingObjectsModel: setting);
+                              // controller.update();
+                            },
+                          ),
+                        ],
                       ),
-                    ],
-                  ),
-                );
-              }),
+                    );
+                  }),
             ),
           ];
         },
