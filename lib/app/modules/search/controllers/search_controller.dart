@@ -51,7 +51,7 @@ class SearchControllerC extends GetxController {
     // Adjust as per your requirements
     List<FileSystemEntity> files = searchForPDFFiles(appDirectory!);
 
-    pdfFiles = files;
+    // pdfFiles = files;
     update();
   }
 }
