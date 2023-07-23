@@ -1,13 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 
 import '../controllers/splash_controller.dart';
 
-class SplashView extends GetView<SplashController> {
+class SplashView extends StatefulWidget {
   const SplashView({Key? key}) : super(key: key);
+
+  @override
+  State<SplashView> createState() => _SplashViewState();
+}
+
+class _SplashViewState extends State<SplashView> {
+  late List<String> imagePaths;
+
+  @override
+  void initState() {
+    super.initState();
+    // Image paths that you want to precache
+    imagePaths = <String>[
+      AppIconsKeys.addBooks,
+      AppIconsKeys.web,
+      AppIconsKeys.webSelected,
+      AppIconsKeys.books,
+      AppIconsKeys.booksSelected,
+      AppIconsKeys.recent,
+      AppIconsKeys.recentSelected,
+      AppIconsKeys.file,
+      AppIconsKeys.fileSelected,
+    ];
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies(); // Precache the images here
+    precacheImages(imagePaths, context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

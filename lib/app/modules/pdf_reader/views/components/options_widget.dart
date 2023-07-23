@@ -55,7 +55,6 @@ class OptionsWidget extends StatelessWidget {
                                 BrightnessBottomSheet.show(
                                   brightness: controller.brightness,
                                   onChanged: (double newPage) async {
-
                                     controller.setReadingMode(newPage);
                                     miraiPrint('BrightOnChanged $newPage');
 

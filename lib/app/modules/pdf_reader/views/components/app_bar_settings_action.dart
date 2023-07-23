@@ -157,6 +157,7 @@ class AppBarSettingsAction extends StatelessWidget {
                   onTap: () async {
                     /// Change DarkMode state...
                     controller.isDarkMode = !controller.isDarkMode;
+
                     /// By
                     setState(() {});
 
@@ -257,7 +258,7 @@ class AppBarSettingsAction extends StatelessWidget {
                           Slider.adaptive(
                             value: pagePadding,
                             min: 0,
-                            max: 40,
+                            max: 100,
                             label: '${pagePadding.floor()}',
                             inactiveColor: AppTheme.keySliderInactiveColor,
                             onChanged: (double newPadding) async {
