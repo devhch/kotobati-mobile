@@ -1,5 +1,7 @@
 package com.dghoughi.lahsen.kotobati
 
+import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -14,6 +16,7 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
+import com.dghoughi.lahsen.kotobati.FileUtils.requestPermission
 
 class MainActivity : FlutterActivity() {
 
@@ -22,6 +25,7 @@ class MainActivity : FlutterActivity() {
         const val READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 100
     }
 
+
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
         MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
@@ -29,6 +33,8 @@ class MainActivity : FlutterActivity() {
                 when (call.method) {
                     "requestStoragePermission" -> {
                         requestStoragePermission(result)
+
+                        //requestPermission(this@MainActivity as Context)
                     }
 
                     "getPdfFilesFromNative" -> {
@@ -45,17 +51,17 @@ class MainActivity : FlutterActivity() {
     }
 
     private fun requestStoragePermission(result: MethodChannel.Result) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            //Android is 11(R) or above
-            Environment.isExternalStorageManager()
-        } else {
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+//            //Android is 11(R) or above
+//            Environment.isExternalStorageManager()
+//        } else {
 
 
-            //Android is below 11(R)
+        //Android is below 11(R)
 //            val read =
 //                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
 //            read == PackageManager.PERMISSION_GRANTED
-        }
+        //    }
 
         //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         //Android is 11(R) or above
@@ -94,20 +100,20 @@ class MainActivity : FlutterActivity() {
 //            )
         //       }
 
-//        if (ContextCompat.checkSelfPermission(
-//                this,
-//                Manifest.permission.READ_EXTERNAL_STORAGE
-//            ) != PackageManager.PERMISSION_GRANTED
-//        ) {
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Manifest.permission.READ_EXTERNAL_STORAGE),
-//                READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE
-//            )
-//            // The result will be handled in onRequestPermissionsResult
-//        } else {
-//            result.success(true) // Permission already granted
-//        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                android.Manifest.permission.READ_EXTERNAL_STORAGE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),
+                READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE
+            )
+            // The result will be handled in onRequestPermissionsResult
+        } else {
+            result.success(true) // Permission already granted
+        }
     }
 
 //    private val storageActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
@@ -193,4 +199,19 @@ class MainActivity : FlutterActivity() {
 //        }
 //        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
 //    }
+}
+
+object FileUtils {
+
+    fun requestPermission(context: Context) {
+        ActivityCompat.requestPermissions(
+            context as Activity,
+            arrayOf(
+                android.Manifest.permission.READ_EXTERNAL_STORAGE,
+                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                android.Manifest.permission.ACCESS_MEDIA_LOCATION
+            ),
+            101
+        ); }
+
 }

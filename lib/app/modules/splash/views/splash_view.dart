@@ -62,7 +62,7 @@ class _SplashViewState extends State<SplashView> {
                 Text(
                   """مع نسخة كوتوباتي للقارئ يمكنك تنظيم قراءتك وتحسين مستواك الفكري و الثقافي.""",
                   style: context.textTheme.displayLarge!.copyWith(
-                    fontFamily: AppTheme.fontBold,
+                    fontWeight: FontWeight.bold,
                     fontSize: 20,
                   ),
                   textDirection: TextDirection.rtl,
@@ -80,7 +80,7 @@ class _SplashViewState extends State<SplashView> {
                     "متابعة",
                     style: context.textTheme.displayLarge!.copyWith(
                       color: AppTheme.keyAppBlackColor,
-                      fontFamily: AppTheme.fontBold,
+                      fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                   ),

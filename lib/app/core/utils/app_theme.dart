@@ -4,6 +4,7 @@
 */
 
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import 'app_theme_text.dart';
 
@@ -13,6 +14,7 @@ abstract class AppTheme {
   static const Color keyAppBlackColor = Color(0xFF0C0B0B);
   static const Color keyAppBarColor = Color(0xFF242424);
   static const Color keyBlackGreyColor = Color(0xFF232323);
+  static const Color keyHintGreyColor = Color(0xFF363434);
   static const Color keyAppGrayColor = Color(0xFFA1A1A1);
   static const Color keyAppLightGrayColor = Color(0xFF464444);
   static const Color keyAppGrayColorDark = Color(0xFF707070);
@@ -26,8 +28,8 @@ abstract class AppTheme {
 
   static Duration shimmerDuration = const Duration(milliseconds: 1200);
 
-  static const String fontRegular = 'AlmaraiRegular';
-  static const String fontBold = 'AlmaraiBold';
+  static Color highlightColorShimmer = Colors.grey[100]!;
+  static Color baseColorShimmer = Colors.grey[300]!;
 
   /// ThemeData
   static ThemeData get themeData => ThemeData(
@@ -40,7 +42,7 @@ abstract class AppTheme {
           primary: keyAppColorDark,
           background: keyAppBlackColor,
         ),
-        fontFamily: fontRegular,
+        fontFamily: GoogleFonts.tajawal().fontFamily,
         appBarTheme: const AppBarTheme(color: keyAppColor),
         scaffoldBackgroundColor: Colors.white,
         primaryColor: keyAppColor,

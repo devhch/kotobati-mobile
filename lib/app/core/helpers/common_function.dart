@@ -153,3 +153,43 @@ void precacheImages(List<String> imagePaths, BuildContext context) async {
     await precacheImage(Image.asset(path).image, context);
   }
 }
+
+/// If you name your createFolder(".folder") that folder will be hidden.
+/// If you create a .nomedia file in your folder, other apps won't be able to scan your folder.
+Future<String> createFolder() async {
+  await requestPermission();
+
+  // The app name is:
+  const String appName = 'Kotobati';
+
+  /// getExternalStorageDirectory For Android, and getApplicationSupportDirectory For iOS...
+  final Directory dir = Directory(
+    '${(Platform.isAndroid ? await getExternalStorageDirectory() : await getApplicationSupportDirectory())!.path}/$appName',
+  );
+
+  /// Let's Check permission...
+  PermissionStatus status = await Permission.storage.status;
+  if (!status.isGranted) {
+    await requestPermission();
+  }
+
+  /// Let's check if the directory is exists...
+  if ((await dir.exists())) {
+    return dir.path;
+  } else {
+    dir.create();
+    return dir.path;
+  }
+}
+
+String extractFilename(String value) {
+  RegExp filenameRegex = RegExp(r'filename[^;=\n]*=["\"]?([^;"\"]*)');
+  Match? match = filenameRegex.firstMatch(value);
+
+  if (match != null) {
+    String filename = match.group(1) ?? '';
+    return Uri.decodeComponent(filename);
+  }
+
+  return '';
+}

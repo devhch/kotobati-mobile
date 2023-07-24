@@ -30,8 +30,7 @@ class BookDetailsView extends StatefulWidget {
   State<BookDetailsView> createState() => _BookDetailsViewState();
 }
 
-class _BookDetailsViewState extends State<BookDetailsView>
-    with SingleTickerProviderStateMixin {
+class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProviderStateMixin {
   /// BookDetailsController
   final BookDetailsController controller = Get.find<BookDetailsController>();
 
@@ -62,36 +61,46 @@ class _BookDetailsViewState extends State<BookDetailsView>
             return Column(
               children: <Widget>[
                 //     const SizedBox(height: 15),
-                Container(
-                  // padding: const EdgeInsets.symmetric(
-                  //   horizontal: 16,
-                  //   vertical: 10,
-                  // ),
-                  height: 140,
-                  width: 96,
-                  decoration: const BoxDecoration(
-                      // color: AppTheme.keyAppColor,
-                      ),
-                  child: controller.book.image != null &&
-                          controller.book.image!.contains(".svg")
-                      ? SvgPicture.network(
-                          controller.book.image!,
-                          fit: BoxFit.contain,
-                          width: double.infinity,
-                          // width: MiraiSize.iconSize24,
-                          // height: MiraiSize.iconSize24,
-                        )
-                      : MiraiCachedImageNetworkWidget(
-                          imageUrl: controller.book.image!,
-                          fit: BoxFit.fill,
-                          width: 96,
-                          //  width: double.infinity,
-                          //    width: MiraiSize.iconSize24,
-                          title: controller.book.title!,
-                          // height: MiraiSize.iconSize24,
-                          // color: AppTheme.keyAppBlackColor,
+                if (controller.book.image != null)
+                  Container(
+                    // padding: const EdgeInsets.symmetric(
+                    //   horizontal: 16,
+                    //   vertical: 10,
+                    // ),
+                    height: 140,
+                    width: 96,
+                    decoration: const BoxDecoration(
+                        // color: AppTheme.keyAppColor,
                         ),
-                ),
+                    child: controller.book.image != null && controller.book.image!.contains(".svg")
+                        ? SvgPicture.network(
+                            controller.book.image!,
+                            fit: BoxFit.contain,
+                            width: double.infinity,
+                            // width: MiraiSize.iconSize24,
+                            // height: MiraiSize.iconSize24,
+                          )
+                        : controller.book.image is String
+                            ? MiraiCachedImageNetworkWidget(
+                                imageUrl: controller.book.image!,
+                                fit: BoxFit.fill,
+                                width: 96,
+                                //  width: double.infinity,
+                                //    width: MiraiSize.iconSize24,
+                                title: controller.book.title!,
+                                // height: MiraiSize.iconSize24,
+                                // color: AppTheme.keyAppBlackColor,
+                              )
+                            : controller.book.image is Uint8List
+                                ? Container(
+                                    color: Colors.white,
+                                    child: Image.memory(
+                                      controller.book.image,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  )
+                                : const SizedBox.shrink(),
+                  ),
                 const SizedBox(height: 18),
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -104,10 +113,11 @@ class _BookDetailsViewState extends State<BookDetailsView>
                   ),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  controller.book.author!,
-                  style: context.textTheme.headlineMedium!.copyWith(fontSize: 14),
-                ),
+                if (controller.book.author != null)
+                  Text(
+                    controller.book.author!,
+                    style: context.textTheme.headlineMedium!.copyWith(fontSize: 14),
+                  ),
                 const SizedBox(height: 16),
                 if (controller.book.path != null)
                   MiraiElevatedButtonWidget(
@@ -207,8 +217,7 @@ class _BookDetailsViewState extends State<BookDetailsView>
                     InkWell(
                       onTap: () {
                         /// Share File
-                        shareFile(controller.pdfFile!.path,
-                            subject: controller.book.title!);
+                        shareFile(controller.pdfFile!.path, subject: controller.book.title!);
                       },
                       child: SvgPicture.asset(
                         AppIconsKeys.share,
@@ -317,7 +326,7 @@ class _BookDetailsViewState extends State<BookDetailsView>
                                 itemCount: book.notes!.length,
                                 itemBuilder: (_, int index) {
                                   return TextWidget(
-                                    title:book.title! ,
+                                    title: book.title!,
                                     text: book.notes![index],
                                     useCover: false,
                                   );
@@ -334,7 +343,7 @@ class _BookDetailsViewState extends State<BookDetailsView>
                                 itemBuilder: (_, int index) {
                                   final String imagePath = book.quotes![index];
                                   return TextWidget(
-                                    title:book.title! ,
+                                    title: book.title!,
                                     image: imagePath,
                                     useCover: false,
                                   );

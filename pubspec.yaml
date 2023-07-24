@@ -28,15 +28,16 @@ dependencies:
   flutter_svg: ^2.0.7
   flutter_downloader: ^1.10.4
   html: ^0.15.4
-  dio: ^5.2.1+1
   shimmer: ^2.0.0
   cached_network_image: ^3.2.1
   flutter_pdfview: ^1.2.7
   screen_brightness: ^0.2.2
   image_cropper: ^5.0.0
-  google_ml_kit: ^0.16.1
   screenshot: ^2.1.0
   flutter_overlay_window: ^0.4.3
+  intl: ^0.18.0
+  pdfx: ^2.4.0
+  animated_text_kit: ^4.2.2
 
   # State Management
   get: ^4.6.5
@@ -71,12 +72,3 @@ flutter:
   assets:
     - assets/icon/
     - assets/images/
-
-  fonts:
-    - family: AlmaraiBold
-      fonts:
-        - asset: assets/fonts/Almarai-Bold.ttf
-
-    - family: AlmaraiRegular
-      fonts:
-        - asset: assets/fonts/Almarai-Regular.ttf

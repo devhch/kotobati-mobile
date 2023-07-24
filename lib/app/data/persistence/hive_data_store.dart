@@ -16,6 +16,7 @@ class HiveDataStore {
   static String booksBoxName = 'books_box_key';
   static String planingBooksBoxName = 'planing_books_box_key';
   static String settingBoxName = 'setting_box_key';
+  static String searchHistoryBoxName = 'search_history_box_key';
 
   /// init
   Future<void> init() async {
@@ -29,12 +30,13 @@ class HiveDataStore {
     await Hive.openBox<Map<dynamic, dynamic>>(planingBooksBoxName);
 
     await Hive.openBox<Map<dynamic, dynamic>>(settingBoxName);
+
+    await Hive.openBox<String>(searchHistoryBoxName);
   }
 
   /// --------------------- Books ---------------------///
   Future<void> saveBook({required Book book}) async {
-    final Box<Map<dynamic, dynamic>> bookBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     //  await bookBox.clear();
     await bookBox.add(book.toJson());
     if (kDebugMode) {
@@ -48,8 +50,7 @@ class HiveDataStore {
     required List<Book> books,
     bool force = false,
   }) async {
-    final Box<Map<dynamic, dynamic>> bookBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     await bookBox.clear();
     final List<Map<String, dynamic>> castedCategories =
         books.map((Book book) => book.toJson()).toList();
@@ -59,12 +60,10 @@ class HiveDataStore {
   }
 
   List<Book> getBooks() {
-    final Box<Map<dynamic, dynamic>> booksBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> booksBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     if (booksBox.isNotEmpty) {
-      List<Book> books = booksBox.values
-          .map((Map<dynamic, dynamic> bookMap) => Book.fromJson(bookMap))
-          .toList();
+      List<Book> books =
+          booksBox.values.map((Map<dynamic, dynamic> bookMap) => Book.fromJson(bookMap)).toList();
 
       // debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
       return books;
@@ -74,8 +73,7 @@ class HiveDataStore {
   }
 
   Future<bool> deleteBook({required Book book}) async {
-    final Box<Map<dynamic, dynamic>> bookBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     if (bookBox.isNotEmpty) {
       miraiPrint('\n=> BookBox isNotEmpty\n');
       miraiPrint('\n=> Deleting this BooK ${book.toString()}\n');
@@ -95,8 +93,7 @@ class HiveDataStore {
   }
 
   Future<void> clearBooks() async {
-    final Box<Map<dynamic, dynamic>> categoryBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> categoryBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
     await categoryBox.clear();
     debugPrint('\n=> Categories are Deleted.\n');
   }
@@ -106,20 +103,22 @@ class HiveDataStore {
   }
 
   Future<bool> updateBook({required Book book}) async {
-    final Box<Map<dynamic, dynamic>> bookBox =
-        Hive.box<Map<dynamic, dynamic>>(booksBoxName);
+    final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
 
     final List<Map<dynamic, dynamic>> list = bookBox.values.toList();
-    int index = 0;
-    for (int i = 0; i < list.length; i++) {
-      if (list[i]['path'] == book.toJson()['path']) {
-        index = i;
-        break;
+    if (list.contains(book.toJson())) {
+      int index = 0;
+      for (int i = 0; i < list.length; i++) {
+        if (list[i]['path'] == book.toJson()['path']) {
+          index = i;
+          break;
+        }
       }
+      miraiPrint('updateBook at $index');
+      await bookBox.putAt(index, book.toJson());
+    } else {
+      await bookBox.add(book.toJson());
     }
-    miraiPrint('updateBook at $index');
-    await bookBox.putAt(index, book.toJson());
-
 
     // List<Book> books =
     //     getBooks().where((Book element) => element.path != book.path).toList();
@@ -142,8 +141,7 @@ class HiveDataStore {
   Future<void> savePlaningBook({
     required List<PlaningBooksModel> planingBooks,
   }) async {
-    final Box<Map<dynamic, dynamic>> bookBox =
-        Hive.box<Map<dynamic, dynamic>>(planingBooksBoxName);
+    final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(planingBooksBoxName);
 
     await bookBox.clear();
 
@@ -173,8 +171,7 @@ class HiveDataStore {
   }
 
   Future<SettingObjectsModel> getSettingObjects() async {
-    final Box<Map<dynamic, dynamic>> settingBox =
-        Hive.box<Map<dynamic, dynamic>>(settingBoxName);
+    final Box<Map<dynamic, dynamic>> settingBox = Hive.box<Map<dynamic, dynamic>>(settingBoxName);
 
     SettingObjectsModel setting = SettingObjectsModel();
 
@@ -190,15 +187,42 @@ class HiveDataStore {
   Future<SettingObjectsModel> saveSettingObjects({
     required SettingObjectsModel settingObjectsModel,
   }) async {
-    final Box<Map<dynamic, dynamic>> settingBox =
-        Hive.box<Map<dynamic, dynamic>>(settingBoxName);
+    final Box<Map<dynamic, dynamic>> settingBox = Hive.box<Map<dynamic, dynamic>>(settingBoxName);
 
     await settingBox.clear();
 
     await settingBox.add(settingObjectsModel.toJson());
 
-   // await getSettingObjects();
+    // await getSettingObjects();
 
     return settingObjectsModel;
+  }
+
+  /// --------------------- Search History ---------------------///
+  Future<void> saveSearchHistory({required String query}) async {
+    final Box<String> searchBox = Hive.box<String>(searchHistoryBoxName);
+    await searchBox.add(query);
+    if (kDebugMode) {
+      print('\n<=------------------------------=>');
+      print('Save Search History: $query\n');
+      print('\n<=------------------------------=>');
+    }
+  }
+
+  List<String> getSearchHistory() {
+    final Box<String> booksBox = Hive.box<String>(searchHistoryBoxName);
+
+    if (booksBox.isNotEmpty) {
+      List<String> books = booksBox.values.toList();
+
+      debugPrint('\n=> GetSaved Books: ${books.toString()}\n');
+      return books;
+    } else {
+      return <String>[];
+    }
+  }
+
+  ValueListenable<Box<String>> searchHistoryListenable() {
+    return Hive.box<String>(searchHistoryBoxName).listenable();
   }
 }

@@ -22,6 +22,7 @@ class AppIconsKeys {
   static const String fileSelected = "$_path/file_selected.png";
   static const String addBooks = "$_path/add_books.png";
 
+  static const String time = "$_path/time.svg";
   static const String arrowBottom = "$_path/arrow_bottom.svg";
   static const String edit = "$_path/edit.svg";
   static const String facebook = "$_path/facebook.svg";

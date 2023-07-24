@@ -32,6 +32,7 @@ class MiraiTextFieldWidget extends StatelessWidget {
     this.onChanged,
     this.onFieldSubmitted,
     this.style,
+    this.hintStyle,
   }) : super(key: key);
 
   final String hint;
@@ -56,6 +57,7 @@ class MiraiTextFieldWidget extends StatelessWidget {
   final ValueChanged<String>? onChanged;
   final ValueChanged<String>? onFieldSubmitted;
   final TextStyle? style;
+  final TextStyle? hintStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -71,9 +73,9 @@ class MiraiTextFieldWidget extends StatelessWidget {
         textAlignVertical: TextAlignVertical.center,
         controller: controller,
         style: style ??
-            Get.theme.textTheme.headline2?.copyWith(
+            Get.theme.textTheme.displayMedium?.copyWith(
               color: labelColor,
-              fontFamily: AppTheme.fontRegular,
+              fontWeight: FontWeight.bold,
             ),
         cursorColor: AppTheme.keyAppColor,
         decoration: InputDecoration(
@@ -121,9 +123,10 @@ class MiraiTextFieldWidget extends StatelessWidget {
                   borderRadius: borderRadius,
                   borderWidth: borderWidth,
                 ),
-          hintStyle: Get.theme.textTheme.bodyText1!.copyWith(
-            color: AppTheme.keyAppGrayColorDark,
-          ),
+          hintStyle: hintStyle ??
+              Get.theme.textTheme.bodyText1!.copyWith(
+                color: AppTheme.keyAppGrayColorDark,
+              ),
           suffixIcon: suffixIcon,
           prefixIcon: prefixIcon,
           hintText: hint,

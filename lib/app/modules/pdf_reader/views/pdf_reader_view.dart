@@ -91,172 +91,187 @@ class _PdfReaderViewState extends State<PdfReaderView> with WidgetsBindingObserv
           miraiPrint('GetBuilder isDarkMode ${controller.isDarkMode}');
           miraiPrint('GetBuilder isVertical ${controller.isVertical}');
           miraiPrint('==================');
-          return ValueListenableBuilder<bool>(
-            valueListenable: controller.fullScreen,
-            builder: (_, bool fullScreen, __) {
-              return Scaffold(
-                backgroundColor: AppTheme.keyAppBlackColor,
-                body: (controller.pdfFile != null)
-                    ? Column(
-                        children: <Widget>[
-                          PdfReaderAppBarWidget(
-                            optionsMenuKey: _optionsMenuKey,
-                            controller: controller,
-                            menuKey: _menuKey,
-                            fullScreen: fullScreen,
-                          ),
-                          Expanded(
-                            child: Stack(
-                              children: <Widget>[
-                                Positioned.fill(
-                                  child: Screenshot(
-                                    controller: controller.screenshotController,
-                                    child: ValueListenableBuilder<bool>(
-                                      valueListenable: controller.isPaddingChanging,
-                                      builder: (_, bool isPaddingChanging, __) {
-                                        return AnimatedSwitcher(
-                                          duration: const Duration(seconds: 1),
-                                          child: isPaddingChanging
-                                              ? Column(
-                                                  key: ValueKey<String>(
-                                                    'SwitchingTrue${DateTime.now().toIso8601String()}',
-                                                  ),
-                                                  children: <Widget>[
-                                                    Expanded(
-                                                      child: ValueListenableBuilder<double>(
-                                                        valueListenable: controller.pagePadding,
-                                                        builder: (_, double pagePadding, __) {
-                                                          return Stack(
-                                                            children: <Widget>[
-                                                              AnimatedPositioned(
-                                                                duration: const Duration(
-                                                                    milliseconds: 100),
-                                                                top: 0,
-                                                                bottom: 0,
-                                                                left: -pagePadding,
-                                                                right: -pagePadding,
-                                                                child: MiraiPDFWidget(
-                                                                  key: const ValueKey<String>(
-                                                                    'MiraiPDFWidget',
-                                                                  ),
-                                                                  controller: controller,
-                                                                ),
+          return Scaffold(
+            backgroundColor: AppTheme.keyAppBlackColor,
+            body: (controller.pdfFile != null)
+                ? Column(
+                    children: <Widget>[
+                      ValueListenableBuilder<bool>(
+                          valueListenable: controller.fullScreen,
+                          builder: (_, bool fullScreen, __) {
+                            return PdfReaderAppBarWidget(
+                              optionsMenuKey: _optionsMenuKey,
+                              controller: controller,
+                              menuKey: _menuKey,
+                              fullScreen: fullScreen,
+                            );
+                          }),
+                      Expanded(
+                        child: Stack(
+                          children: <Widget>[
+                            Positioned.fill(
+                              child: Screenshot(
+                                controller: controller.screenshotController,
+                                child: ValueListenableBuilder<bool>(
+                                  valueListenable: controller.isPaddingChanging,
+                                  builder: (_, bool isPaddingChanging, __) {
+                                    return AnimatedSwitcher(
+                                      duration: const Duration(seconds: 1),
+                                      child: isPaddingChanging
+                                          ? Column(
+                                              key: ValueKey<String>(
+                                                'SwitchingTrue${DateTime.now().toIso8601String()}',
+                                              ),
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: ValueListenableBuilder<double>(
+                                                    valueListenable: controller.pagePadding,
+                                                    builder: (_, double pagePadding, __) {
+                                                      return Stack(
+                                                        children: <Widget>[
+                                                          AnimatedPositioned(
+                                                            duration:
+                                                                const Duration(milliseconds: 100),
+                                                            top: 0,
+                                                            bottom: 0,
+                                                            left: -pagePadding,
+                                                            right: -pagePadding,
+                                                            child: MiraiPDFWidget(
+                                                              key: const ValueKey<String>(
+                                                                'MiraiPDFWidget',
                                                               ),
-                                                            ],
-                                                          );
-                                                        },
-                                                      ),
-                                                    ),
-                                                    if (!fullScreen && isPaddingChanging)
-                                                      SliderBottomWidget(
+                                                              controller: controller,
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      );
+                                                    },
+                                                  ),
+                                                ),
+                                                ValueListenableBuilder<bool>(
+                                                  valueListenable: controller.fullScreen,
+                                                  builder: (_, bool fullScreen, __) {
+                                                    if (!fullScreen && isPaddingChanging) {
+                                                      return SliderBottomWidget(
                                                         controller: controller,
-                                                      ),
-                                                  ],
-                                                )
-                                              : Container(
-                                                  key: ValueKey<String>(
-                                                    'SwitchingFalse${DateTime.now().toIso8601String()}',
-                                                  ),
-                                                  color: AppTheme.keyAppBlackColor,
-                                                  child: const Center(
-                                                    child: CircularProgressIndicator.adaptive(
-                                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                                        AppTheme.keyAppColor,
-                                                      ),
-                                                    ),
-                                                  ),
+                                                      );
+                                                    } else {
+                                                      return const SizedBox.shrink();
+                                                    }
+                                                  },
                                                 ),
-                                        );
-                                        // : MiraiPDFWidget(controller: controller);
-                                        // : PDFView(
-                                        //     filePath: controller.pdfFile!.path,
-                                        //     enableSwipe: true,
-                                        //     swipeHorizontal: !controller.isVertical,
-                                        //     autoSpacing: false,
-                                        //     nightMode: controller.isDarkMode,
-                                        //     onViewCreated: onViewCreated,
-                                        //     onError: onError,
-                                        //     onPageError: onPageError,
-                                        //     onRender: onRender,
-                                        //     onPageChanged: onPageChanged,
-                                        //   );
-                                      },
-                                    ),
-                                  ),
-                                ),
-                                OptionsWidget(controller: controller),
-                                Positioned.fill(
-                                  child: ValueListenableBuilder<bool>(
-                                    valueListenable: controller.isPdfLoaded,
-                                    builder: (_, bool isPdfLoaded, __) {
-                                      return AnimatedSwitcher(
-                                        duration: const Duration(milliseconds: 400),
-                                        switchInCurve: Curves.easeIn,
-                                        switchOutCurve: Curves.easeInOutCubic,
-                                        child: !isPdfLoaded
-                                            ? Container(
-                                                key: ValueKey<String>(
-                                                  'SwitchingFalse${DateTime.now().toIso8601String()}',
-                                                ),
-                                                color: AppTheme.keyAppLightGrayColor,
-                                                child: const Center(
-                                                  child: CircularProgressIndicator.adaptive(
-                                                    valueColor: AlwaysStoppedAnimation<Color>(
-                                                      AppTheme.keyAppColor,
-                                                    ),
+                                              ],
+                                            )
+                                          : Container(
+                                              key: ValueKey<String>(
+                                                'SwitchingFalse${DateTime.now().toIso8601String()}',
+                                              ),
+                                              color: AppTheme.keyAppBlackColor,
+                                              child: const Center(
+                                                child: CircularProgressIndicator.adaptive(
+                                                  valueColor: AlwaysStoppedAnimation<Color>(
+                                                    AppTheme.keyAppColor,
                                                   ),
-                                                ),
-                                              )
-                                            : SizedBox.shrink(
-                                                key: ValueKey<String>(
-                                                  'SwitchingSizedBox${DateTime.now().toIso8601String()}',
                                                 ),
                                               ),
-                                      );
-                                    },
-                                  ),
+                                            ),
+                                    );
+                                    // : MiraiPDFWidget(controller: controller);
+                                    // : PDFView(
+                                    //     filePath: controller.pdfFile!.path,
+                                    //     enableSwipe: true,
+                                    //     swipeHorizontal: !controller.isVertical,
+                                    //     autoSpacing: false,
+                                    //     nightMode: controller.isDarkMode,
+                                    //     onViewCreated: onViewCreated,
+                                    //     onError: onError,
+                                    //     onPageError: onPageError,
+                                    //     onRender: onRender,
+                                    //     onPageChanged: onPageChanged,
+                                    //   );
+                                  },
                                 ),
-                                if (fullScreen)
-                                  Padding(
-                                    padding: EdgeInsetsDirectional.only(
-                                      start: 20.0,
-                                      top: context.topPadding + 10,
-                                    ),
-                                    child: CircleAvatar(
-                                      backgroundColor: AppTheme.keyAppColorDark,
-                                      child: Center(
-                                        child: IconButton(
-                                          padding: EdgeInsets.zero,
-                                          onPressed: () {
-                                            controller.enterFullScreen();
-                                            controller.fullScreen.value =
-                                                !controller.fullScreen.value;
-                                            controller.fullScreen.notifyListeners();
-                                          },
-                                          highlightColor: AppTheme.keyAppBlackColor.withOpacity(.2),
-                                          splashColor: AppTheme.keyAppBlackColor.withOpacity(.2),
-                                          icon: const Icon(
-                                            Icons.fullscreen_exit,
-                                            color: Colors.white,
-                                            size: 30,
+                              ),
+                            ),
+                            OptionsWidget(controller: controller),
+                            Positioned.fill(
+                              child: ValueListenableBuilder<bool>(
+                                valueListenable: controller.isPdfLoaded,
+                                builder: (_, bool isPdfLoaded, __) {
+                                  return AnimatedSwitcher(
+                                    duration: const Duration(milliseconds: 400),
+                                    switchInCurve: Curves.easeIn,
+                                    switchOutCurve: Curves.easeInOutCubic,
+                                    child: !isPdfLoaded
+                                        ? Container(
+                                            key: ValueKey<String>(
+                                              'SwitchingFalse${DateTime.now().toIso8601String()}',
+                                            ),
+                                            color: AppTheme.keyAppLightGrayColor,
+                                            child: const Center(
+                                              child: CircularProgressIndicator.adaptive(
+                                                valueColor: AlwaysStoppedAnimation<Color>(
+                                                  AppTheme.keyAppColor,
+                                                ),
+                                              ),
+                                            ),
+                                          )
+                                        : SizedBox.shrink(
+                                            key: ValueKey<String>(
+                                              'SwitchingSizedBox${DateTime.now().toIso8601String()}',
+                                            ),
+                                          ),
+                                  );
+                                },
+                              ),
+                            ),
+                            ValueListenableBuilder<bool>(
+                                valueListenable: controller.fullScreen,
+                                builder: (_, bool fullScreen, __) {
+                                  if (fullScreen) {
+                                    return Padding(
+                                      padding: EdgeInsetsDirectional.only(
+                                        start: 20.0,
+                                        top: context.topPadding + 10,
+                                      ),
+                                      child: CircleAvatar(
+                                        backgroundColor: AppTheme.keyAppColorDark,
+                                        child: Center(
+                                          child: IconButton(
+                                            padding: EdgeInsets.zero,
+                                            onPressed: () {
+                                              controller.enterFullScreen();
+                                              controller.fullScreen.value =
+                                                  !controller.fullScreen.value;
+                                              controller.fullScreen.notifyListeners();
+                                            },
+                                            highlightColor:
+                                                AppTheme.keyAppBlackColor.withOpacity(.2),
+                                            splashColor: AppTheme.keyAppBlackColor.withOpacity(.2),
+                                            icon: const Icon(
+                                              Icons.fullscreen_exit,
+                                              color: Colors.white,
+                                              size: 30,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      )
-                    : const Center(
-                        child: CircularProgressIndicator.adaptive(
-                          valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
-                          strokeWidth: 2,
+                                    );
+                                  } else {
+                                    return const SizedBox.shrink();
+                                  }
+                                }),
+                          ],
                         ),
                       ),
-              );
-            },
+                    ],
+                  )
+                : const Center(
+                    child: CircularProgressIndicator.adaptive(
+                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
+                      strokeWidth: 2,
+                    ),
+                  ),
           );
         },
       ),

@@ -3,6 +3,8 @@
 * On 6/23/2023.
 */
 
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
@@ -62,16 +64,26 @@ class BookWidget extends StatelessWidget {
                     // width: MiraiSize.iconSize24,
                     // height: MiraiSize.iconSize24,
                   )
-                : MiraiCachedImageNetworkWidget(
-                    imageUrl: book.image!,
-                    fit: BoxFit.fill,
-                    width: 96,
-                    //  width: double.infinity,
-                    //    width: MiraiSize.iconSize24,
-                    title: book.title!,
-                    // height: MiraiSize.iconSize24,
-                    // color: AppTheme.keyAppBlackColor,
-                  ),
+                : book.image != null && book.image is String
+                    ? MiraiCachedImageNetworkWidget(
+                        imageUrl: book.image!,
+                        fit: BoxFit.fill,
+                        width: 96,
+                        //  width: double.infinity,
+                        //    width: MiraiSize.iconSize24,
+                        title: book.title!,
+                        // height: MiraiSize.iconSize24,
+                        // color: AppTheme.keyAppBlackColor,
+                      )
+                    : book.image != null && book.image is Uint8List
+                        ? Container(
+                            color: Colors.white,
+                            child: Image.memory(
+                              book.image,
+                              fit: BoxFit.cover,
+                            ),
+                          )
+                        : const SizedBox.shrink(),
           ),
           Expanded(
             child: Padding(
@@ -80,21 +92,23 @@ class BookWidget extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   const SizedBox(height: 20),
-                  Text(
-                    book.title!,
-                    style: context.textTheme.headlineMedium!.copyWith(
-                      fontSize: 22,
+                  if (book.title != null)
+                    Text(
+                      book.title!,
+                      style: context.textTheme.headlineMedium!.copyWith(
+                        fontSize: 22,
+                      ),
+                      maxLines: 1,
                     ),
-                    maxLines: 1,
-                  ),
                   const SizedBox(height: 15),
-                  Text(
-                    book.author!,
-                    style: context.textTheme.bodyMedium!.copyWith(
-                      fontSize: 12,
-                      fontFamily: AppTheme.fontBold,
+                  if (book.author != null)
+                    Text(
+                      book.author!,
+                      style: context.textTheme.bodyMedium!.copyWith(
+                        fontSize: 12,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                  ),
                   const SizedBox(height: 22),
                   Row(
                     children: <Widget>[
@@ -113,8 +127,7 @@ class BookWidget extends StatelessWidget {
                                 child: SvgPicture.asset(
                                   AppIconsKeys.reading,
                                   width: 16,
-                                  colorFilter: book.planingBook != null &&
-                                          book.planingBook!.id == 1
+                                  colorFilter: book.planingBook != null && book.planingBook!.id == 1
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
                                           BlendMode.srcIn,
@@ -132,8 +145,7 @@ class BookWidget extends StatelessWidget {
                                   AppIconsKeys.readLater,
                                   width: 16,
                                   // color: AppTheme.keyAppColor,
-                                  colorFilter: book.planingBook != null &&
-                                          book.planingBook!.id == 2
+                                  colorFilter: book.planingBook != null && book.planingBook!.id == 2
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
                                           BlendMode.srcIn,
@@ -150,8 +162,7 @@ class BookWidget extends StatelessWidget {
                                 child: SvgPicture.asset(
                                   AppIconsKeys.readed,
                                   width: 16,
-                                  colorFilter: book.planingBook != null &&
-                                          book.planingBook!.id == 3
+                                  colorFilter: book.planingBook != null && book.planingBook!.id == 3
                                       ? const ColorFilter.mode(
                                           AppTheme.keyAppColor,
                                           BlendMode.srcIn,
@@ -174,7 +185,7 @@ class BookWidget extends StatelessWidget {
                               InkWell(
                                 onTap: () {
                                   /// Share File
-                                  shareFile(book.path!, subject:book.title!);
+                                  shareFile(book.path!, subject: book.title!);
                                 },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.share,

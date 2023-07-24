@@ -100,9 +100,9 @@ class _PlaningBottomSheetBody extends StatelessWidget {
                           margin: const EdgeInsets.only(bottom: 40),
                           onTap: () async {
                             book.planingBook = planingBook;
-                            final bool isBookAdded =
-                                await HiveDataStore().updateBook(book: book);
+                            final bool isBookAdded = await HiveDataStore().updateBook(book: book);
 
+                            Get.back();
                             if (isBookAdded) {
                               AppMiraiDialog.snackBar(
                                 backgroundColor: Colors.green,

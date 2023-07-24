@@ -46,8 +46,8 @@ class OptionsMenuWidget extends StatelessWidget {
         //  color: AppTheme.keyAppColorDark,
         //  offset: Offset(1, -240),
         position: PopupMenuPosition.under,
-        onSelected: (int index)async {
-          switch (index)  {
+        onSelected: (int index) async {
+          switch (index) {
             case 0:
 
               /// Share File
@@ -96,7 +96,7 @@ class OptionsMenuWidget extends StatelessWidget {
               break;
 
             case 3:
-              await controller.overlayWindow();
+              //  await controller.overlayWindow();
               break;
             case 4:
               controller.exitFullScreen();

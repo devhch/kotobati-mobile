@@ -47,7 +47,7 @@ class ReadingView extends GetView<ReadingController> {
                     'لاتوجد بيانات',
                     style: context.textTheme.displayLarge!.copyWith(
                       color: Colors.white,
-                      fontFamily: AppTheme.fontBold,
+                      fontWeight: FontWeight.bold,
                       fontSize: 20,
                     ),
                   ),
@@ -56,7 +56,7 @@ class ReadingView extends GetView<ReadingController> {
                     'يرجى الذهاب إلى صفحة الكتب \nوتنزيل بعض الكتب!',
                     style: context.textTheme.displayLarge!.copyWith(
                       color: AppTheme.keyAppWhiteGrayColor,
-                      fontFamily: AppTheme.fontBold,
+                      fontWeight: FontWeight.bold,
                       fontSize: 16,
                     ),
                     textAlign: TextAlign.center,
@@ -73,7 +73,7 @@ class ReadingView extends GetView<ReadingController> {
                       "اكتشف الكتب المتاحة",
                       style: context.textTheme.displayLarge!.copyWith(
                         color: AppTheme.keyAppBlackColor,
-                        fontFamily: AppTheme.fontBold,
+                        fontWeight: FontWeight.bold,
                         fontSize: 16,
                       ),
                     ),

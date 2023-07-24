@@ -3,7 +3,6 @@
 * On 6/23/2023.
 */
 
-
 import 'dart:io';
 import 'dart:ui';
 
@@ -15,7 +14,7 @@ class Book {
   final String? longTitle;
   final String? author;
   final String? description;
-  final String? image;
+  dynamic image;
   String? path;
   List<String>? notes;
   List<String>? quotes;
@@ -48,9 +47,8 @@ class Book {
       description: json['description'],
       image: json['image'],
       path: json['path'],
-      planingBook: json['planingBook'] != null
-          ? PlaningBooksModel.fromJson(json['planingBook'])
-          : null,
+      planingBook:
+          json['planingBook'] != null ? PlaningBooksModel.fromJson(json['planingBook']) : null,
       notes: json['notes'],
       quotes: json['quotes'],
     );
@@ -100,6 +98,6 @@ class Book {
 
   @override
   String toString() {
-    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author, description: $description, image: $image, path: $path, notes: $notes, quotes: $quotes, planingBook: $planingBook}';
+    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author, description: $description, path: $path, notes: $notes, quotes: $quotes, planingBook: $planingBook}';
   }
 }

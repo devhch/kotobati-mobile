@@ -23,18 +23,18 @@ class SliderBottomWidget extends StatelessWidget {
     //   valueListenable: controller.isPdfLoaded,
     //   builder: (_, bool isPdfLoaded, __) {
     //     if (isPdfLoaded) {
-    return Container(
-      height: 100,
-      width: double.infinity,
-      color: AppTheme.keyAppLightGrayColor,
-      child: ValueListenableBuilder<(int, int)>(
-        valueListenable: controller.savedPage,
-        builder: (_, (int, int) savedPage, __) {
-          final (int page, int total) = savedPage;
-          miraiPrint('SwitchTotal: $total');
-          return total == 0
-              ? const SizedBox.shrink()
-              : Column(
+    return ValueListenableBuilder<(int, int)>(
+      valueListenable: controller.savedPage,
+      builder: (_, (int, int) savedPage, __) {
+        final (int page, int total) = savedPage;
+        miraiPrint('SwitchTotal: $total');
+        return total == 0 || total == 1
+            ? const SizedBox.shrink()
+            : Container(
+                height: 100,
+                width: double.infinity,
+                color: AppTheme.keyAppLightGrayColor,
+                child: Column(
                   key: ValueKey<String>(
                     'SliderBottomWidgetColumn${DateTime.now().toIso8601String()}',
                   ),
@@ -43,7 +43,7 @@ class SliderBottomWidget extends StatelessWidget {
                     Slider.adaptive(
                       value: page.toDouble(),
                       min: 0,
-                      max: total.toDouble(),
+                      max: total.toDouble() - 1,
                       label: '${page + 1}',
                       inactiveColor: AppTheme.keySliderInactiveColor,
                       onChanged: (double newPage) {
@@ -61,9 +61,9 @@ class SliderBottomWidget extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
                   ],
-                );
-        },
-      ),
+                ),
+              );
+      },
     );
     //     } else {
     //       return const SizedBox.shrink();
