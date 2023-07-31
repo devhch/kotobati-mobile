@@ -15,7 +15,7 @@ class NavigationController extends GetxController {
   List<MiraiTabIcon> tabIconsList = MiraiTabIcon.tabIconsList;
 
   /// Page View Controller
-  final PageController pageController = PageController();
+  late PageController pageController;
 
   /// current page view.
   final ValueNotifier<int> currentPage = ValueNotifier<int>(0);
@@ -50,6 +50,7 @@ class NavigationController extends GetxController {
   void onInit() {
     super.onInit();
     isBooksListNotEmpty = HiveDataStore().getBooks().isNotEmpty;
+    pageController = PageController(initialPage: isBooksListNotEmpty ? 1 : 0);
     debugPrint("NavigationController onInit");
   }
 
@@ -57,8 +58,8 @@ class NavigationController extends GetxController {
   void onReady() {
     super.onReady();
 
-    // setIndex(index: isBooksListNotEmpty? 1 : 0);
-    setIndex(index: 0);
+    setIndex(index: isBooksListNotEmpty ? 1 : 0, jump: true);
+    // setIndex(index: 0);
 
     debugPrint("NavigationController onReady");
   }

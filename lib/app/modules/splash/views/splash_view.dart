@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
@@ -16,6 +17,9 @@ class SplashView extends StatefulWidget {
 }
 
 class _SplashViewState extends State<SplashView> {
+  /// Find This Controller
+  final SplashController controller = Get.find<SplashController>();
+
   late List<String> imagePaths;
 
   @override
@@ -43,49 +47,24 @@ class _SplashViewState extends State<SplashView> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint(controller.state);
     return Scaffold(
       backgroundColor: AppTheme.keyAppBlackColor,
       body: SafeArea(
         child: Center(
-          child: Padding(
-            padding: const EdgeInsets.all(26),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(
-                  'مرحبا بك',
-                  style: context.textTheme.displayLarge!.copyWith(
-                    fontSize: 34,
-                  ),
-                ),
-                const SizedBox(height: 55),
-                Text(
-                  """مع نسخة كوتوباتي للقارئ يمكنك تنظيم قراءتك وتحسين مستواك الفكري و الثقافي.""",
-                  style: context.textTheme.displayLarge!.copyWith(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                  ),
-                  textDirection: TextDirection.rtl,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 98),
-                MiraiElevatedButtonWidget(
-                  onTap: () {
-                    Get.offNamed(Routes.navigation);
-                  },
-                  rounded: true,
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 18),
-                  overlayColor: Colors.white.withOpacity(.2),
-                  child: Text(
-                    "متابعة",
-                    style: context.textTheme.displayLarge!.copyWith(
-                      color: AppTheme.keyAppBlackColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                ),
-              ],
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              vertical: 20,
+              horizontal: 30,
+            ),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: SvgPicture.asset(
+              AppIconsKeys.kotobatiIcon,
+              height: 100,
+              fit: BoxFit.fill,
             ),
           ),
         ),

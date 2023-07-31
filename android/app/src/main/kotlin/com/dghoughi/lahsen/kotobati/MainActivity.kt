@@ -16,93 +16,50 @@ import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.provider.Settings
 import androidx.activity.result.contract.ActivityResultContracts
-import com.dghoughi.lahsen.kotobati.FileUtils.requestPermission
+
 
 class MainActivity : FlutterActivity() {
 
     companion object {
         const val CHANNEL_NAME = "com.kotobati.pdf_reader_channel"
         const val READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 100
+        const val MANAGE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE = 1001
     }
-
 
     override fun configureFlutterEngine(@NonNull flutterEngine: FlutterEngine) {
         super.configureFlutterEngine(flutterEngine)
-        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, CHANNEL_NAME)
-            .setMethodCallHandler { call, result ->
-                when (call.method) {
-                    "requestStoragePermission" -> {
-                        requestStoragePermission(result)
-
-                        //requestPermission(this@MainActivity as Context)
-                    }
-
-                    "getPdfFilesFromNative" -> {
-
-                        val pdfFiles = getPdfFilesFromStorage()
-                        result.success(pdfFiles)
-
-
-                    }
-
-                    else -> result.notImplemented()
+        MethodChannel(
+            flutterEngine.dartExecutor.binaryMessenger,
+            CHANNEL_NAME
+        ).setMethodCallHandler { call, result ->
+            when (call.method) {
+                "requestStoragePermission" -> {
+                    requestStoragePermission(result)
                 }
+
+                "hasManageExternalStoragePermission" -> {
+                    val isManageExternalStorageGranted = hasManageExternalStoragePermission()
+                    result.success(isManageExternalStorageGranted)
+                }
+
+                "requestManageExternalStoragePermission" -> {
+                    requestManageExternalStoragePermission()
+                }
+
+                "getPdfFilesFromNative" -> {
+                    val pdfFiles: List<String> = getPdfFilesFromStorage()
+                    result.success(pdfFiles)
+                }
+
+                else -> result.notImplemented()
             }
+        }
     }
 
     private fun requestStoragePermission(result: MethodChannel.Result) {
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-//            //Android is 11(R) or above
-//            Environment.isExternalStorageManager()
-//        } else {
-
-
-        //Android is below 11(R)
-//            val read =
-//                ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
-//            read == PackageManager.PERMISSION_GRANTED
-        //    }
-
-        //  if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-        //Android is 11(R) or above
-//        try {
-//            // Log.d(TAG, "requestPermission: try")
-//            val intent = Intent()
-//            intent.action = Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-//            val uri = Uri.fromParts("package", this.packageName, null)
-//            intent.data = uri
-//            // storageActivityResultLauncher.launch(intent)
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION),
-//                READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE
-//            )
-//        } catch (e: Exception) {
-//            //  Log.e(TAG, "requestPermission: ", e)
-//            val intent = Intent()
-//            intent.action = Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION
-//            // storageActivityResultLauncher.launch(intent)
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION),
-//                READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE
-//            )
-//        }
-        //   } else {
-        //Android is below 11(R)
-//            ActivityCompat.requestPermissions(
-//                this,
-//                arrayOf(
-//                    Manifest.permission.WRITE_EXTERNAL_STORAGE,
-//                    Manifest.permission.READ_EXTERNAL_STORAGE
-//                ),
-//                STORAGE_PERMISSION_CODE
-//            )
-        //       }
 
         if (ContextCompat.checkSelfPermission(
-                this,
-                android.Manifest.permission.READ_EXTERNAL_STORAGE
+                this, android.Manifest.permission.READ_EXTERNAL_STORAGE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             ActivityCompat.requestPermissions(
@@ -115,27 +72,6 @@ class MainActivity : FlutterActivity() {
             result.success(true) // Permission already granted
         }
     }
-
-//    private val storageActivityResultLauncher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
-//      //  Log.d(TAG, "storageActivityResultLauncher: ")
-//        //here we will handle the result of our intent
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R){
-//            //Android is 11(R) or above
-//            if (Environment.isExternalStorageManager()){
-//                //Manage External Storage Permission is granted
-//              //  Log.d(TAG, "storageActivityResultLauncher: Manage External Storage Permission is granted")
-//               // createFolder()
-//            }
-//            else{
-//                //Manage External Storage Permission is denied....
-//               // Log.d(TAG, "storageActivityResultLauncher: Manage External Storage Permission is denied....")
-//              //  toast("Manage External Storage Permission is denied....")
-//            }
-//        }
-//        else{
-//            //Android is below 11(R)
-//        }
-//    }
 
     private fun getPdfFilesFromStorage(): List<String> {
         val pdfFilesList = mutableListOf<String>()
@@ -155,63 +91,75 @@ class MainActivity : FlutterActivity() {
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray
-    ) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
-            if (grantResults.isNotEmpty()) {
-                //check each permission if granted or not
-                val write = grantResults[0] == PackageManager.PERMISSION_GRANTED
-                val read = grantResults[1] == PackageManager.PERMISSION_GRANTED
-                if (write && read) {
-                    //External Storage Permission granted
-                    //Log.d(TAG, "onRequestPermissionsResult: External Storage Permission granted")
-                    // createFolder()
-                    MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL_NAME)
-                        .invokeMethod("requestStoragePermission", true)
+    /** Function to check if the app has the "MANAGE_EXTERNAL_STORAGE" permission **/
+    private fun hasManageExternalStoragePermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            Environment.isExternalStorageManager()
+        } else {
+            // On devices running Android 10 and below, this permission is not needed.
+            true
+        }
+    }
+
+    /** Request the "MANAGE_EXTERNAL_STORAGE" permission if not granted already **/
+    private fun requestManageExternalStoragePermission() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+            if (!hasManageExternalStoragePermission()) {
+                val intent = Intent(Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION)
+                startActivityForResult(intent, MANAGE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE)
+            }
+        }
+    }
+
+    /** Handle the result of the permission request **/
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == MANAGE_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (hasManageExternalStoragePermission()) {
+                    // The permission is granted. You can now access files on external storage.
+                    MethodChannel(
+                        flutterEngine!!.dartExecutor.binaryMessenger,
+                        CHANNEL_NAME
+                    ).invokeMethod("requestManageExternalStoragePermission", true)
                 } else {
-                    //External Storage Permission denied...
-                    //  Log.d(TAG, "onRequestPermissionsResult: External Storage Permission denied...")
-                    //  toast("External Storage Permission denied...")
-                    MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL_NAME)
-                        .invokeMethod("requestStoragePermission", false)
+                    // The permission is denied.
+                    // Handle this situation gracefully, as the user might deny the permission.
+                    MethodChannel(
+                        flutterEngine!!.dartExecutor.binaryMessenger,
+                        CHANNEL_NAME
+                    ).invokeMethod("requestManageExternalStoragePermission", false)
                 }
             }
         }
     }
 
-//    override fun onRequestPermissionsResult(
-//        requestCode: Int,
-//        permissions: Array<out String>,
-//        grantResults: IntArray
-//    ) {
-//        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
-//            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-//                MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL_NAME)
-//                    .invokeMethod("requestStoragePermission", true)
-//            } else {
-//                MethodChannel(flutterEngine!!.dartExecutor.binaryMessenger, CHANNEL_NAME)
-//                    .invokeMethod("requestStoragePermission", false)
-//            }
-//        }
-//        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-//    }
-}
+    override fun onRequestPermissionsResult(
+        requestCode: Int, permissions: Array<out String>, grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == READ_EXTERNAL_STORAGE_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty()) {
+                /// Check each permission if granted or not
+                val read = grantResults[0] == PackageManager.PERMISSION_GRANTED
 
-object FileUtils {
-
-    fun requestPermission(context: Context) {
-        ActivityCompat.requestPermissions(
-            context as Activity,
-            arrayOf(
-                android.Manifest.permission.READ_EXTERNAL_STORAGE,
-                android.Manifest.permission.WRITE_EXTERNAL_STORAGE,
-                android.Manifest.permission.ACCESS_MEDIA_LOCATION
-            ),
-            101
-        ); }
-
+                if (read) {
+                    // External Storage Permission granted
+                    // Log.d(TAG, "onRequestPermissionsResult: External Storage Permission granted")
+                    // createFolder()
+                    MethodChannel(
+                        flutterEngine!!.dartExecutor.binaryMessenger,
+                        CHANNEL_NAME
+                    ).invokeMethod("requestStoragePermission", true)
+                } else {
+                    //External Storage Permission denied...
+                    //  Log.d(TAG, "onRequestPermissionsResult: External Storage Permission denied...")
+                    //  toast("External Storage Permission denied...")
+                    MethodChannel(
+                        flutterEngine!!.dartExecutor.binaryMessenger,
+                        CHANNEL_NAME
+                    ).invokeMethod("requestStoragePermission", false)
+                }
+            }
+        }
+    }
 }

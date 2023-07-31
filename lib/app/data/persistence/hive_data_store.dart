@@ -3,20 +3,28 @@
 * On 25/6/2023.
 */
 
+import 'dart:developer';
+
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/mirai_pdf_model.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/models/setting_objects_model.dart';
 
 import '../../core/helpers/common_function.dart';
 
 class HiveDataStore {
-  /// CategoryModel Box Name
+  /// Keys Box Name
   static String booksBoxName = 'books_box_key';
   static String planingBooksBoxName = 'planing_books_box_key';
   static String settingBoxName = 'setting_box_key';
   static String searchHistoryBoxName = 'search_history_box_key';
+  static const String keysBoxName = 'keys_box_name';
+  static const String pdfFilesBoxName = 'pdf_files_box_name';
+
+  /// Intro
+  static String introKey = 'intro_key';
 
   /// init
   Future<void> init() async {
@@ -30,8 +38,10 @@ class HiveDataStore {
     await Hive.openBox<Map<dynamic, dynamic>>(planingBooksBoxName);
 
     await Hive.openBox<Map<dynamic, dynamic>>(settingBoxName);
+    await Hive.openBox<Map<dynamic, dynamic>>(pdfFilesBoxName);
 
     await Hive.openBox<String>(searchHistoryBoxName);
+    await Hive.openBox<String>(keysBoxName);
   }
 
   /// --------------------- Books ---------------------///
@@ -80,7 +90,7 @@ class HiveDataStore {
       final int index = bookBox.values.toList().indexWhere(
             (Map<dynamic, dynamic> bookAtIndex) =>
                 Book.fromJson(bookAtIndex).title == book.title &&
-                Book.fromJson(bookAtIndex).image == book.image,
+                Book.fromJson(bookAtIndex).id == book.id,
           );
       miraiPrint('\n=> BookBox $index\n');
       if (index >= 0) {
@@ -106,7 +116,17 @@ class HiveDataStore {
     final Box<Map<dynamic, dynamic>> bookBox = Hive.box<Map<dynamic, dynamic>>(booksBoxName);
 
     final List<Map<dynamic, dynamic>> list = bookBox.values.toList();
-    if (list.contains(book.toJson())) {
+
+    /// Check if this book is exists in DB...
+    bool isExists = false;
+    for (Map<dynamic, dynamic> jsonItem in list) {
+      if (jsonItem['id'] == book.id && jsonItem['path'] == book.path) {
+        isExists = true;
+        break;
+      }
+    }
+
+    if (isExists) {
       int index = 0;
       for (int i = 0; i < list.length; i++) {
         if (list[i]['path'] == book.toJson()['path']) {
@@ -119,20 +139,6 @@ class HiveDataStore {
     } else {
       await bookBox.add(book.toJson());
     }
-
-    // List<Book> books =
-    //     getBooks().where((Book element) => element.path != book.path).toList();
-    //
-    // books.add(book);
-    //
-    // final List<Map<String, dynamic>> castedCategories =
-    //     books.map((Book book) => book.toJson()).toList();
-
-    // miraiPrint('Books : ${books.toString()}');
-    // miraiPrint('Books: ${castedCategories.toList().toString()}');
-
-    // await bookBox.clear();
-    // await bookBox.addAll(castedCategories);
 
     debugPrint('\n=> Saved Books: ${book.toString()}\n');
     return true;
@@ -225,4 +231,96 @@ class HiveDataStore {
   ValueListenable<Box<String>> searchHistoryListenable() {
     return Hive.box<String>(searchHistoryBoxName).listenable();
   }
+
+  /// -------------------------- Save Intro --------------------------///
+
+  Future<void> saveIntroSeenState({required bool isSeen}) async {
+    // keysBoxName
+    Box<String> box = Hive.box<String>(keysBoxName);
+    await box.put(introKey, isSeen.toString());
+    String saveIntroIsSeen = box.get(introKey) ?? 'false';
+    debugPrint('saved intro seen: $saveIntroIsSeen');
+  }
+
+  bool getIntroSeenState() {
+    // keysBoxName
+    Box<String> box = Hive.box<String>(keysBoxName);
+    String saveIntroIsSeen = box.get(introKey) ?? "false";
+
+    debugPrint('saved intro is seen: $saveIntroIsSeen');
+
+    return (saveIntroIsSeen == "true");
+  }
+
+  /// ----------------------------------------------------///
+
+  /// --------------------- Mirai PDFs ---------------------///
+  Future<void> saveMiraiPDF({required MiraiPDF miraiPDF}) async {
+    final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
+    await miraiPDFBox.add(miraiPDF.toJson());
+    if (kDebugMode) {
+      print('\n<=------------------------------=>');
+      print('Saved MiraiPDF: ${miraiPDF.toString()}\n');
+      print('\n<=------------------------------=>');
+    }
+  }
+
+  Future<void> setMiraiPDFs({
+    required List<MiraiPDF> miraiPDFs,
+    bool force = false,
+  }) async {
+    final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
+    final List<Map<String, dynamic>> castedCategories =
+        miraiPDFs.map((MiraiPDF miraiPDF) => miraiPDF.toJson()).toList();
+    miraiPDFs.clear();
+    await miraiPDFBox.addAll(castedCategories);
+    log('MiraiPDFs cast: ${miraiPDFs.cast()}');
+    miraiPrint('========================================');
+    log('\n=> Saved MiraiPDFs: ${miraiPDFs.toString()}\n');
+  }
+
+  List<MiraiPDF> getMiraiPDfs() {
+    final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
+    if (miraiPDFBox.isNotEmpty) {
+      List<MiraiPDF> miriaPDFs = miraiPDFBox.values
+          .map((Map<dynamic, dynamic> pdfMap) => MiraiPDF.fromJson(pdfMap))
+          .toList();
+      miraiPrint('<= getMiraiPDfs: ${miriaPDFs.length} =======================================');
+      return miriaPDFs;
+    } else {
+      return <MiraiPDF>[];
+    }
+  }
+
+  Future<bool> deleteMirai({required MiraiPDF miraiPDF}) async {
+    final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
+    if (miraiPDFBox.isNotEmpty) {
+      miraiPrint('\n=> MiraiPDFBoxBox isNotEmpty\n');
+      miraiPrint('\n=> Deleting this miraiPDF ${miraiPDF.toString()}\n');
+      final int index = miraiPDFBox.values.toList().indexWhere(
+            (Map<dynamic, dynamic> bookAtIndex) =>
+                Book.fromJson(bookAtIndex).title == miraiPDF.title &&
+                Book.fromJson(bookAtIndex).image == miraiPDF.image,
+          );
+      miraiPrint('\n=> MiraiPDFBox $index\n');
+      if (index >= 0) {
+        await miraiPDFBox.deleteAt(index);
+        miraiPrint('\n=> Delete This MiraPDF: ${miraiPDF.toString()}\n');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<void> clearMiraiPDFs() async {
+    final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
+    await miraiPDFBox.clear();
+    debugPrint('\n=> MiraiPDFs are Deleted.\n');
+  }
+
+  ValueListenable<Box<Map<dynamic, dynamic>>> miraiPDFsListenable() {
+    return Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName).listenable();
+  }
+
+  /// ----------------------------------------------------///
 }

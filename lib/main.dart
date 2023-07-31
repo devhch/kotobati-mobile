@@ -8,6 +8,8 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/utils/app_icons_keys.dart';
+import 'package:kotobati/app/core/utils/app_preload_svgs.dart';
 
 import 'app/core/models/planing_books_model.dart';
 import 'app/core/utils/app_theme.dart';
@@ -37,6 +39,9 @@ void overlayMain() {
 
 Future<void> appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await preloadSVG(assetName: AppIconsKeys.kotobatiIcon);
+
   await FlutterDownloader.initialize();
 
   await Firebase.initializeApp(
@@ -82,7 +87,7 @@ Future<void> appPreLunch() async {
 
     if (swAvailable && swInterceptAvailable) {
       AndroidServiceWorkerController serviceWorkerController =
-          AndroidServiceWorkerController.instance();
+      AndroidServiceWorkerController.instance();
 
       serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
         shouldInterceptRequest: (WebResourceRequest request) async {

@@ -11,6 +11,7 @@ import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/utils/app_config.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 
 import 'text_bottom_sheet.dart';
@@ -18,15 +19,17 @@ import 'text_bottom_sheet.dart';
 class TextWidget extends StatelessWidget {
   const TextWidget({
     super.key,
-  required  this.title,
+    required this.title,
     this.text,
     this.image,
+    this.cover,
     this.useCover = true,
   });
 
   final String title;
   final String? text;
   final String? image;
+  final String? cover;
   final bool useCover;
 
   @override
@@ -41,8 +44,7 @@ class TextWidget extends StatelessWidget {
               bottom: 45,
               child: MiraiElevatedButtonWidget(
                 height: 268,
-                onTap: () =>
-                    TextBottomSheet.showTextBottomSheet(text: text, image: image),
+                onTap: () => TextBottomSheet.showTextBottomSheet(text: text, image: image),
                 margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                 width: double.infinity,
                 padding: const EdgeInsets.only(
@@ -86,7 +88,9 @@ class TextWidget extends StatelessWidget {
                         onTap: () {
                           if (image != null) {
                             /// Share File
-                            shareFile(image!, text: 'إقتباس من $title تطبيق كتوباتي ، \nلتحميل التطبيق: ${AppConfig.playStoreURL}  ');
+                            shareFile(image!,
+                                text:
+                                    'إقتباس من $title تطبيق كتوباتي ، \nلتحميل التطبيق: ${AppConfig.playStoreURL}  ');
                           }
                         },
                         child: SvgPicture.asset(
@@ -101,17 +105,18 @@ class TextWidget extends StatelessWidget {
                 ),
               ),
             ),
-            if (useCover)
+            if (useCover && cover != null)
               Positioned(
                 bottom: 0,
                 left: context.width / 2 - 40,
                 child: Container(
                   color: AppTheme.keyAppBlackColor,
                   padding: const EdgeInsets.symmetric(horizontal: 14),
-                  child: Image.asset(
-                    'assets/images/book_image.png',
+                  child: MiraiCachedImageNetworkWidget(
                     width: 80,
                     height: 118,
+                    imageUrl: '$cover',
+                    title: title,
                   ),
                 ),
               ),

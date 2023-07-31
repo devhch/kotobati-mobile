@@ -99,6 +99,7 @@ class BookWidget extends StatelessWidget {
                         fontSize: 22,
                       ),
                       maxLines: 1,
+                      textDirection: isArabic(book.title!) ? TextDirection.rtl : TextDirection.ltr,
                     ),
                   const SizedBox(height: 15),
                   if (book.author != null)

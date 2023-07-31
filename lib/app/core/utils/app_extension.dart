@@ -3,6 +3,9 @@
 * On 06/22/2023.
 */
 
+import 'dart:convert';
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 
 extension BottomPadding on BuildContext {
@@ -29,5 +32,24 @@ extension GenerateTheName on String {
       }
     }
     return imageString.toUpperCase();
+  }
+}
+
+extension ConvertUint8ListString on String {
+  Uint8List get convertStringToUint8List {
+    // final List<int> codeUnits = this.codeUnits;
+    // final Uint8List unit8List = Uint8List.fromList(codeUnits);
+
+    List<int> list = utf8.encode(this);
+    Uint8List bytes = Uint8List.fromList(list);
+
+    return bytes;
+  }
+}
+
+extension ConvertUint8List on Uint8List {
+  String get convertUint8ListToString {
+    //  return String.fromCharCodes(this);
+    return utf8.decode(this);
   }
 }

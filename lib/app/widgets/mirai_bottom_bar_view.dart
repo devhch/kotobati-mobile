@@ -74,7 +74,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
           valueListenable: widget.isFabBarAdding,
           builder: (_, bool isFabBarAdding, __) {
             return Container(
-              height: MiraiSize.bottomNavBarHeight94 + MiraiSize.iconSize58,
+              height: MiraiSize.bottomNavBarHeight94 + 8,
               width: Get.width,
               decoration: BoxDecoration(
                 boxShadow: isScrolling

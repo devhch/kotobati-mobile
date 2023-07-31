@@ -193,3 +193,20 @@ String extractFilename(String value) {
 
   return '';
 }
+
+bool isArabic(String text) {
+  for (int codeUnit in text.runes) {
+    if ((codeUnit >= 0x0600 && codeUnit <= 0x06FF) || // Arabic
+        (codeUnit >= 0x0750 && codeUnit <= 0x077F) || // Arabic Supplement
+        (codeUnit >= 0x08A0 && codeUnit <= 0x08FF) || // Arabic Extended-A
+        (codeUnit >= 0xFB50 && codeUnit <= 0xFDFF) || // Arabic Presentation Forms-A
+        (codeUnit >= 0xFE70 && codeUnit <= 0xFEFF) || // Arabic Presentation Forms-B
+        (codeUnit >= 0x10E60 && codeUnit <= 0x10E7F)) {
+      //  miraiPrint('Is text Arabic? true');
+      // Arabic Extended-B
+      return true;
+    }
+  }
+  // miraiPrint('Is text Arabic? false');
+  return false;
+}

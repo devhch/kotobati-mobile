@@ -6,6 +6,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/note_model.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
 import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
@@ -16,7 +17,8 @@ import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 import 'package:kotobati/app/widgets/mirai_text_field_widget.dart';
 
 class AddNoteToBookDialog {
-  static Future<void> show({required  ValueNotifier<Book> book, required VoidCallback callback}) async {
+  static Future<void> show(
+      {required ValueNotifier<Book?> book, required VoidCallback callback}) async {
     TextEditingController textController = TextEditingController();
 
     await Get.dialog(
@@ -37,7 +39,7 @@ class _AddNoteToBookBody extends StatelessWidget {
     required this.callback,
   }) : super(key: key);
 
-  final  ValueNotifier<Book> book;
+  final ValueNotifier<Book?> book;
   final VoidCallback callback;
   final TextEditingController textController;
 
@@ -67,7 +69,7 @@ class _AddNoteToBookBody extends StatelessWidget {
             children: <Widget>[
               const SizedBox(height: 10),
               MiraiTextFieldWidget(
-                hint: "أدخل ملاحظاتك لكتاب ${book.value.title?.replaceAll('كتاب', '')}",
+                hint: "أدخل ملاحظاتك لكتاب ${book.value?.title?.replaceAll('كتاب', '')}",
                 fillColor: const Color(0xff464444),
                 borderColor: const Color(0xff464444),
                 borderRadius: 16,
@@ -87,21 +89,22 @@ class _AddNoteToBookBody extends StatelessWidget {
                         //   Get.back();
                         // }
 
-                        checkNotes(book.value.notes!);
-                        book.value.notes?.add(textController.text);
+                        // checkNotes(book.value.notes!);
+                        final Note note = Note.create(content: textController.text);
+                        book.value?.notes?.add(note);
                         book.notifyListeners();
 
                         callback.call();
 
                         final bool isBookAdded =
-                            await HiveDataStore().updateBook(book: book.value);
+                            await HiveDataStore().updateBook(book: book.value!);
 
                         if (isBookAdded) {
                           AppMiraiDialog.snackBar(
                             backgroundColor: Colors.green,
                             title: 'عظيم',
                             message:
-                                'تمت إضافة ملاحظة إلى ${book.value.title?.replaceAll('pdf', '')} ',
+                                'تمت إضافة ملاحظة إلى ${book.value?.title?.replaceAll('pdf', '')} ',
                           );
                         }
 

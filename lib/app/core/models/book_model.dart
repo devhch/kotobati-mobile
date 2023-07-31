@@ -6,22 +6,25 @@
 import 'dart:io';
 import 'dart:ui';
 
+import 'package:kotobati/app/core/models/note_model.dart';
+
 import 'planing_books_model.dart';
+import 'quote_model.dart';
 
 class Book {
-  final String? id;
+  final String id;
   final String? title;
   final String? longTitle;
   final String? author;
   final String? description;
   dynamic image;
   String? path;
-  List<String>? notes;
-  List<String>? quotes;
+  List<Note>? notes;
+  List<Quote>? quotes;
   PlaningBooksModel? planingBook;
 
   Book({
-    this.id,
+    required this.id,
     this.title,
     this.longTitle,
     this.author,
@@ -32,12 +35,26 @@ class Book {
     this.notes,
     this.quotes,
   }) {
-    notes ??= <String>[];
-    quotes ??= <String>[];
+    notes ??= <Note>[];
+    quotes ??= <Quote>[];
   }
 
   factory Book.fromJson(Map<dynamic, dynamic> map) {
     final Map<String, dynamic> json = Map<String, dynamic>.from(map);
+
+    final List<Note> notes = <Note>[];
+    if (json['notes'] != null) {
+      for (int i = 0; i < json['notes'].length; i++) {
+        notes.add(Note.fromJson(json['notes'][i]));
+      }
+    }
+
+    final List<Quote> quotes = <Quote>[];
+    if (json['quotes'] != null) {
+      for (int i = 0; i < json['quotes'].length; i++) {
+        quotes.add(Quote.fromJson(json['quotes'][i]));
+      }
+    }
 
     return Book(
       id: json['id'],
@@ -49,8 +66,8 @@ class Book {
       path: json['path'],
       planingBook:
           json['planingBook'] != null ? PlaningBooksModel.fromJson(json['planingBook']) : null,
-      notes: json['notes'],
-      quotes: json['quotes'],
+      notes: notes,
+      quotes: quotes,
     );
   }
 
@@ -63,8 +80,8 @@ class Book {
         'image': image,
         'path': path,
         'planingBook': planingBook?.toJson(),
-        'notes': notes,
-        'quotes': quotes,
+        'notes': notes?.map((Note note) => note.toJson()).toList(),
+        'quotes': quotes?.map((Quote quote) => quote.toJson()).toList(),
       };
 
   @override
@@ -98,6 +115,6 @@ class Book {
 
   @override
   String toString() {
-    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author, description: $description, path: $path, notes: $notes, quotes: $quotes, planingBook: $planingBook}';
+    return 'Book{id: $id, title: $title, longTitle: $longTitle, author: $author, description: $description, image: $image, path: $path, notes: $notes, quotes: $quotes, planingBook: $planingBook}';
   }
 }

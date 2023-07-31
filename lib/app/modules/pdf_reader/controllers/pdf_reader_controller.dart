@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/quote_model.dart';
 import 'package:kotobati/app/core/models/setting_objects_model.dart';
 import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
@@ -20,7 +21,7 @@ import 'package:screenshot/screenshot.dart';
 
 class PdfReaderController extends GetxController {
   String pdfPath = '';
-  ValueNotifier<Book> book = ValueNotifier<Book>(Book());
+  ValueNotifier<Book?> book = ValueNotifier<Book?>(null);
 
   final HiveDataStore hive = HiveDataStore();
   ScreenBrightness screenBrightness = ScreenBrightness();
@@ -96,9 +97,9 @@ class PdfReaderController extends GetxController {
     pagePadding.value = setting.spacing;
 
     book.value = Get.arguments;
-    pdfPath = book.value.path!;
+    pdfPath = book.value!.path!;
 
-   if (pdfPath.contains('Kotobati/')) {
+    if (pdfPath.contains('Kotobati/')) {
       pdfPath = pdfPath.replaceAll('.pdf', '');
     }
 
@@ -108,13 +109,14 @@ class PdfReaderController extends GetxController {
     miraiPrint('File Exists: ${pdfFile?.existsSync()}');
 
     defaultBrightness = await screenBrightness.current;
+    miraiPrint('defaultBrightness $defaultBrightness');
   }
 
   Future<void> close() async {
-    screenBrightness.setScreenBrightness(defaultBrightness);
+    if (defaultBrightness != 0) screenBrightness.setScreenBrightness(defaultBrightness);
 
     /// closes overlay if open
-    FlutterOverlayWindow.closeOverlay().then((bool? value) => log('STOPPED: value: $value'));
+   // FlutterOverlayWindow.closeOverlay().then((bool? value) => log('STOPPED: value: $value'));
   }
 
   void setReadingMode(double bright) async {
@@ -147,15 +149,16 @@ class PdfReaderController extends GetxController {
         //   imageFile = File(croppedImage.path);
 
         /// Save Cropped Image to book
-        book.value.quotes?.add(croppedImage.path);
+        final Quote quote = Quote.create(content: croppedImage.path);
+        book.value?.quotes?.add(quote);
 
-        await HiveDataStore().updateBook(book: book.value);
+        await HiveDataStore().updateBook(book: book.value!);
 
         AppMiraiDialog.snackBar(
           duration: 4,
           backgroundColor: Colors.green,
           title: 'عظيم',
-          message: 'تمت إضافة إقتباس إلى ${book.value.title?.replaceAll('pdf', '')} ',
+          message: 'تمت إضافة إقتباس إلى ${book.value?.title?.replaceAll('pdf', '')} ',
         );
       } else {
         debugPrint('crop false');
@@ -164,7 +167,7 @@ class PdfReaderController extends GetxController {
         AppMiraiDialog.snackBarError(
           duration: 4,
           title: 'إنتباه!',
-          message: 'لم يتمر إضافة اي إقتباس إلى ${book.value.title?.replaceAll('pdf', '')} ',
+          message: 'لم يتمر إضافة اي إقتباس إلى ${book.value?.title?.replaceAll('pdf', '')} ',
         );
       }
     } else {
@@ -227,12 +230,12 @@ class PdfReaderController extends GetxController {
   }
 
   void enterFullScreen() {
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.leanBack);
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: <SystemUiOverlay>[]);
+    //  SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky);
+     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: <SystemUiOverlay>[]);
   }
 
   void exitFullScreen() {
-    // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
+     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: SystemUiOverlay.values);
   }
 }
 

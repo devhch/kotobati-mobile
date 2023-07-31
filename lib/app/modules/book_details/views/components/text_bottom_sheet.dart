@@ -69,7 +69,7 @@ class TextBottomSheetWidget extends StatelessWidget {
               width: context.width,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               decoration: const BoxDecoration(
-                color: AppTheme.keyAppGrayColorDark,
+                color: AppTheme.keyAppLightGrayColor,
                 borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(26),
                   topRight: Radius.circular(26),

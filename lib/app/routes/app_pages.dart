@@ -4,6 +4,8 @@ import '../modules/book_details/bindings/book_details_binding.dart';
 import '../modules/book_details/views/book_details_view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
+import '../modules/intro/bindings/intro_binding.dart';
+import '../modules/intro/views/intro_view.dart';
 import '../modules/navigation/bindings/navigation_binding.dart';
 import '../modules/navigation/views/navigation_view.dart';
 import '../modules/notes/bindings/notes_binding.dart';
@@ -85,6 +87,11 @@ class AppPages {
       name: _Paths.planingDetails,
       page: () => const PlaningDetailsView(),
       binding: PlaningDetailsBinding(),
+    ),
+    GetPage<void>(
+      name: _Paths.intro,
+      page: () => const IntroView(),
+      binding: IntroBinding(),
     ),
   ];
 }

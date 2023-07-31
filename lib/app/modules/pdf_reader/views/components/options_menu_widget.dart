@@ -51,7 +51,7 @@ class OptionsMenuWidget extends StatelessWidget {
             case 0:
 
               /// Share File
-              shareFile(controller.pdfFile!.path, subject: controller.book.value.title!);
+              shareFile(controller.pdfFile!.path, subject: controller.book.value!.title!);
               break;
 
             case 1:
@@ -59,9 +59,9 @@ class OptionsMenuWidget extends StatelessWidget {
               /// Delete
               MiraiVerifyingDialog.showDialog(
                 yes: () async {
-                  deleteFile(controller.book.value.path!);
+                  deleteFile(controller.book.value!.path!);
                   final bool isDeleted =
-                      await HiveDataStore().deleteBook(book: controller.book.value);
+                      await HiveDataStore().deleteBook(book: controller.book.value!);
                   // if (isDeleted) {
                   Get.back();
                   Get.back();
@@ -90,7 +90,7 @@ class OptionsMenuWidget extends StatelessWidget {
                 //   Routes.planing,
                 //   arguments: controller.pdfFile,
                 // );
-                PlaningBottomSheet.show(book: controller.book.value);
+                PlaningBottomSheet.show(book: controller.book.value!);
               }
 
               break;
@@ -98,11 +98,11 @@ class OptionsMenuWidget extends StatelessWidget {
             case 3:
               //  await controller.overlayWindow();
               break;
-            case 4:
-              controller.exitFullScreen();
-              controller.fullScreen.value = !controller.fullScreen.value;
-              controller.fullScreen.notifyListeners();
-              break;
+            // case 4:
+            //   controller.exitFullScreen();
+            //   controller.fullScreen.value = !controller.fullScreen.value;
+            //   controller.fullScreen.notifyListeners();
+            //   break;
           }
         },
 
@@ -142,28 +142,28 @@ class OptionsMenuWidget extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
               ),
             ),
-            PopupMenuItem<int>(
-              value: 3,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'حماية العين',
-                style: Get.theme.textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
-            PopupMenuItem<int>(
-              value: 4,
-              padding: const EdgeInsets.symmetric(horizontal: 24),
-              child: Text(
-                'تكبير الشاشة',
-                style: Get.theme.textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-                overflow: TextOverflow.ellipsis,
-              ),
-            ),
+            // PopupMenuItem<int>(
+            //   value: 3,
+            //   padding: const EdgeInsets.symmetric(horizontal: 24),
+            //   child: Text(
+            //     'حماية العين',
+            //     style: Get.theme.textTheme.bodyLarge!.copyWith(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //     overflow: TextOverflow.ellipsis,
+            //   ),
+            // ),
+            // PopupMenuItem<int>(
+            //   value: 4,
+            //   padding: const EdgeInsets.symmetric(horizontal: 24),
+            //   child: Text(
+            //     'تكبير الشاشة',
+            //     style: Get.theme.textTheme.bodyLarge!.copyWith(
+            //       fontWeight: FontWeight.bold,
+            //     ),
+            //     overflow: TextOverflow.ellipsis,
+            //   ),
+            // ),
           ];
         },
       ),

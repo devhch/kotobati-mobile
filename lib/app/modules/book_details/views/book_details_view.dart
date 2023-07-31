@@ -305,9 +305,9 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
 
                         miraiPrint('Map<dynamic, dynamic>> $books');
 
-                        Book book = Book();
+                        Book? book;
                         for (Map<dynamic, dynamic> bookJson in books) {
-                          if (Book.fromJson(bookJson) == controller.book) {
+                          if (Book.fromJson(bookJson).id == controller.book.id) {
                             book = Book.fromJson(bookJson);
                             break;
                           }
@@ -318,7 +318,7 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                           controller: _tabController,
                           physics: const NeverScrollableScrollPhysics(),
                           children: <Widget>[
-                            if (book.notes!.isNotEmpty)
+                            if (book != null && book.notes!.isNotEmpty)
                               ListView.builder(
                                 shrinkWrap: true,
                                 //  physics: const NeverScrollableScrollPhysics(),
@@ -326,22 +326,50 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                                 itemCount: book.notes!.length,
                                 itemBuilder: (_, int index) {
                                   return TextWidget(
-                                    title: book.title!,
-                                    text: book.notes![index],
+                                    title: book!.title!,
+                                    text: book.notes![index].content,
                                     useCover: false,
                                   );
                                 },
                               )
                             else
-                              const Center(child: Text('No Data')),
-                            if (book.quotes!.isNotEmpty)
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(
+                                        'لاتوجد بيانات',
+                                        style: context.textTheme.displayLarge!.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'يرجى إضافة بعض الملاحظات إلى هذا الكتاب!',
+                                        style: context.textTheme.displayLarge!.copyWith(
+                                          color: AppTheme.keyAppWhiteGrayColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 100),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            if (book != null && book.quotes!.isNotEmpty)
                               ListView.builder(
                                 shrinkWrap: true,
                                 //   physics: const NeverScrollableScrollPhysics(),
                                 padding: EdgeInsets.zero,
                                 itemCount: book.quotes!.length,
                                 itemBuilder: (_, int index) {
-                                  final String imagePath = book.quotes![index];
+                                  final String imagePath = book!.quotes![index].content;
                                   return TextWidget(
                                     title: book.title!,
                                     image: imagePath,
@@ -353,7 +381,35 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                                 },
                               )
                             else
-                              const Center(child: Text('No Data')),
+                              Center(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      Text(
+                                        'لاتوجد بيانات',
+                                        style: context.textTheme.displayLarge!.copyWith(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 16),
+                                      Text(
+                                        'يرجى إضافة بعض الإقتباسات إلى هذا الكتاب!',
+                                        style: context.textTheme.displayLarge!.copyWith(
+                                          color: AppTheme.keyAppWhiteGrayColor,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 16,
+                                        ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                      const SizedBox(height: 100),
+                                    ],
+                                  ),
+                                ),
+                              ),
                           ],
                         );
                       }),

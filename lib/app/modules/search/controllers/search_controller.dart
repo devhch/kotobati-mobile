@@ -1,35 +1,54 @@
+import 'dart:developer';
 import 'dart:io';
-import 'dart:math';
+import 'dart:math' as math;
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/models/mirai_pdf_model.dart';
+import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'package:pdfx/pdfx.dart'; // Import the collection package
 
 import 'package:intl/intl.dart' as intl;
+import 'package:permission_handler/permission_handler.dart';
+
+import '../../../core/utils/app_custom_dialog.dart';
 
 class SearchControllerC extends GetxController {
-  late final TextEditingController txtController;
+  // Call the native method to get PDF files and wait for the result
+  static const MethodChannel platform = MethodChannel('com.kotobati.pdf_reader_channel');
 
-  List<PdfWidthImage> pdfPaths = <PdfWidthImage>[];
+  List<MiraiPDF> pdfPaths = <MiraiPDF>[];
 
   /// Lists
-  ValueNotifier<List<PdfWidthImage>> pdfFilesForSearch =
-      ValueNotifier<List<PdfWidthImage>>(<PdfWidthImage>[]);
+  ValueNotifier<List<MiraiPDF>> pdfFilesForSearch = ValueNotifier<List<MiraiPDF>>(<MiraiPDF>[]);
+
+  bool isDoneSearching = false;
+  bool isPDFsFromHive = false;
+
+  ValueNotifier<int> downloadProgress = ValueNotifier<int>(0);
+  int total = 1;
+
+  late final TextEditingController txtController;
 
   @override
   void onInit() {
-    txtController = TextEditingController();
     super.onInit();
+    txtController = TextEditingController();
   }
 
   @override
   void onReady() {
     super.onReady();
+    miraiPrint('SearchControllerC onReady');
+
+    // HiveDataStore().clearMiraiPDFs();
     getPdfFilesFromNative();
   }
 
@@ -38,12 +57,26 @@ class SearchControllerC extends GetxController {
   //   super.dispose();
   // }
 
+  void check() {
+    final List<MiraiPDF> miraiPDFs = HiveDataStore().getMiraiPDfs();
+    if (miraiPDFs.isNotEmpty) {
+      log('miraiPDFs ${miraiPDFs.toString()}');
+      isPDFsFromHive = true;
+      isDoneSearching = true;
+      pdfPaths = miraiPDFs;
+      pdfFilesForSearch.value = pdfPaths;
+      update();
+    } else {
+      getPdfFilesFromNative();
+    }
+  }
+
   void search(String query) {
     final String normalizedSearchText = Intl.canonicalizedLocale(query);
     final RegExp regex = RegExp(normalizedSearchText, caseSensitive: false, unicode: true);
 
     /// Search in categories
-    pdfFilesForSearch.value = pdfPaths.where((PdfWidthImage pdfWidthImage) {
+    pdfFilesForSearch.value = pdfPaths.where((MiraiPDF pdfWidthImage) {
       final String normalizedText = Intl.canonicalizedLocale(pdfWidthImage.title.toLowerCase());
       return regex.hasMatch(normalizedText);
     }).toList();
@@ -51,43 +84,117 @@ class SearchControllerC extends GetxController {
 
   // Native method call using MethodChannel to get PDF files from native code
   Future<void> getPdfFilesFromNative() async {
+    miraiPrint('getPdfFilesFromNative  Called');
     if (pdfPaths.isEmpty) {
-      // Call the native method to get PDF files and wait for the result
-      const MethodChannel platform = MethodChannel('com.kotobati.pdf_reader_channel');
-      try {
-        final List<dynamic> pdfFiles = await platform.invokeMethod('getPdfFilesFromNative');
-        List<String> pdfPathsAsString = pdfFiles.cast<String>()
-          ..sort((String a, String b) => a.toLowerCase().compareTo(b.toLowerCase()));
-        miraiPrint('pdfPaths $pdfPaths');
+      miraiPrint('getPdfFilesFromNative  pdfPaths.isEmpty');
 
-        for (String pdfPath in pdfPathsAsString) {
-          final String title = pdfPath
-              .split('/')
-              .last
-              .capitalizeFirst!
-              .replaceAll('-', ' ')
-              .replaceAll('pdf', ' ')
-              .replaceAll('.pdf', '')
-              .trim();
-          PdfWidthImage pdfWidthImage = PdfWidthImage(title: title, path: pdfPath);
+      bool permissionGranted = false;
+      final bool hasManageExternalStoragePermission = await checkManageExternalStoragePermission();
+      miraiPrint('checkManageExternalStoragePermission  $hasManageExternalStoragePermission');
+      permissionGranted = hasManageExternalStoragePermission;
+      if (!hasManageExternalStoragePermission) {
+        AppMiraiDialog.snackBarError(
+          title: 'تم رفض الوصول إلى إذن الملفات!',
+          message:
+              'يرجى السماح بإذن الوصول إلى الملفات للحصول على جميع ملفات pdf من الجهاز ...\n"Allow access to manage all files"',
+          duration: 4,
+        );
 
-          final String size = await getFileSizes(pdfPath, 2);
-          debugPrint('size $size');
-          pdfWidthImage.size = size;
+        await Future<void>.delayed(const Duration(seconds: 4), () {});
 
-          pdfWidthImage.image?.value = await generatePdfCover(pdfPath);
-
-          // pdfPageImage;
-
-          pdfPaths.add(pdfWidthImage);
+        try {
+          /// Request read external storage permission
+          miraiPrint(' Request read external storage permission');
+          permissionGranted = await requestManageExternalStoragePermission();
+          miraiPrint(' permissionGranted $permissionGranted');
+        } on PlatformException catch (e) {
+          miraiPrint("Error: ${e.message}");
         }
-
-        pdfFilesForSearch.value = pdfPaths;
-
-        update();
-      } catch (e) {
-        throw PlatformException(code: 'ERROR', message: 'Failed to communicate with native code');
       }
+
+      try {
+        if (permissionGranted) {
+          /// Call the native method to get PDF files and wait for the result
+          final List<dynamic> pdfFiles = await platform.invokeMethod('getPdfFilesFromNative');
+          List<String> pdfPathsAsString = pdfFiles.cast<String>();
+          total = pdfPathsAsString.length;
+          // ..sort((String a, String b) => a.toLowerCase().compareTo(b.toLowerCase()));
+          // Sort the list alphabetically using Unicode code points
+          pdfPathsAsString.sort((String a, String b) =>
+              Intl.canonicalizedLocale(a).compareTo(Intl.canonicalizedLocale(b)));
+          miraiPrint('pdfPaths $pdfPathsAsString');
+
+          /// Update...
+          update();
+
+          for (String pdfPath in pdfPathsAsString) {
+            final String title = pdfPath
+                .split('/')
+                .last
+                .capitalizeFirst!
+                .replaceAll('-', ' ')
+                .replaceAll('pdf', ' ')
+                .replaceAll('.pdf', '')
+                .trim();
+            MiraiPDF pdfWidthImage = MiraiPDF(title: title, path: pdfPath);
+
+            final String size = await getFileSizes(pdfPath, 2);
+            debugPrint('size $size');
+            pdfWidthImage.size = size;
+
+            pdfWidthImage.image = await generatePdfCover(pdfPath);
+
+            pdfPaths.add(pdfWidthImage);
+
+            downloadProgress.value += 1;
+
+            await Future<void>.delayed(const Duration(milliseconds: 50), () {});
+          }
+
+          miraiPrint('before to search list pdfPaths: $pdfPaths');
+          pdfFilesForSearch.value = pdfPaths;
+
+          isDoneSearching = true;
+          update();
+
+          // if (pdfFilesForSearch.value.isNotEmpty) {
+          //   /// Save To HIVE
+          //   HiveDataStore().setMiraiPDFs(miraiPDFs: pdfFilesForSearch.value);
+          // }
+        } else {
+          miraiPrint("Permission not granted.");
+          AppMiraiDialog.snackBarError(
+            title: 'تم رفض الوصول إلى إذن الملفات!',
+            message: 'يرجى السماح بإذن الوصول إلى الملفات للحصول على جميع ملفات pdf من الجهاز ...',
+            duration: 4,
+          );
+          openAppSettings();
+        }
+      } on PlatformException catch (e) {
+        miraiPrint("Error: ${e.message}");
+      }
+    }
+  }
+
+  Future<bool> checkManageExternalStoragePermission() async {
+    bool hasPermission;
+    try {
+      hasPermission = await platform.invokeMethod('hasManageExternalStoragePermission');
+    } on PlatformException catch (e) {
+      hasPermission = false; // Handle exception, if any
+    }
+
+    return hasPermission;
+  }
+
+  /// Native method call using MethodChannel to request read external storage permission
+  Future<bool> requestManageExternalStoragePermission() async {
+    try {
+      final bool permissionGranted =
+          await platform.invokeMethod('requestManageExternalStoragePermission');
+      return permissionGranted;
+    } catch (e) {
+      throw PlatformException(code: 'ERROR', message: 'Failed to communicate with native code');
     }
   }
 
@@ -97,8 +204,8 @@ class SearchControllerC extends GetxController {
     if (bytes <= 0) return "0 B";
 
     const List<String> suffixes = <String>["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
-    int i = (log(bytes) / log(1024)).floor();
-    double size = bytes / pow(1024, i);
+    int i = (math.log(bytes) / math.log(1024)).floor();
+    double size = bytes / math.pow(1024, i);
 
     // Using NumberFormat for consistent and accurate formatting
     intl.NumberFormat format = intl.NumberFormat.decimalPattern();
@@ -156,21 +263,5 @@ class SearchControllerC extends GetxController {
       miraiPrint('Error reading file: $e');
       return <int>[];
     }
-  }
-}
-
-class PdfWidthImage {
-  final String title;
-  final String path;
-  String size;
-  ValueNotifier<Uint8List?>? image;
-
-  PdfWidthImage({
-    this.title = '',
-    this.path = '',
-    this.size = '',
-    this.image,
-  }) {
-    image ??= ValueNotifier<Uint8List?>(null);
   }
 }

@@ -175,8 +175,9 @@ class _BottomNavigationBar extends StatelessWidget {
         } else {
           MiraiVerifyingDialog.showDialog(
             title: ' لاتوجد بيانات... \n يرجى الذهاب إلى صفحة الكتب \nوتنزيل بعض الكتب! ',
-            yesStyle: context.textTheme.labelLarge!.copyWith(
+            yesStyle: context.textTheme.labelMedium!.copyWith(
               color: AppTheme.keyAppBlackColor,
+              fontWeight: FontWeight.bold,
             ),
             yes: () {
               final NavigationController controller = Get.find<NavigationController>();

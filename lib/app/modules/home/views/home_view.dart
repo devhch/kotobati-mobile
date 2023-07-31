@@ -14,10 +14,12 @@ import 'package:kotobati/app/core/utils/app_config.dart';
 import 'package:kotobati/app/core/utils/app_extension.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/modules/home/views/components/home_app_bar.dart';
+import 'package:mirai_responsive/mirai_responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:html/parser.dart' show parseFragment;
 import 'package:html/dom.dart' as dom;
+import 'package:uuid/uuid.dart';
 
 import '../controllers/home_controller.dart';
 
@@ -104,8 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Object? id = (Platform.isAndroid)
               ? contextMenuItemClicked.androidId
               : contextMenuItemClicked.iosId;
-          miraiPrint(
-              "onContextMenuActionItemClicked: $id ${contextMenuItemClicked.title}");
+          miraiPrint("onContextMenuActionItemClicked: $id ${contextMenuItemClicked.title}");
         });
 
     pullToRefreshController = PullToRefreshController(
@@ -149,74 +150,158 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final Size size = MediaQuery.of(context).size;
     return Scaffold(
-      backgroundColor: progress < 1.0 ? AppTheme.keyAppBlackColor : Colors.white,
-      appBar: progress < 1.0 ? null : homeAppBar(webViewController),
+      backgroundColor: Colors.white,
+      //  appBar: progress < 1.0 ? null : homeAppBar(webViewController),
       body: Padding(
         padding: EdgeInsets.only(
-          // top: context.topPadding,
-          bottom: context.bottomAdding / 2,
+          top: context.topPadding,
+          // bottom: context.bottomAdding / 2,
+          bottom: 80,
         ),
-        child: Stack(
-          children: <Widget>[
-            InAppWebView(
-              key: webViewKey,
-              // contextMenu: contextMenu,
-              initialUrlRequest: URLRequest(url: Uri.parse(AppConfig.webUrl)),
-              // initialFile: "assets/index.html",
-              initialUserScripts: UnmodifiableListView<UserScript>([]),
-              initialOptions: options,
-              pullToRefreshController: pullToRefreshController,
-              onWebViewCreated: (InAppWebViewController controller) {
-                webViewController = controller;
-                setState(() {});
-              },
-              onLoadStart: (InAppWebViewController controller, Uri? url) {
-                setState(() {
-                  this.url = url.toString();
-                  urlController.text = this.url;
-                });
-              },
+        child: SizedBox(
+          height: size.height - context.topPadding - 80,
+          width: size.width,
+          child: Stack(
+            children: <Widget>[
+              Positioned.fill(
+                bottom: 60,
+                child: InAppWebView(
+                  key: webViewKey,
+                  // contextMenu: contextMenu,
+                  initialUrlRequest: URLRequest(url: Uri.parse(AppConfig.webUrl)),
+                  // initialFile: "assets/index.html",
+                  initialUserScripts: UnmodifiableListView<UserScript>([]),
+                  initialOptions: options,
+                  pullToRefreshController: pullToRefreshController,
+                  onWebViewCreated: (InAppWebViewController controller) {
+                    webViewController = controller;
+                    miraiPrint('webViewController != null');
+                    setState(() {});
+                  },
+                  onLoadStart: (InAppWebViewController controller, Uri? url) {
+                    setState(() {
+                      this.url = url.toString();
+                      urlController.text = this.url;
+                    });
+                  },
 
-              onDownloadStartRequest: widget.controller.onDownloadStartRequest,
-              androidOnPermissionRequest: androidOnPermissionRequest,
-              shouldOverrideUrlLoading: shouldOverrideUrlLoading,
-              onLoadStop: onLoadStop,
-              onLoadError: (InAppWebViewController controller, Uri? url, int code,
-                  String message) {
-                pullToRefreshController.endRefreshing();
-              },
-              onProgressChanged: (InAppWebViewController controller, int progress) {
-                if (progress == 100) {
-                  pullToRefreshController.endRefreshing();
-                }
-                setState(() {
-                  this.progress = progress / 100;
-                  urlController.text = url;
-                });
-              },
-              onUpdateVisitedHistory:
-                  (InAppWebViewController controller, Uri? url, bool? androidIsReload) {
-                setState(() {
-                  this.url = url.toString();
-                  urlController.text = this.url;
-                });
-              },
-              onConsoleMessage:
-                  (InAppWebViewController controller, ConsoleMessage consoleMessage) {
-                miraiPrint(consoleMessage);
-              },
-            ),
-            if (progress < 1.0)
-              Container(
-                color: AppTheme.keyAppBlackColor,
-                child: const Center(
-                  child: CircularProgressIndicator.adaptive(
-                    valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
-                  ),
+                  onDownloadStartRequest: widget.controller.onDownloadStartRequest,
+                  androidOnPermissionRequest: androidOnPermissionRequest,
+                  shouldOverrideUrlLoading: shouldOverrideUrlLoading,
+                  onLoadStop: onLoadStop,
+                  onLoadError:
+                      (InAppWebViewController controller, Uri? url, int code, String message) {
+                    pullToRefreshController.endRefreshing();
+                  },
+                  onProgressChanged: (InAppWebViewController controller, int progress) {
+                    if (progress == 100) {
+                      pullToRefreshController.endRefreshing();
+                    }
+                    setState(() {
+                      this.progress = progress / 100;
+                      urlController.text = url;
+                    });
+                  },
+                  onUpdateVisitedHistory:
+                      (InAppWebViewController controller, Uri? url, bool? androidIsReload) {
+                    setState(() {
+                      this.url = url.toString();
+                      urlController.text = this.url;
+                    });
+                  },
+                  onConsoleMessage:
+                      (InAppWebViewController controller, ConsoleMessage consoleMessage) {
+                    miraiPrint(consoleMessage);
+                  },
                 ),
               ),
-          ],
+
+              // if (progress < 1.0)
+              //   Container(
+              //     color: AppTheme.keyAppBlackColor,
+              //     child: const Center(
+              //       child: CircularProgressIndicator.adaptive(
+              //         valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
+              //       ),
+              //     ),
+              //   ),
+
+              if (progress < 1.0)
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  child: LinearProgressIndicator(
+                    value: progress,
+                    color: AppTheme.keyAppColorDark,
+                    backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
+                  ),
+                ),
+
+              PositionedDirectional(
+                start: 16,
+                bottom: 4,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    AnimatedScale(
+                      duration: const Duration(milliseconds: 200),
+                      scale: progress == 1.0 ? 1 : 0,
+                      child: FutureBuilder<bool>(
+                        future:
+                            webViewController == null ? null : webViewController!.canGoForward(),
+                        builder: (_, AsyncSnapshot<bool> snapshot) {
+                          final bool canGoForward = snapshot.data ?? false;
+                          miraiPrint('canGoForward $canGoForward');
+                          return FloatingActionButton(
+                            // mini: true,
+                            heroTag: "FloatingActionButton1",
+                            tooltip: 'Go Forward',
+                            onPressed: () async {
+                              miraiPrint('GoForward Clicked');
+                              await webViewController!.goForward();
+                            },
+                            child: const Icon(
+                              Icons.arrow_back,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AnimatedScale(
+                      duration: const Duration(milliseconds: 200),
+                      scale: progress == 1.0 ? 1 : 0,
+                      child: FutureBuilder<bool>(
+                        future: webViewController == null ? null : webViewController!.canGoBack(),
+                        builder: (_, AsyncSnapshot<bool> snapshot) {
+                          final bool canGoBack = snapshot.data ?? false;
+                          miraiPrint('canGoBack $canGoBack');
+                          return FloatingActionButton(
+                            //  mini: true,
+                            heroTag: "FloatingActionButton2",
+                            tooltip: 'Go Back',
+                            hoverColor: Colors.red.withOpacity(.2),
+                            onPressed: () async {
+                              miraiPrint('GoBack Clicked');
+                              await webViewController!.goBack();
+                            },
+                            child: const Icon(
+                              Icons.arrow_forward,
+                              color: Colors.white,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -226,8 +311,7 @@ class _MyHomePageState extends State<MyHomePage> {
       InAppWebViewController controller, NavigationAction navigationAction) async {
     Uri uri = navigationAction.request.url!;
 
-    if (!["http", "https", "file", "chrome", "data", "javascript", "about"]
-        .contains(uri.scheme)) {
+    if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
       if (await canLaunch(url)) {
         // Launch the App
         await launch(url);
@@ -273,8 +357,11 @@ class _MyHomePageState extends State<MyHomePage> {
         /// Split title to get the author, [Book title] pdf - [author name] | كتوباتي
         Tuple3<String, String, String> tupleResult = splitTitle(title);
 
+        final String id = const Uuid().v1();
+
         /// Now, The User chosen this book to read...
         final Book book = Book(
+          id: id,
           title: tupleResult.item1,
           longTitle: title,
           author: tupleResult.item2,
@@ -285,8 +372,6 @@ class _MyHomePageState extends State<MyHomePage> {
         /// Now Store this book in the memory...
         widget.controller.chosenBook.value = book;
       }
-
-
     }
 
     pullToRefreshController.endRefreshing();

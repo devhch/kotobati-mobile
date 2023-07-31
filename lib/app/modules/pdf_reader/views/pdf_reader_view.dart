@@ -226,41 +226,49 @@ class _PdfReaderViewState extends State<PdfReaderView> with WidgetsBindingObserv
                               ),
                             ),
                             ValueListenableBuilder<bool>(
-                                valueListenable: controller.fullScreen,
-                                builder: (_, bool fullScreen, __) {
-                                  if (fullScreen) {
-                                    return Padding(
-                                      padding: EdgeInsetsDirectional.only(
-                                        start: 20.0,
-                                        top: context.topPadding + 10,
-                                      ),
-                                      child: CircleAvatar(
-                                        backgroundColor: AppTheme.keyAppColorDark,
-                                        child: Center(
-                                          child: IconButton(
-                                            padding: EdgeInsets.zero,
-                                            onPressed: () {
-                                              controller.enterFullScreen();
-                                              controller.fullScreen.value =
-                                                  !controller.fullScreen.value;
-                                              controller.fullScreen.notifyListeners();
-                                            },
-                                            highlightColor:
-                                                AppTheme.keyAppBlackColor.withOpacity(.2),
-                                            splashColor: AppTheme.keyAppBlackColor.withOpacity(.2),
-                                            icon: const Icon(
-                                              Icons.fullscreen_exit,
-                                              color: Colors.white,
-                                              size: 30,
+                              valueListenable: controller.fullScreen,
+                              builder: (_, bool fullScreen, __) {
+                                return AnimatedPositionedDirectional(
+                                  duration: const Duration(milliseconds: 200),
+                                  start: 20,
+                                  bottom: fullScreen ? 20 : 120,
+                                  child: CircleAvatar(
+                                    backgroundColor: AppTheme.keyAppColorDark,
+                                    child: Center(
+                                      child: IconButton(
+                                        padding: EdgeInsets.zero,
+                                        onPressed: () {
+                                          if (fullScreen) {
+                                            controller.exitFullScreen();
+                                            controller.fullScreen.value =
+                                                !controller.fullScreen.value;
+                                            controller.fullScreen.notifyListeners();
+                                          } else {
+                                            controller.enterFullScreen();
+                                            controller.fullScreen.value =
+                                                !controller.fullScreen.value;
+                                            controller.fullScreen.notifyListeners();
+                                          }
+                                        },
+                                        highlightColor: AppTheme.keyAppBlackColor.withOpacity(.2),
+                                        splashColor: AppTheme.keyAppBlackColor.withOpacity(.2),
+                                        icon: AnimatedSwitcher(
+                                          duration: const Duration(milliseconds: 100),
+                                          child: Icon(
+                                            fullScreen ? Icons.fullscreen_exit : Icons.fullscreen,
+                                            color: Colors.white,
+                                            size: 30,
+                                            key: ValueKey<String>(
+                                              'SwitchFullScreenIcon$fullScreen',
                                             ),
                                           ),
                                         ),
                                       ),
-                                    );
-                                  } else {
-                                    return const SizedBox.shrink();
-                                  }
-                                }),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
                           ],
                         ),
                       ),
