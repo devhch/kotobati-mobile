@@ -11,16 +11,18 @@ class Quote {
   final String id;
   final String content;
   Book? book;
+  int page;
 
   Quote({
     required this.id,
     required this.content,
     this.book,
+    this.page = 0,
   });
 
-  factory Quote.create({required String content, Book? book}) {
+  factory Quote.create({required String content, required int page, Book? book}) {
     final String id = const Uuid().v1();
-    return Quote(id: id, content: content, book: book);
+    return Quote(id: id, content: content, book: book, page: page);
   }
 
   factory Quote.fromJson(Map<dynamic, dynamic> map) {
@@ -29,6 +31,7 @@ class Quote {
     return Quote(
       id: json['id'],
       content: json['content'],
+      page: json['page'] ?? 0,
       book: json['book'] == null ? null : Book.fromJson(json['book']),
     );
   }
@@ -36,6 +39,7 @@ class Quote {
   Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'content': content,
+        'page': page,
         'book': book?.toJson(),
       };
 
@@ -46,13 +50,14 @@ class Quote {
           runtimeType == other.runtimeType &&
           id == other.id &&
           content == other.content &&
-          book == other.book;
+          book == other.book &&
+          page == other.page;
 
   @override
-  int get hashCode => id.hashCode ^ content.hashCode ^ book.hashCode;
+  int get hashCode => id.hashCode ^ content.hashCode ^ book.hashCode ^ page.hashCode;
 
   @override
   String toString() {
-    return 'Quote{id: $id, content: $content, book: $book}';
+    return 'Quote{id: $id, content: $content, book: $book, page: $page}';
   }
 }

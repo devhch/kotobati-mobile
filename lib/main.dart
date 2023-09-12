@@ -5,16 +5,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
+import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_preload_svgs.dart';
 
 import 'app/core/models/planing_books_model.dart';
 import 'app/core/utils/app_theme.dart';
 import 'app/data/persistence/hive_data_store.dart';
-import 'app/overlays/true_caller_overlay.dart';
+import 'app/modules/home/controllers/home_controller.dart';
 import 'app/routes/app_pages.dart';
 import 'firebase_options.dart';
 
@@ -24,18 +26,23 @@ Future<void> main() async {
   runApp(const MyApp());
 }
 
+void onDidReceiveNotificationResponse(NotificationResponse notificationResponse) async {
+  final String? payload = notificationResponse.payload;
+  if (notificationResponse.payload != null) {
+    debugPrint('notification payload: $payload');
+  }
 
-@pragma("vm:entry-point")
-void overlayMain() {
-  WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: TrueCallerOverlay(),
-    ),
-  );
+  final Book? book = Get.find<HomeController>().chosenBook.value;
+  miraiPrint('<==============================================>');
+  miraiPrint('onDidReceiveNotificationResponse: book $book');
+  miraiPrint('<==============================================>');
+  if (book != null) {
+    Get.toNamed(
+      Routes.bookDetails,
+      arguments: <String, dynamic>{"book": book},
+    );
+  }
 }
-
 
 Future<void> appPreLunch() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -46,6 +53,17 @@ Future<void> appPreLunch() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
+  const InitializationSettings initializationSettings = InitializationSettings(
+    android: AndroidInitializationSettings('@mipmap/ic_launcher'),
+    iOS: DarwinInitializationSettings(),
+  );
+  await flutterLocalNotificationsPlugin.initialize(
+    initializationSettings,
+    onDidReceiveNotificationResponse: onDidReceiveNotificationResponse,
   );
 
   /// Change NavigationBarColor and statusBarColor.
@@ -87,7 +105,7 @@ Future<void> appPreLunch() async {
 
     if (swAvailable && swInterceptAvailable) {
       AndroidServiceWorkerController serviceWorkerController =
-      AndroidServiceWorkerController.instance();
+          AndroidServiceWorkerController.instance();
 
       serviceWorkerController.serviceWorkerClient = AndroidServiceWorkerClient(
         shouldInterceptRequest: (WebResourceRequest request) async {
@@ -126,8 +144,7 @@ class MyApp extends StatelessWidget {
           GlobalWidgetsLocalizations.delegate,
           GlobalCupertinoLocalizations.delegate,
         ],
-        localeResolutionCallback:
-            (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
+        localeResolutionCallback: (Locale? deviceLocale, Iterable<Locale> supportedLocales) {
           for (Locale locale in supportedLocales) {
             if (locale.languageCode == deviceLocale?.languageCode &&
                 locale.countryCode == deviceLocale?.countryCode) {

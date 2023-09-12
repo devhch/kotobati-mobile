@@ -21,9 +21,10 @@ class ReadingView extends GetView<ReadingController> {
       child: ValueListenableBuilder<Box<Map<dynamic, dynamic>>>(
         valueListenable: HiveDataStore().booksListenable(),
         builder: (_, Box<Map<dynamic, dynamic>> box, __) {
-          final List<Map<dynamic, dynamic>> books = box.values.toList();
+          List<Map<dynamic, dynamic>> books = box.values.toList();
 
           if (books.isNotEmpty) {
+            books = books.reversed.toList();
             return ListView.builder(
               padding: const EdgeInsets.only(
                 left: 16,

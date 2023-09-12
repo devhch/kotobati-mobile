@@ -35,21 +35,11 @@ class SearchControllerC extends GetxController {
   ValueNotifier<int> downloadProgress = ValueNotifier<int>(0);
   int total = 1;
 
-  late final TextEditingController txtController;
-
-  @override
-  void onInit() {
-    super.onInit();
-    txtController = TextEditingController();
-  }
-
   @override
   void onReady() {
     super.onReady();
     miraiPrint('SearchControllerC onReady');
-
-    // HiveDataStore().clearMiraiPDFs();
-    getPdfFilesFromNative();
+    check();
   }
 
   // @override
@@ -57,17 +47,24 @@ class SearchControllerC extends GetxController {
   //   super.dispose();
   // }
 
-  void check() {
+  Future<void> check() async {
     final List<MiraiPDF> miraiPDFs = HiveDataStore().getMiraiPDfs();
     if (miraiPDFs.isNotEmpty) {
+      await Future<void>.delayed(const Duration(seconds: 1), () {});
       log('miraiPDFs ${miraiPDFs.toString()}');
       isPDFsFromHive = true;
-      isDoneSearching = true;
+      // pdfPaths = miraiPDFs;
+      total = miraiPDFs.length;
       pdfPaths = miraiPDFs;
-      pdfFilesForSearch.value = pdfPaths;
+      pdfFilesForSearch.value = List<MiraiPDF>.from(pdfPaths);
+
+      isDoneSearching = true;
+
+      /// Update...
       update();
+      //  await loadFileImageAndSize(miraiPDFs);
     } else {
-      getPdfFilesFromNative();
+      await getPdfFilesFromNative();
     }
   }
 
@@ -107,6 +104,7 @@ class SearchControllerC extends GetxController {
           miraiPrint(' Request read external storage permission');
           permissionGranted = await requestManageExternalStoragePermission();
           miraiPrint(' permissionGranted $permissionGranted');
+          // await getPdfFilesFromNative();
         } on PlatformException catch (e) {
           miraiPrint("Error: ${e.message}");
         }
@@ -127,40 +125,12 @@ class SearchControllerC extends GetxController {
           /// Update...
           update();
 
-          for (String pdfPath in pdfPathsAsString) {
-            final String title = pdfPath
-                .split('/')
-                .last
-                .capitalizeFirst!
-                .replaceAll('-', ' ')
-                .replaceAll('pdf', ' ')
-                .replaceAll('.pdf', '')
-                .trim();
-            MiraiPDF pdfWidthImage = MiraiPDF(title: title, path: pdfPath);
+          await loadFileImageAndSize(pdfPathsAsString);
 
-            final String size = await getFileSizes(pdfPath, 2);
-            debugPrint('size $size');
-            pdfWidthImage.size = size;
-
-            pdfWidthImage.image = await generatePdfCover(pdfPath);
-
-            pdfPaths.add(pdfWidthImage);
-
-            downloadProgress.value += 1;
-
-            await Future<void>.delayed(const Duration(milliseconds: 50), () {});
+          if (pdfFilesForSearch.value.isNotEmpty) {
+            /// Save To HIVE
+            HiveDataStore().setMiraiPDFs(miraiPDFs: pdfFilesForSearch.value);
           }
-
-          miraiPrint('before to search list pdfPaths: $pdfPaths');
-          pdfFilesForSearch.value = pdfPaths;
-
-          isDoneSearching = true;
-          update();
-
-          // if (pdfFilesForSearch.value.isNotEmpty) {
-          //   /// Save To HIVE
-          //   HiveDataStore().setMiraiPDFs(miraiPDFs: pdfFilesForSearch.value);
-          // }
         } else {
           miraiPrint("Permission not granted.");
           AppMiraiDialog.snackBarError(
@@ -174,6 +144,39 @@ class SearchControllerC extends GetxController {
         miraiPrint("Error: ${e.message}");
       }
     }
+  }
+
+  Future<void> loadFileImageAndSize(List<String> pdfPathsAsString) async {
+    pdfPaths.clear();
+    for (String pdfPath in pdfPathsAsString) {
+      final String title = pdfPath
+          .split('/')
+          .last
+          .capitalizeFirst!
+          .replaceAll('-', ' ')
+          .replaceAll('pdf', ' ')
+          .replaceAll('.pdf', '')
+          .trim();
+      MiraiPDF pdfWidthImage = MiraiPDF(title: title, path: pdfPath);
+
+      final String size = await getFileSizes(pdfPath, 2);
+      debugPrint('size $size');
+      pdfWidthImage.size = size;
+
+      pdfWidthImage.image = await generatePdfCover(pdfPath);
+
+      pdfPaths.add(pdfWidthImage);
+
+      downloadProgress.value += 1;
+
+      await Future<void>.delayed(const Duration(milliseconds: 50), () {});
+    }
+
+    pdfFilesForSearch.value = pdfPaths;
+
+    isDoneSearching = true;
+
+    update();
   }
 
   Future<bool> checkManageExternalStoragePermission() async {

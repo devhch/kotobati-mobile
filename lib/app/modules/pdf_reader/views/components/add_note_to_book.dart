@@ -17,14 +17,18 @@ import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 import 'package:kotobati/app/widgets/mirai_text_field_widget.dart';
 
 class AddNoteToBookDialog {
-  static Future<void> show(
-      {required ValueNotifier<Book?> book, required VoidCallback callback}) async {
+  static Future<void> show({
+    required ValueNotifier<Book?> book,
+    required int page,
+    required VoidCallback callback,
+  }) async {
     TextEditingController textController = TextEditingController();
 
     await Get.dialog(
       _AddNoteToBookBody(
         book: book,
         textController: textController,
+        page: page,
         callback: callback,
       ),
     );
@@ -36,12 +40,14 @@ class _AddNoteToBookBody extends StatelessWidget {
     Key? key,
     required this.book,
     required this.textController,
+    required this.page,
     required this.callback,
   }) : super(key: key);
 
   final ValueNotifier<Book?> book;
   final VoidCallback callback;
   final TextEditingController textController;
+  final int page;
 
   @override
   Widget build(BuildContext context) {
@@ -90,7 +96,7 @@ class _AddNoteToBookBody extends StatelessWidget {
                         // }
 
                         // checkNotes(book.value.notes!);
-                        final Note note = Note.create(content: textController.text);
+                        final Note note = Note.create(content: textController.text, page: page);
                         book.value?.notes?.add(note);
                         book.notifyListeners();
 

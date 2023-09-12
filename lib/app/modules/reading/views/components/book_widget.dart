@@ -11,6 +11,7 @@ import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
+import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
@@ -19,6 +20,7 @@ import 'package:kotobati/app/routes/app_pages.dart';
 import 'package:kotobati/app/widgets/delete_one_book_widget.dart';
 import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
+import 'package:share_plus/share_plus.dart';
 
 class BookWidget extends StatelessWidget {
   const BookWidget({
@@ -185,8 +187,22 @@ class BookWidget extends StatelessWidget {
                               const ContainerDivider(),
                               InkWell(
                                 onTap: () {
-                                  /// Share File
-                                  shareFile(book.path!, subject: book.title!);
+                                  if (book.path != null) {
+                                    /// ADD PDF extension if it does not exists
+                                    final String pathWithExtension = !book.path!.endsWith('.pdf')
+                                        ? '${book.path!}.pdf'
+                                        : book.path!;
+
+                                    XFile file = XFile(pathWithExtension);
+
+                                    /// Share File
+                                    shareFile(file, subject: book.title!);
+                                  } else {
+                                    AppMiraiDialog.snackBarError(
+                                      title: 'OPS!',
+                                      message: 'Book path not found',
+                                    );
+                                  }
                                 },
                                 child: SvgPicture.asset(
                                   AppIconsKeys.share,

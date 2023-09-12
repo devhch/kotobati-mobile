@@ -81,12 +81,12 @@ class AppPages {
     GetPage<void>(
       name: _Paths.bookDetails,
       page: () => const BookDetailsView(),
-      binding: BookDetailsBinding(),
+      // binding: BookDetailsBinding(),
     ),
     GetPage<void>(
       name: _Paths.planingDetails,
       page: () => const PlaningDetailsView(),
-      binding: PlaningDetailsBinding(),
+      //  binding: PlaningDetailsBinding(),
     ),
     GetPage<void>(
       name: _Paths.intro,

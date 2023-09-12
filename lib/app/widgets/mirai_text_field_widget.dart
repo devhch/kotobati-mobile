@@ -70,6 +70,7 @@ class MiraiTextFieldWidget extends StatelessWidget {
         enabled: enabled,
         maxLines: maxLines,
         // autofocus: true,
+        autofocus: false,
         textAlignVertical: TextAlignVertical.center,
         controller: controller,
         style: style ??
@@ -131,7 +132,8 @@ class MiraiTextFieldWidget extends StatelessWidget {
           prefixIcon: prefixIcon,
           hintText: hint,
         ),
-        keyboardType: keyboardType ?? TextInputType.emailAddress,
+        keyboardType: keyboardType,
+        //?? TextInputType.emailAddress,
         textInputAction: textInputAction ?? TextInputAction.next,
         onFieldSubmitted: onFieldSubmitted,
         onChanged: onChanged,

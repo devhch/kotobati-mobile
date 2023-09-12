@@ -10,8 +10,25 @@ import 'package:kotobati/app/widgets/common_scaffold.dart';
 import '../../../core/utils/app_theme.dart';
 import '../controllers/planing_details_controller.dart';
 
-class PlaningDetailsView extends GetView<PlaningDetailsController> {
+class PlaningDetailsView extends StatefulWidget {
   const PlaningDetailsView({Key? key}) : super(key: key);
+
+  @override
+  State<PlaningDetailsView> createState() => _PlaningDetailsViewState();
+}
+
+class _PlaningDetailsViewState extends State<PlaningDetailsView> {
+  /// BookDetailsController
+  late PlaningDetailsController controller;
+
+  @override
+  void initState() {
+    super.initState();
+    controller = Get.put<PlaningDetailsController>(
+      PlaningDetailsController(),
+      tag: '${UniqueKey()}',
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

@@ -7,21 +7,28 @@ import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/note_model.dart';
 import 'package:kotobati/app/core/models/planing_books_model.dart';
+import 'package:kotobati/app/core/models/quote_model.dart';
+import 'package:kotobati/app/core/utils/app_extension.dart';
 import 'package:kotobati/app/core/utils/app_icons_keys.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/reading/views/components/book_widget.dart';
 import 'package:kotobati/app/routes/app_pages.dart';
+import 'package:kotobati/app/widgets/common_app_bar_widget.dart';
 import 'package:kotobati/app/widgets/common_scaffold.dart';
 import 'package:kotobati/app/widgets/delete_one_book_widget.dart';
 import 'package:kotobati/app/widgets/mirai_cached_image_network_widget.dart';
 import 'package:kotobati/app/widgets/mirai_elevated_button_widget.dart';
 import 'package:kotobati/app/widgets/mirai_verifying_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 
 import '../../pdf_reader/views/components/planing_bottom_sheet.dart';
 import '../controllers/book_details_controller.dart';
 import 'components/text_widget.dart';
+
+import 'dart:math' as math;
 
 class BookDetailsView extends StatefulWidget {
   const BookDetailsView({Key? key}) : super(key: key);
@@ -32,19 +39,25 @@ class BookDetailsView extends StatefulWidget {
 
 class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProviderStateMixin {
   /// BookDetailsController
-  final BookDetailsController controller = Get.find<BookDetailsController>();
+  late BookDetailsController controller;
 
   late TabController _tabController;
 
   @override
   void initState() {
     super.initState();
+    controller = Get.put<BookDetailsController>(
+      BookDetailsController(),
+      tag: '${UniqueKey()}',
+    );
     _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
   void dispose() {
     _tabController.dispose();
+    controller.book = null;
+    controller.pdfFile = null;
     super.dispose();
   }
 
@@ -54,251 +67,320 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
       value: const SystemUiOverlayStyle(
         systemNavigationBarColor: AppTheme.keyAppBlackColor,
       ),
-      child: CommonScaffold(
-        backButton: true,
-        child: GetBuilder<BookDetailsController>(
+      child: Scaffold(
+        backgroundColor: AppTheme.keyAppBlackColor,
+        body: GetBuilder<BookDetailsController>(
+          init: controller,
           builder: (_) {
             return Column(
               children: <Widget>[
-                //     const SizedBox(height: 15),
-                if (controller.book.image != null)
-                  Container(
-                    // padding: const EdgeInsets.symmetric(
-                    //   horizontal: 16,
-                    //   vertical: 10,
-                    // ),
-                    height: 140,
-                    width: 96,
-                    decoration: const BoxDecoration(
-                        // color: AppTheme.keyAppColor,
-                        ),
-                    child: controller.book.image != null && controller.book.image!.contains(".svg")
-                        ? SvgPicture.network(
-                            controller.book.image!,
-                            fit: BoxFit.contain,
-                            width: double.infinity,
-                            // width: MiraiSize.iconSize24,
-                            // height: MiraiSize.iconSize24,
-                          )
-                        : controller.book.image is String
-                            ? MiraiCachedImageNetworkWidget(
-                                imageUrl: controller.book.image!,
-                                fit: BoxFit.fill,
-                                width: 96,
-                                //  width: double.infinity,
-                                //    width: MiraiSize.iconSize24,
-                                title: controller.book.title!,
-                                // height: MiraiSize.iconSize24,
-                                // color: AppTheme.keyAppBlackColor,
-                              )
-                            : controller.book.image is Uint8List
-                                ? Container(
-                                    color: Colors.white,
-                                    child: Image.memory(
-                                      controller.book.image,
-                                      fit: BoxFit.cover,
-                                    ),
-                                  )
-                                : const SizedBox.shrink(),
-                  ),
-                const SizedBox(height: 18),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Text(
-                    controller.book.title!,
-                    style: context.textTheme.headlineMedium!.copyWith(
-                      fontSize: 22,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                const SizedBox(height: 10),
-                if (controller.book.author != null)
-                  Text(
-                    controller.book.author!,
-                    style: context.textTheme.headlineMedium!.copyWith(fontSize: 14),
-                  ),
-                const SizedBox(height: 16),
-                if (controller.book.path != null)
-                  MiraiElevatedButtonWidget(
-                    // height: 48,
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
-                    overlayColor: Colors.white.withOpacity(.2),
-                    borderRadius: BorderRadius.circular(8),
-                    child: const Text("قراءة الكتاب"),
-                    onTap: () async {
-                      miraiPrint("Send Book ${controller.book.toString()}");
-                      Get.toNamed(
-                        Routes.pdfReader,
-                        arguments: controller.book,
-                      );
-                      // miraiPrint("New Book ${newBook.toString()}");
-                      //
-                      // if (newBook is Book &&
-                      //     newBook.toString() != controller.book.toString()) {
-                      //   controller.book = newBook;
-                      //   controller.update();
-                      // }
-                    },
-                  ),
-                const SizedBox(height: 24),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    InkWell(
-                      onTap: () async {
-                        controller.book.planingBook = listPlaningBooks[0];
-                        await HiveDataStore().updateBook(book: controller.book);
-                        controller.update();
-                      },
-                      child: SvgPicture.asset(
-                        AppIconsKeys.reading,
-                        width: 16,
-                        colorFilter: controller.book.planingBook != null &&
-                                controller.book.planingBook!.id == 1
-                            ? const ColorFilter.mode(
-                                AppTheme.keyAppColor,
-                                BlendMode.srcIn,
-                              )
-                            : null,
-                      ),
-                    ),
-                    const ContainerDivider(),
-                    InkWell(
-                      onTap: () async {
-                        controller.book.planingBook = listPlaningBooks[1];
-                        await HiveDataStore().updateBook(book: controller.book);
-                        controller.update();
-                      },
-                      child: SvgPicture.asset(
-                        AppIconsKeys.readLater,
-                        width: 16,
-                        // color: AppTheme.keyAppColor,
-                        colorFilter: controller.book.planingBook != null &&
-                                controller.book.planingBook!.id == 2
-                            ? const ColorFilter.mode(
-                                AppTheme.keyAppColor,
-                                BlendMode.srcIn,
-                              )
-                            : null,
-                      ),
-                    ),
-                    const ContainerDivider(),
-                    InkWell(
-                      onTap: () async {
-                        controller.book.planingBook = listPlaningBooks[2];
-                        await HiveDataStore().updateBook(book: controller.book);
-                        controller.update();
-                      },
-                      child: SvgPicture.asset(
-                        AppIconsKeys.readed,
-                        width: 16,
-                        colorFilter: controller.book.planingBook != null &&
-                                controller.book.planingBook!.id == 3
-                            ? const ColorFilter.mode(
-                                AppTheme.keyAppColor,
-                                BlendMode.srcIn,
-                              )
-                            : null,
-                      ),
-                    ),
-                    const ContainerDivider(),
-                    InkWell(
-                      onTap: () {
-                        PlaningBottomSheet.show(book: controller.book);
-                      },
-                      child: SvgPicture.asset(
-                        AppIconsKeys.addCollection,
-                        width: 16,
-                        height: 16,
-                      ),
-                    ),
-                    const ContainerDivider(),
-                    InkWell(
-                      onTap: () {
-                        /// Share File
-                        shareFile(controller.pdfFile!.path, subject: controller.book.title!);
-                      },
-                      child: SvgPicture.asset(
-                        AppIconsKeys.share,
-                        width: 16,
-                      ),
-                    ),
-                    const ContainerDivider(margin: EdgeInsetsDirectional.only(start: 12)),
-                    DeleteOneBookWidget(book: controller.book),
-                  ],
-                ),
-
-                const SizedBox(height: 35),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    GestureDetector(
-                      onTap: () {
-                        _tabController.animateTo(0);
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              // color: AppTheme.keyAppColor,
-                              color: _tabController.index == 0
-                                  ? AppTheme.keyAppColor
-                                  : Colors.transparent,
-                              width: 1.0, // Underline thickness
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          "الملاحظات",
-                          style: context.textTheme.headlineMedium!.copyWith(
-                            fontSize: 24,
-                            color: _tabController.index == 0
-                                ? AppTheme.keyAppColor
-                                : AppTheme.keyAppGrayColorDark,
-                          ),
-                        ),
-                      ),
-                    ),
-                    const ContainerDivider(height: 30, width: 1),
-                    GestureDetector(
-                      onTap: () {
-                        _tabController.animateTo(1);
-                        setState(() {});
-                      },
-                      child: Container(
-                        padding: const EdgeInsets.only(bottom: 5),
-                        decoration: BoxDecoration(
-                          border: Border(
-                            bottom: BorderSide(
-                              // color: AppTheme.keyAppColor,
-                              color: _tabController.index == 1
-                                  ? AppTheme.keyAppColor
-                                  : Colors.transparent,
-                              width: 1.0, // Underline thickness
-                            ),
-                          ),
-                        ),
-                        child: Text(
-                          "الإقتباسات",
-                          style: context.textTheme.headlineMedium!.copyWith(
-                            fontSize: 24,
-                            color: _tabController.index == 1
-                                ? AppTheme.keyAppColor
-                                : AppTheme.keyAppGrayColorDark,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 30),
+                const CommonAppBarWidget(backButton: true, showSettingButton: true),
                 Expanded(
-                  child: ValueListenableBuilder<Box<Map<dynamic, dynamic>>>(
+                  child: NestedScrollView(
+                    headerSliverBuilder: (BuildContext context, bool value) {
+                      return <Widget>[
+                        SliverAppBar(
+                          elevation: 0,
+                          backgroundColor: AppTheme.keyAppBlackColor,
+                          pinned: true,
+                          automaticallyImplyLeading: false,
+                          title: const SizedBox.shrink(),
+                          expandedHeight: 440,
+                          flexibleSpace: FlexibleSpaceBar(
+                            background: SingleChildScrollView(
+                              child: Column(
+                                children: <Widget>[
+                                  const SizedBox(height: 50),
+                                  if (controller.book!.image != null)
+                                    Container(
+                                      // padding: const EdgeInsets.symmetric(
+                                      //   horizontal: 16,
+                                      //   vertical: 10,
+                                      // ),
+                                      height: 140,
+                                      width: 96,
+                                      decoration: const BoxDecoration(
+                                          // color: AppTheme.keyAppColor,
+                                          ),
+                                      child: controller.book!.image != null &&
+                                              controller.book!.image!.contains(".svg")
+                                          ? SvgPicture.network(
+                                              controller.book!.image!,
+                                              fit: BoxFit.contain,
+                                              width: double.infinity,
+                                              // width: MiraiSize.iconSize24,
+                                              // height: MiraiSize.iconSize24,
+                                            )
+                                          : controller.book!.image is String
+                                              ? MiraiCachedImageNetworkWidget(
+                                                  imageUrl: controller.book!.image!,
+                                                  fit: BoxFit.fill,
+                                                  width: 96,
+                                                  //  width: double.infinity,
+                                                  //    width: MiraiSize.iconSize24,
+                                                  title: controller.book!.title!,
+                                                  // height: MiraiSize.iconSize24,
+                                                  // color: AppTheme.keyAppBlackColor,
+                                                )
+                                              : controller.book!.image is Uint8List
+                                                  ? Container(
+                                                      color: Colors.white,
+                                                      child: Image.memory(
+                                                        controller.book!.image,
+                                                        fit: BoxFit.cover,
+                                                      ),
+                                                    )
+                                                  : const SizedBox.shrink(),
+                                    ),
+                                  const SizedBox(height: 18),
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                                    child: Text(
+                                      controller.book!.title!,
+                                      style: context.textTheme.headlineMedium!.copyWith(
+                                        fontSize: 22,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 10),
+                                  if (controller.book!.author != null)
+                                    Text(
+                                      controller.book!.author!,
+                                      style:
+                                          context.textTheme.headlineMedium!.copyWith(fontSize: 14),
+                                    ),
+                                  const SizedBox(height: 16),
+                                  if (controller.book!.path != null)
+                                    MiraiElevatedButtonWidget(
+                                      // height: 48,
+                                      padding:
+                                          const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+                                      overlayColor: Colors.white.withOpacity(.2),
+                                      borderRadius: BorderRadius.circular(8),
+                                      child: const Text("قراءة الكتاب"),
+                                      onTap: () async {
+                                        miraiPrint("Send Book ${controller.book!.toString()}");
+                                        Get.toNamed(
+                                          Routes.pdfReader,
+                                          arguments: <String, dynamic>{"book": controller.book!},
+                                        );
+                                        // miraiPrint("New Book ${newBook.toString()}");
+                                        //
+                                        // if (newBook is Book &&
+                                        //     newBook.toString() != controller.book!.toString()) {
+                                        //   controller.book! = newBook;
+                                        //   controller.update();
+                                        // }
+                                      },
+                                    ),
+                                  const SizedBox(height: 24),
+                                  Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: <Widget>[
+                                      InkWell(
+                                        onTap: () async {
+                                          controller.book!.planingBook = listPlaningBooks[0];
+                                          await HiveDataStore().updateBook(book: controller.book!);
+                                          controller.update();
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppIconsKeys.reading,
+                                          width: 16,
+                                          colorFilter: controller.book!.planingBook != null &&
+                                                  controller.book!.planingBook!.id == 1
+                                              ? const ColorFilter.mode(
+                                                  AppTheme.keyAppColor,
+                                                  BlendMode.srcIn,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                      const ContainerDivider(),
+                                      InkWell(
+                                        onTap: () async {
+                                          controller.book!.planingBook = listPlaningBooks[1];
+                                          await HiveDataStore().updateBook(book: controller.book!);
+                                          controller.update();
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppIconsKeys.readLater,
+                                          width: 16,
+                                          // color: AppTheme.keyAppColor,
+                                          colorFilter: controller.book!.planingBook != null &&
+                                                  controller.book!.planingBook!.id == 2
+                                              ? const ColorFilter.mode(
+                                                  AppTheme.keyAppColor,
+                                                  BlendMode.srcIn,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                      const ContainerDivider(),
+                                      InkWell(
+                                        onTap: () async {
+                                          controller.book!.planingBook = listPlaningBooks[2];
+                                          await HiveDataStore().updateBook(book: controller.book!);
+                                          controller.update();
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppIconsKeys.readed,
+                                          width: 16,
+                                          colorFilter: controller.book!.planingBook != null &&
+                                                  controller.book!.planingBook!.id == 3
+                                              ? const ColorFilter.mode(
+                                                  AppTheme.keyAppColor,
+                                                  BlendMode.srcIn,
+                                                )
+                                              : null,
+                                        ),
+                                      ),
+                                      const ContainerDivider(),
+                                      InkWell(
+                                        onTap: () {
+                                          PlaningBottomSheet.show(book: controller.book!);
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppIconsKeys.addCollection,
+                                          width: 16,
+                                          height: 16,
+                                        ),
+                                      ),
+                                      const ContainerDivider(),
+                                      InkWell(
+                                        onTap: () async {
+                                          final String originalFilePath = controller.pdfFile!.path;
+                                          await shareBook(
+                                            originalFilePath,
+                                            controller.book!.title!,
+                                          );
+                                          //}
+
+                                          // Rename the file with ".pdf" extension if it's missing.
+                                          // if (!fileNameWithExtension
+                                          //     .toLowerCase()
+                                          //     .endsWith('.pdf')) {
+                                          //   final String newFilePath = '$originalFilePath.pdf';
+                                          //   await file.rename(newFilePath);
+                                          // }
+
+                                          // if (shareResult != null) {
+                                          //   switch (shareResult.status) {
+                                          //     /// The user has selected an action
+                                          //     case ShareResultStatus.success:
+                                          //       miraiPrint(
+                                          //           'ShareFile: The user has selected an action');
+                                          //
+                                          //     /// The user dismissed the share-sheet
+                                          //     case ShareResultStatus.dismissed:
+                                          //       // Delete the temporary copy after sharing.
+                                          //       await File(tempCopyPath).delete();
+                                          //
+                                          //     /// The status can not be determined
+                                          //     case ShareResultStatus.unavailable:
+                                          //       // Delete the temporary copy after sharing.
+                                          //       await File(tempCopyPath).delete();
+                                          //   }
+                                          // } else {
+                                          //   // Delete the temporary copy after sharing.
+                                          //   await File(tempCopyPath).delete();
+                                          // }
+                                        },
+                                        child: SvgPicture.asset(
+                                          AppIconsKeys.share,
+                                          width: 16,
+                                        ),
+                                      ),
+                                      const ContainerDivider(
+                                        margin: EdgeInsetsDirectional.only(start: 12),
+                                      ),
+                                      DeleteOneBookWidget(book: controller.book!),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        SliverPersistentHeader(
+                          pinned: true,
+                          delegate: _SliverAppBarDelegate(
+                            minHeight: 60,
+                            maxHeight: 60,
+                            child: Container(
+                              color: AppTheme.keyAppBlackColor,
+                              //  padding: const EdgeInsets.only(top: 10),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  GestureDetector(
+                                    onTap: () {
+                                      _tabController.animateTo(0);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.only(bottom: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            // color: AppTheme.keyAppColor,
+                                            color: _tabController.index == 0
+                                                ? AppTheme.keyAppColor
+                                                : Colors.transparent,
+                                            width: 1.0, // Underline thickness
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "الملاحظات",
+                                        style: context.textTheme.headlineMedium!.copyWith(
+                                          fontSize: 24,
+                                          color: _tabController.index == 0
+                                              ? AppTheme.keyAppColor
+                                              : AppTheme.keyAppGrayColorDark,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  const ContainerDivider(height: 30, width: 1),
+                                  GestureDetector(
+                                    onTap: () {
+                                      _tabController.animateTo(1);
+                                      setState(() {});
+                                    },
+                                    child: Container(
+                                      padding: const EdgeInsets.only(bottom: 5),
+                                      decoration: BoxDecoration(
+                                        border: Border(
+                                          bottom: BorderSide(
+                                            // color: AppTheme.keyAppColor,
+                                            color: _tabController.index == 1
+                                                ? AppTheme.keyAppColor
+                                                : Colors.transparent,
+                                            width: 1.0, // Underline thickness
+                                          ),
+                                        ),
+                                      ),
+                                      child: Text(
+                                        "الإقتباسات",
+                                        style: context.textTheme.headlineMedium!.copyWith(
+                                          fontSize: 24,
+                                          color: _tabController.index == 1
+                                              ? AppTheme.keyAppColor
+                                              : AppTheme.keyAppGrayColorDark,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                      ];
+                    },
+                    body: ValueListenableBuilder<Box<Map<dynamic, dynamic>>>(
                       valueListenable: HiveDataStore().booksListenable(),
                       builder: (_, Box<Map<dynamic, dynamic>> box, __) {
                         final List<Map<dynamic, dynamic>> books = box.values.toList();
@@ -307,7 +389,7 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
 
                         Book? book;
                         for (Map<dynamic, dynamic> bookJson in books) {
-                          if (Book.fromJson(bookJson).id == controller.book.id) {
+                          if (Book.fromJson(bookJson).id == controller.book!.id) {
                             book = Book.fromJson(bookJson);
                             break;
                           }
@@ -325,9 +407,12 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                                 padding: EdgeInsets.zero,
                                 itemCount: book.notes!.length,
                                 itemBuilder: (_, int index) {
+                                  final Note note = book!.notes![index];
                                   return TextWidget(
-                                    title: book!.title!,
-                                    text: book.notes![index].content,
+                                    book: book,
+                                    title: book.title!,
+                                    text: note.content,
+                                    page: note.page,
                                     useCover: false,
                                   );
                                 },
@@ -369,10 +454,13 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                                 padding: EdgeInsets.zero,
                                 itemCount: book.quotes!.length,
                                 itemBuilder: (_, int index) {
-                                  final String imagePath = book!.quotes![index].content;
+                                  final Quote quote = book!.quotes![index];
+
                                   return TextWidget(
+                                    book: book,
                                     title: book.title!,
-                                    image: imagePath,
+                                    image: quote.content,
+                                    page: quote.page,
                                     useCover: false,
                                   );
                                   // return TextWidget(
@@ -412,7 +500,9 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                               ),
                           ],
                         );
-                      }),
+                      },
+                    ),
+                  ),
                 ),
               ],
             );
@@ -420,5 +510,390 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
         ),
       ),
     );
+  }
+}
+//
+// body(BookDetailsController controller, BuildContext context, setState, _tabController) => Column(
+//       children: <Widget>[
+//         //     const SizedBox(height: 15),
+//         if (controller.book!.image != null)
+//           Container(
+//             // padding: const EdgeInsets.symmetric(
+//             //   horizontal: 16,
+//             //   vertical: 10,
+//             // ),
+//             height: 140,
+//             width: 96,
+//             decoration: const BoxDecoration(
+//                 // color: AppTheme.keyAppColor,
+//                 ),
+//             child: controller.book!.image != null && controller.book!.image!.contains(".svg")
+//                 ? SvgPicture.network(
+//                     controller.book!.image!,
+//                     fit: BoxFit.contain,
+//                     width: double.infinity,
+//                     // width: MiraiSize.iconSize24,
+//                     // height: MiraiSize.iconSize24,
+//                   )
+//                 : controller.book!.image is String
+//                     ? MiraiCachedImageNetworkWidget(
+//                         imageUrl: controller.book!.image!,
+//                         fit: BoxFit.fill,
+//                         width: 96,
+//                         //  width: double.infinity,
+//                         //    width: MiraiSize.iconSize24,
+//                         title: controller.book!.title!,
+//                         // height: MiraiSize.iconSize24,
+//                         // color: AppTheme.keyAppBlackColor,
+//                       )
+//                     : controller.book!.image is Uint8List
+//                         ? Container(
+//                             color: Colors.white,
+//                             child: Image.memory(
+//                               controller.book!.image,
+//                               fit: BoxFit.cover,
+//                             ),
+//                           )
+//                         : const SizedBox.shrink(),
+//           ),
+//         const SizedBox(height: 18),
+//         Padding(
+//           padding: const EdgeInsets.symmetric(horizontal: 20),
+//           child: Text(
+//             controller.book!.title!,
+//             style: context.textTheme.headlineMedium!.copyWith(
+//               fontSize: 22,
+//             ),
+//             textAlign: TextAlign.center,
+//           ),
+//         ),
+//         const SizedBox(height: 10),
+//         if (controller.book!.author != null)
+//           Text(
+//             controller.book!.author!,
+//             style: context.textTheme.headlineMedium!.copyWith(fontSize: 14),
+//           ),
+//         const SizedBox(height: 16),
+//         if (controller.book!.path != null)
+//           MiraiElevatedButtonWidget(
+//             // height: 48,
+//             padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 16),
+//             overlayColor: Colors.white.withOpacity(.2),
+//             borderRadius: BorderRadius.circular(8),
+//             child: const Text("قراءة الكتاب"),
+//             onTap: () async {
+//               miraiPrint("Send Book ${controller.book!.toString()}");
+//               Get.toNamed(
+//                 Routes.pdfReader,
+//                 arguments: controller.book!,
+//               );
+//               // miraiPrint("New Book ${newBook.toString()}");
+//               //
+//               // if (newBook is Book &&
+//               //     newBook.toString() != controller.book!.toString()) {
+//               //   controller.book! = newBook;
+//               //   controller.update();
+//               // }
+//             },
+//           ),
+//         const SizedBox(height: 24),
+//         Row(
+//           mainAxisSize: MainAxisSize.min,
+//           children: <Widget>[
+//             InkWell(
+//               onTap: () async {
+//                 controller.book!.planingBook = listPlaningBooks[0];
+//                 await HiveDataStore().updateBook(book: controller.book!);
+//                 controller.update();
+//               },
+//               child: SvgPicture.asset(
+//                 AppIconsKeys.reading,
+//                 width: 16,
+//                 colorFilter:
+//                     controller.book!.planingBook != null && controller.book!.planingBook!.id == 1
+//                         ? const ColorFilter.mode(
+//                             AppTheme.keyAppColor,
+//                             BlendMode.srcIn,
+//                           )
+//                         : null,
+//               ),
+//             ),
+//             const ContainerDivider(),
+//             InkWell(
+//               onTap: () async {
+//                 controller.book!.planingBook = listPlaningBooks[1];
+//                 await HiveDataStore().updateBook(book: controller.book!);
+//                 controller.update();
+//               },
+//               child: SvgPicture.asset(
+//                 AppIconsKeys.readLater,
+//                 width: 16,
+//                 // color: AppTheme.keyAppColor,
+//                 colorFilter:
+//                     controller.book!.planingBook != null && controller.book!.planingBook!.id == 2
+//                         ? const ColorFilter.mode(
+//                             AppTheme.keyAppColor,
+//                             BlendMode.srcIn,
+//                           )
+//                         : null,
+//               ),
+//             ),
+//             const ContainerDivider(),
+//             InkWell(
+//               onTap: () async {
+//                 controller.book!.planingBook = listPlaningBooks[2];
+//                 await HiveDataStore().updateBook(book: controller.book!);
+//                 controller.update();
+//               },
+//               child: SvgPicture.asset(
+//                 AppIconsKeys.readed,
+//                 width: 16,
+//                 colorFilter:
+//                     controller.book!.planingBook != null && controller.book!.planingBook!.id == 3
+//                         ? const ColorFilter.mode(
+//                             AppTheme.keyAppColor,
+//                             BlendMode.srcIn,
+//                           )
+//                         : null,
+//               ),
+//             ),
+//             const ContainerDivider(),
+//             InkWell(
+//               onTap: () {
+//                 PlaningBottomSheet.show(book: controller.book!);
+//               },
+//               child: SvgPicture.asset(
+//                 AppIconsKeys.addCollection,
+//                 width: 16,
+//                 height: 16,
+//               ),
+//             ),
+//             const ContainerDivider(),
+//             InkWell(
+//               onTap: () {
+//                 /// Share File
+//                 shareFile(controller.pdfFile!.path, subject: controller.book!.title!);
+//               },
+//               child: SvgPicture.asset(
+//                 AppIconsKeys.share,
+//                 width: 16,
+//               ),
+//             ),
+//             const ContainerDivider(margin: EdgeInsetsDirectional.only(start: 12)),
+//             DeleteOneBookWidget(book: controller.book!),
+//           ],
+//         ),
+//
+//         const SizedBox(height: 35),
+//
+//         Row(
+//           mainAxisAlignment: MainAxisAlignment.center,
+//           crossAxisAlignment: CrossAxisAlignment.start,
+//           children: <Widget>[
+//             GestureDetector(
+//               onTap: () {
+//                 _tabController.animateTo(0);
+//                 setState(() {});
+//               },
+//               child: Container(
+//                 padding: const EdgeInsets.only(bottom: 5),
+//                 decoration: BoxDecoration(
+//                   border: Border(
+//                     bottom: BorderSide(
+//                       // color: AppTheme.keyAppColor,
+//                       color: _tabController.index == 0 ? AppTheme.keyAppColor : Colors.transparent,
+//                       width: 1.0, // Underline thickness
+//                     ),
+//                   ),
+//                 ),
+//                 child: Text(
+//                   "الملاحظات",
+//                   style: context.textTheme.headlineMedium!.copyWith(
+//                     fontSize: 24,
+//                     color: _tabController.index == 0
+//                         ? AppTheme.keyAppColor
+//                         : AppTheme.keyAppGrayColorDark,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//             const ContainerDivider(height: 30, width: 1),
+//             GestureDetector(
+//               onTap: () {
+//                 _tabController.animateTo(1);
+//                 setState(() {});
+//               },
+//               child: Container(
+//                 padding: const EdgeInsets.only(bottom: 5),
+//                 decoration: BoxDecoration(
+//                   border: Border(
+//                     bottom: BorderSide(
+//                       // color: AppTheme.keyAppColor,
+//                       color: _tabController.index == 1 ? AppTheme.keyAppColor : Colors.transparent,
+//                       width: 1.0, // Underline thickness
+//                     ),
+//                   ),
+//                 ),
+//                 child: Text(
+//                   "الإقتباسات",
+//                   style: context.textTheme.headlineMedium!.copyWith(
+//                     fontSize: 24,
+//                     color: _tabController.index == 1
+//                         ? AppTheme.keyAppColor
+//                         : AppTheme.keyAppGrayColorDark,
+//                   ),
+//                 ),
+//               ),
+//             ),
+//           ],
+//         ),
+//         const SizedBox(height: 30),
+//         Expanded(
+//           child: ValueListenableBuilder<Box<Map<dynamic, dynamic>>>(
+//               valueListenable: HiveDataStore().booksListenable(),
+//               builder: (_, Box<Map<dynamic, dynamic>> box, __) {
+//                 final List<Map<dynamic, dynamic>> books = box.values.toList();
+//
+//                 miraiPrint('Map<dynamic, dynamic>> $books');
+//
+//                 Book? book;
+//                 for (Map<dynamic, dynamic> bookJson in books) {
+//                   if (Book.fromJson(bookJson).id == controller.book!.id) {
+//                     book = Book.fromJson(bookJson);
+//                     break;
+//                   }
+//                 }
+//
+//                 //   final Book book = Book.fromJson(bookJson);
+//                 return TabBarView(
+//                   controller: _tabController,
+//                   physics: const NeverScrollableScrollPhysics(),
+//                   children: <Widget>[
+//                     if (book != null && book.notes!.isNotEmpty)
+//                       ListView.builder(
+//                         shrinkWrap: true,
+//                         //  physics: const NeverScrollableScrollPhysics(),
+//                         padding: EdgeInsets.zero,
+//                         itemCount: book.notes!.length,
+//                         itemBuilder: (_, int index) {
+//                           return TextWidget(
+//                             title: book!.title!,
+//                             text: book.notes![index].content,
+//                             useCover: false,
+//                           );
+//                         },
+//                       )
+//                     else
+//                       Center(
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(horizontal: 20),
+//                           child: Column(
+//                             mainAxisSize: MainAxisSize.min,
+//                             children: <Widget>[
+//                               Text(
+//                                 'لاتوجد بيانات',
+//                                 style: context.textTheme.displayLarge!.copyWith(
+//                                   color: Colors.white,
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 20,
+//                                 ),
+//                               ),
+//                               const SizedBox(height: 16),
+//                               Text(
+//                                 'يرجى إضافة بعض الملاحظات إلى هذا الكتاب!',
+//                                 style: context.textTheme.displayLarge!.copyWith(
+//                                   color: AppTheme.keyAppWhiteGrayColor,
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 16,
+//                                 ),
+//                                 textAlign: TextAlign.center,
+//                               ),
+//                               const SizedBox(height: 100),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                     if (book != null && book.quotes!.isNotEmpty)
+//                       ListView.builder(
+//                         shrinkWrap: true,
+//                         //   physics: const NeverScrollableScrollPhysics(),
+//                         padding: EdgeInsets.zero,
+//                         itemCount: book.quotes!.length,
+//                         itemBuilder: (_, int index) {
+//                           final String imagePath = book!.quotes![index].content;
+//                           return TextWidget(
+//                             title: book.title!,
+//                             image: imagePath,
+//                             useCover: false,
+//                           );
+//                           // return TextWidget(
+//                           //   text: book.quotes![index],
+//                           // );
+//                         },
+//                       )
+//                     else
+//                       Center(
+//                         child: Padding(
+//                           padding: const EdgeInsets.symmetric(horizontal: 20),
+//                           child: Column(
+//                             mainAxisSize: MainAxisSize.min,
+//                             children: <Widget>[
+//                               Text(
+//                                 'لاتوجد بيانات',
+//                                 style: context.textTheme.displayLarge!.copyWith(
+//                                   color: Colors.white,
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 20,
+//                                 ),
+//                               ),
+//                               const SizedBox(height: 16),
+//                               Text(
+//                                 'يرجى إضافة بعض الإقتباسات إلى هذا الكتاب!',
+//                                 style: context.textTheme.displayLarge!.copyWith(
+//                                   color: AppTheme.keyAppWhiteGrayColor,
+//                                   fontWeight: FontWeight.bold,
+//                                   fontSize: 16,
+//                                 ),
+//                                 textAlign: TextAlign.center,
+//                               ),
+//                               const SizedBox(height: 100),
+//                             ],
+//                           ),
+//                         ),
+//                       ),
+//                   ],
+//                 );
+//               }),
+//         ),
+//       ],
+//     );
+
+class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
+  _SliverAppBarDelegate({
+    required this.minHeight,
+    required this.maxHeight,
+    required this.child,
+  });
+
+  final double minHeight;
+  final double maxHeight;
+  final Widget child;
+
+  @override
+  double get minExtent => minHeight;
+
+  @override
+  double get maxExtent => math.max(maxHeight, minHeight);
+
+  @override
+  Widget build(BuildContext context, double shrinkOffset, bool overlapsContent) {
+    return SizedBox.expand(child: child);
+  }
+
+  @override
+  bool shouldRebuild(_SliverAppBarDelegate oldDelegate) {
+    return maxHeight != oldDelegate.maxHeight ||
+        minHeight != oldDelegate.minHeight ||
+        child != oldDelegate.child;
   }
 }

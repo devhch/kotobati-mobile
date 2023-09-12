@@ -13,6 +13,7 @@ import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/pdf_reader/controllers/pdf_reader_controller.dart';
 import 'package:kotobati/app/modules/pdf_reader/views/components/planing_bottom_sheet.dart';
 import 'package:kotobati/app/widgets/mirai_verifying_dialog.dart';
+import 'package:share_plus/share_plus.dart';
 
 class OptionsMenuWidget extends StatelessWidget {
   const OptionsMenuWidget({
@@ -50,8 +51,15 @@ class OptionsMenuWidget extends StatelessWidget {
           switch (index) {
             case 0:
 
+              /// ADD PDF extension if it does not exists
+              final String pathWithExtension = !controller.pdfFile!.path.endsWith('.pdf')
+                  ? '${controller.pdfFile!.path}.pdf'
+                  : controller.pdfFile!.path;
+
+              XFile file = XFile(pathWithExtension);
+
               /// Share File
-              shareFile(controller.pdfFile!.path, subject: controller.book.value!.title!);
+              shareFile(file, subject: controller.book.value!.title!);
               break;
 
             case 1:

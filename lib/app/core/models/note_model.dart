@@ -9,17 +9,19 @@ import 'book_model.dart';
 class Note {
   final String id;
   final String content;
+  int page;
   Book? book;
 
   Note({
     required this.id,
     required this.content,
     this.book,
+    this.page = 0,
   });
 
-  factory Note.create({required String content, Book? book}) {
+  factory Note.create({required String content, required int page, Book? book}) {
     final String id = const Uuid().v1();
-    return Note(id: id, content: content, book: book);
+    return Note(id: id, content: content, page: page, book: book);
   }
 
   factory Note.fromJson(Map<dynamic, dynamic> map) {
@@ -28,31 +30,33 @@ class Note {
     return Note(
       id: json['id'],
       content: json['content'],
+      page: json['page'] ?? 0,
       book: json['book'] == null ? null : Book.fromJson(json['book']),
     );
   }
 
-  Map<String, dynamic> toJson() =>
-      <String, dynamic>{
+  Map<String, dynamic> toJson() => <String, dynamic>{
         'id': id,
         'content': content,
+        'page': page,
         'book': book?.toJson(),
       };
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is Note &&
-              runtimeType == other.runtimeType &&
-              id == other.id &&
-              content == other.content &&
-              book == other.book;
+      other is Note &&
+          runtimeType == other.runtimeType &&
+          id == other.id &&
+          content == other.content &&
+          page == other.page &&
+          book == other.book;
 
   @override
-  int get hashCode => id.hashCode ^ content.hashCode ^ book.hashCode;
+  int get hashCode => id.hashCode ^ content.hashCode ^ page.hashCode ^ book.hashCode;
 
   @override
   String toString() {
-    return 'Note{id: $id, content: $content, book: $book}';
+    return 'Note{id: $id, content: $content, page: $page, book: $book}';
   }
 }

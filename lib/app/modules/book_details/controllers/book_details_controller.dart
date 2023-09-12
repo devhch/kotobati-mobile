@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
 
 class BookDetailsController extends GetxController {
-  late Book book;
+  Book? book;
 
   RxBool notes = false.obs;
 
@@ -13,7 +13,7 @@ class BookDetailsController extends GetxController {
   @override
   void onInit() {
     book = Get.arguments['book'];
-    pdfFile = File(book.path!.replaceAll('.pdf', ''));
+    pdfFile = File(book!.path!.replaceAll('.pdf', ''));
 //     book.notes = <String>[
 //       """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
 // نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
@@ -35,6 +35,7 @@ class BookDetailsController extends GetxController {
 
   @override
   void dispose() {
+    pdfFile = null;
     super.dispose();
   }
 

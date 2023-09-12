@@ -22,6 +22,7 @@ class Book {
   List<Note>? notes;
   List<Quote>? quotes;
   PlaningBooksModel? planingBook;
+  int savedPage;
 
   Book({
     required this.id,
@@ -34,6 +35,7 @@ class Book {
     this.planingBook,
     this.notes,
     this.quotes,
+    this.savedPage = 0,
   }) {
     notes ??= <Note>[];
     quotes ??= <Quote>[];
@@ -64,6 +66,7 @@ class Book {
       description: json['description'],
       image: json['image'],
       path: json['path'],
+      savedPage: json['savedPage'] ?? 0,
       planingBook:
           json['planingBook'] != null ? PlaningBooksModel.fromJson(json['planingBook']) : null,
       notes: notes,
@@ -79,6 +82,7 @@ class Book {
         'description': description,
         'image': image,
         'path': path,
+        'savedPage': savedPage,
         'planingBook': planingBook?.toJson(),
         'notes': notes?.map((Note note) => note.toJson()).toList(),
         'quotes': quotes?.map((Quote quote) => quote.toJson()).toList(),

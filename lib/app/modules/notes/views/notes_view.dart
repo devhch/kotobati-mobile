@@ -147,10 +147,16 @@ class _NotesViewState extends State<NotesView> with SingleTickerProviderStateMix
                         itemBuilder: (_, int index) {
                           final Note note = notes[index];
                           return TextWidget(
-                            title: '${note.book?.title}',
-                            text: note.content,
-                            cover: note.book?.image,
-                          );
+                              book: note.book!,
+                              title: '${note.book?.title}',
+                              text: note.content,
+                              page: note.page,
+                              cover: note.book?.image
+
+                              // cover: (note.book?.image != null && note.book!.image is String)
+                              //     ? note.book!.image
+                              //     : null,
+                              );
                         },
                       )
                     else
@@ -208,8 +214,10 @@ class _NotesViewState extends State<NotesView> with SingleTickerProviderStateMix
                         itemBuilder: (_, int index) {
                           final Quote quote = quotes[index];
                           return TextWidget(
+                            book: quote.book!,
                             title: quote.book!.title!,
                             image: quote.content,
+                            page: quote.page,
                             cover: quote.book?.image,
                           );
                         },

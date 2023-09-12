@@ -10,9 +10,11 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 import 'package:get/get.dart';
 import 'package:kotobati/app/core/helpers/common_function.dart';
 import 'package:kotobati/app/core/models/book_model.dart';
+import 'package:kotobati/app/core/models/download_task_info.dart';
 import 'package:kotobati/app/core/utils/app_config.dart';
 import 'package:kotobati/app/core/utils/app_extension.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
+import 'package:kotobati/app/data/persistence/hive_data_store.dart';
 import 'package:kotobati/app/modules/home/views/components/home_app_bar.dart';
 import 'package:mirai_responsive/mirai_responsive.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -78,8 +80,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    // createAppFolder();
-
     contextMenu = ContextMenu(
         menuItems: <ContextMenuItem>[
           ContextMenuItem(
@@ -121,19 +121,57 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
 
-    IsolateNameServer.registerPortWithName(
+    /// Flutter Downloader
+    _bindBackgroundIsolate();
+
+    FlutterDownloader.registerCallback(downloadCallback, step: 1);
+  }
+
+  void _bindBackgroundIsolate() {
+    final bool isSuccess = IsolateNameServer.registerPortWithName(
       _port.sendPort,
       'downloader_send_port',
     );
-
+    if (!isSuccess) {
+      _unbindBackgroundIsolate();
+      _bindBackgroundIsolate();
+      return;
+    }
     _port.listen((dynamic data) {
-      String id = data[0];
-      DownloadTaskStatus status = DownloadTaskStatus(data[1]);
-      int progress = data[2];
-      setState(() {});
-    });
+      final String taskId = (data as List<dynamic>)[0] as String;
+      final DownloadTaskStatus status = DownloadTaskStatus.fromInt(data[1] as int);
+      final int progress = data[2] as int;
 
-    FlutterDownloader.registerCallback(downloadCallback);
+      miraiPrint(
+        'Callback on UI isolate: '
+        'task ($taskId) is in status ($status) and process ($progress)',
+      );
+
+      /// Show Download Notification...
+      showDownloadNotification(
+        title: widget.controller.chosenBook.value?.title ?? 'File To Download',
+        progress: progress,
+      );
+
+      if (widget.controller.downloadTaskInfo.value != null) {
+        widget.controller.downloadTaskInfo.value!
+          ..status = status
+          ..progress = progress;
+        widget.controller.downloadTaskInfo.notifyListeners();
+
+        if (progress == 100 &&
+            widget.controller.chosenBook.value != null &&
+            status == DownloadTaskStatus.complete) {
+          /// Save book to Hive
+          final HiveDataStore dataStore = HiveDataStore();
+          dataStore.saveBook(book: widget.controller.chosenBook.value!);
+        }
+      }
+    });
+  }
+
+  void _unbindBackgroundIsolate() {
+    IsolateNameServer.removePortNameMapping('downloader_send_port');
   }
 
   @override
@@ -144,163 +182,178 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @pragma('vm:entry-point')
   static void downloadCallback(String id, int status, int progress) {
-    final SendPort? send = IsolateNameServer.lookupPortByName('downloader_send_port');
-    send?.send([id, status, progress]);
+    miraiPrint(
+      'Callback on background isolate: '
+      'task ($id) is in status ($status) and process ($progress)',
+    );
+
+    IsolateNameServer.lookupPortByName('downloader_send_port')
+        ?.send(<Object>[id, status, progress]);
   }
 
   @override
   Widget build(BuildContext context) {
     final Size size = MediaQuery.of(context).size;
-    return Scaffold(
-      backgroundColor: Colors.white,
-      //  appBar: progress < 1.0 ? null : homeAppBar(webViewController),
-      body: Padding(
-        padding: EdgeInsets.only(
-          top: context.topPadding,
-          // bottom: context.bottomAdding / 2,
-          bottom: 80,
-        ),
-        child: SizedBox(
-          height: size.height - context.topPadding - 80,
-          width: size.width,
-          child: Stack(
-            children: <Widget>[
-              Positioned.fill(
-                bottom: 60,
-                child: InAppWebView(
-                  key: webViewKey,
-                  // contextMenu: contextMenu,
-                  initialUrlRequest: URLRequest(url: Uri.parse(AppConfig.webUrl)),
-                  // initialFile: "assets/index.html",
-                  initialUserScripts: UnmodifiableListView<UserScript>([]),
-                  initialOptions: options,
-                  pullToRefreshController: pullToRefreshController,
-                  onWebViewCreated: (InAppWebViewController controller) {
-                    webViewController = controller;
-                    miraiPrint('webViewController != null');
-                    setState(() {});
-                  },
-                  onLoadStart: (InAppWebViewController controller, Uri? url) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
+    return WillPopScope(
+      onWillPop: () async {
+        if (webViewController != null && await webViewController!.canGoBack()) {
+          await webViewController!.goBack();
+          return false;
+        }
 
-                  onDownloadStartRequest: widget.controller.onDownloadStartRequest,
-                  androidOnPermissionRequest: androidOnPermissionRequest,
-                  shouldOverrideUrlLoading: shouldOverrideUrlLoading,
-                  onLoadStop: onLoadStop,
-                  onLoadError:
-                      (InAppWebViewController controller, Uri? url, int code, String message) {
-                    pullToRefreshController.endRefreshing();
-                  },
-                  onProgressChanged: (InAppWebViewController controller, int progress) {
-                    if (progress == 100) {
+        return true;
+      },
+      child: Scaffold(
+        backgroundColor: Colors.white,
+        //  appBar: progress < 1.0 ? null : homeAppBar(webViewController),
+        body: Padding(
+          padding: EdgeInsets.only(
+            top: context.topPadding,
+            // bottom: context.bottomAdding / 2,
+            bottom: 60,
+          ),
+          child: SizedBox(
+            height: size.height - context.topPadding - 60,
+            width: size.width,
+            child: Stack(
+              children: <Widget>[
+                Positioned.fill(
+                  bottom: 60,
+                  child: InAppWebView(
+                    key: webViewKey,
+                    // contextMenu: contextMenu,
+                    initialUrlRequest: URLRequest(url: Uri.parse(AppConfig.webUrl)),
+                    // initialFile: "assets/index.html",
+                    initialUserScripts: UnmodifiableListView<UserScript>(<UserScript>[]),
+                    initialOptions: options,
+                    pullToRefreshController: pullToRefreshController,
+                    onWebViewCreated: (InAppWebViewController controller) {
+                      webViewController = controller;
+                      miraiPrint('webViewController != null');
+                      setState(() {});
+                    },
+                    onLoadStart: (InAppWebViewController controller, Uri? url) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+
+                    onDownloadStartRequest: widget.controller.onDownloadStartRequest,
+                    androidOnPermissionRequest: androidOnPermissionRequest,
+                    shouldOverrideUrlLoading: shouldOverrideUrlLoading,
+                    onLoadStop: onLoadStop,
+                    onLoadError:
+                        (InAppWebViewController controller, Uri? url, int code, String message) {
                       pullToRefreshController.endRefreshing();
-                    }
-                    setState(() {
-                      this.progress = progress / 100;
-                      urlController.text = url;
-                    });
-                  },
-                  onUpdateVisitedHistory:
-                      (InAppWebViewController controller, Uri? url, bool? androidIsReload) {
-                    setState(() {
-                      this.url = url.toString();
-                      urlController.text = this.url;
-                    });
-                  },
-                  onConsoleMessage:
-                      (InAppWebViewController controller, ConsoleMessage consoleMessage) {
-                    miraiPrint(consoleMessage);
-                  },
-                ),
-              ),
-
-              // if (progress < 1.0)
-              //   Container(
-              //     color: AppTheme.keyAppBlackColor,
-              //     child: const Center(
-              //       child: CircularProgressIndicator.adaptive(
-              //         valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
-              //       ),
-              //     ),
-              //   ),
-
-              if (progress < 1.0)
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: LinearProgressIndicator(
-                    value: progress,
-                    color: AppTheme.keyAppColorDark,
-                    backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
+                    },
+                    onProgressChanged: (InAppWebViewController controller, int progress) {
+                      if (progress == 100) {
+                        pullToRefreshController.endRefreshing();
+                      }
+                      setState(() {
+                        this.progress = progress / 100;
+                        urlController.text = url;
+                      });
+                    },
+                    onUpdateVisitedHistory:
+                        (InAppWebViewController controller, Uri? url, bool? androidIsReload) {
+                      setState(() {
+                        this.url = url.toString();
+                        urlController.text = this.url;
+                      });
+                    },
+                    onConsoleMessage:
+                        (InAppWebViewController controller, ConsoleMessage consoleMessage) {
+                      miraiPrint(consoleMessage);
+                    },
                   ),
                 ),
 
-              PositionedDirectional(
-                start: 16,
-                bottom: 4,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    AnimatedScale(
-                      duration: const Duration(milliseconds: 200),
-                      scale: progress == 1.0 ? 1 : 0,
-                      child: FutureBuilder<bool>(
-                        future:
-                            webViewController == null ? null : webViewController!.canGoForward(),
-                        builder: (_, AsyncSnapshot<bool> snapshot) {
-                          final bool canGoForward = snapshot.data ?? false;
-                          miraiPrint('canGoForward $canGoForward');
-                          return FloatingActionButton(
-                            // mini: true,
-                            heroTag: "FloatingActionButton1",
-                            tooltip: 'Go Forward',
-                            onPressed: () async {
-                              miraiPrint('GoForward Clicked');
-                              await webViewController!.goForward();
-                            },
-                            child: const Icon(
-                              Icons.arrow_back,
-                              color: Colors.white,
-                            ),
-                          );
-                        },
-                      ),
+                // if (progress < 1.0)
+                //   Container(
+                //     color: AppTheme.keyAppBlackColor,
+                //     child: const Center(
+                //       child: CircularProgressIndicator.adaptive(
+                //         valueColor: AlwaysStoppedAnimation<Color>(AppTheme.keyAppColor),
+                //       ),
+                //     ),
+                //   ),
+
+                if (progress < 1.0)
+                  Positioned(
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    child: LinearProgressIndicator(
+                      value: progress,
+                      color: AppTheme.keyAppColorDark,
+                      backgroundColor: AppTheme.keyAppColor.withOpacity(0.6),
                     ),
-                    const SizedBox(width: 8),
-                    AnimatedScale(
-                      duration: const Duration(milliseconds: 200),
-                      scale: progress == 1.0 ? 1 : 0,
-                      child: FutureBuilder<bool>(
-                        future: webViewController == null ? null : webViewController!.canGoBack(),
-                        builder: (_, AsyncSnapshot<bool> snapshot) {
-                          final bool canGoBack = snapshot.data ?? false;
-                          miraiPrint('canGoBack $canGoBack');
-                          return FloatingActionButton(
-                            //  mini: true,
-                            heroTag: "FloatingActionButton2",
-                            tooltip: 'Go Back',
-                            hoverColor: Colors.red.withOpacity(.2),
-                            onPressed: () async {
-                              miraiPrint('GoBack Clicked');
-                              await webViewController!.goBack();
-                            },
-                            child: const Icon(
-                              Icons.arrow_forward,
-                              color: Colors.white,
-                            ),
-                          );
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
+                  ),
+
+                // PositionedDirectional(
+                //   start: 16,
+                //   bottom: 4,
+                //   child: Row(
+                //     mainAxisSize: MainAxisSize.min,
+                //     children: <Widget>[
+                //       AnimatedScale(
+                //         duration: const Duration(milliseconds: 200),
+                //         scale: progress == 1.0 ? 1 : 0,
+                //         child: FutureBuilder<bool>(
+                //           future:
+                //           webViewController == null ? null : webViewController!.canGoForward(),
+                //           builder: (_, AsyncSnapshot<bool> snapshot) {
+                //             final bool canGoForward = snapshot.data ?? false;
+                //             miraiPrint('canGoForward $canGoForward');
+                //             return FloatingActionButton(
+                //               // mini: true,
+                //               heroTag: "FloatingActionButton1",
+                //               tooltip: 'Go Forward',
+                //               onPressed: () async {
+                //                 miraiPrint('GoForward Clicked');
+                //                 await webViewController!.goForward();
+                //               },
+                //               child: const Icon(
+                //                 Icons.arrow_back,
+                //                 color: Colors.white,
+                //               ),
+                //             );
+                //           },
+                //         ),
+                //       ),
+                //       const SizedBox(width: 8),
+                //       AnimatedScale(
+                //         duration: const Duration(milliseconds: 200),
+                //         scale: progress == 1.0 ? 1 : 0,
+                //         child: FutureBuilder<bool>(
+                //           future: webViewController == null ? null : webViewController!.canGoBack(),
+                //           builder: (_, AsyncSnapshot<bool> snapshot) {
+                //             final bool canGoBack = snapshot.data ?? false;
+                //             miraiPrint('canGoBack $canGoBack');
+                //             return FloatingActionButton(
+                //               //  mini: true,
+                //               heroTag: "FloatingActionButton2",
+                //               tooltip: 'Go Back',
+                //               hoverColor: Colors.red.withOpacity(.2),
+                //               onPressed: () async {
+                //                 miraiPrint('GoBack Clicked');
+                //                 await webViewController!.goBack();
+                //               },
+                //               child: const Icon(
+                //                 Icons.arrow_forward,
+                //                 color: Colors.white,
+                //               ),
+                //             );
+                //           },
+                //         ),
+                //       ),
+                //     ],
+                //   ),
+                // ),
+              ],
+            ),
           ),
         ),
       ),
@@ -311,7 +364,8 @@ class _MyHomePageState extends State<MyHomePage> {
       InAppWebViewController controller, NavigationAction navigationAction) async {
     Uri uri = navigationAction.request.url!;
 
-    if (!["http", "https", "file", "chrome", "data", "javascript", "about"].contains(uri.scheme)) {
+    if (!<String>["http", "https", "file", "chrome", "data", "javascript", "about"]
+        .contains(uri.scheme)) {
       if (await canLaunch(url)) {
         // Launch the App
         await launch(url);
@@ -371,6 +425,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
         /// Now Store this book in the memory...
         widget.controller.chosenBook.value = book;
+        widget.controller.chosenBook.notifyListeners();
+
+        miraiPrint('<==========================>');
+        miraiPrint('ChosenBook: ${widget.controller.chosenBook.value}');
+        miraiPrint('<==========================>');
       }
     }
 
@@ -406,9 +465,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   String _decodeHtmlEntities(String input) {
-    var document = parseFragment(input);
+    dom.DocumentFragment document = parseFragment(input);
     String decodedText = '';
-    for (var node in document.nodes) {
+    for (dom.Node node in document.nodes) {
       if (node is dom.Text) {
         decodedText += node.text;
       } else if (node is dom.Element) {

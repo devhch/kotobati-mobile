@@ -48,5 +48,6 @@ class AppIconsKeys {
   static const String bookIcon = "$_path/book_icon.svg";
   static const String backArrowCircle = "$_path/back_arrow_circle.svg";
   static const String kotobatiIcon = "$_path/kotobati_icon.svg";
+  static const String kotobatiWhiteIcon = "$_path/kotobati_white_icon.svg";
 // static const String x = "$_path/.svg";
 }

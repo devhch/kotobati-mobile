@@ -35,7 +35,7 @@ class TextBottomSheetWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: context.height * 0.6,
+      height: context.height * 0.5,
       color: Colors.transparent,
       child: Stack(
         children: <Widget>[
@@ -89,7 +89,7 @@ class TextBottomSheetWidget extends StatelessWidget {
                       // height: 100,
                       width: double.infinity,
                       height: double.infinity,
-                      fit: BoxFit.fill,
+                      fit: BoxFit.contain,
                     ),
             ),
           ),

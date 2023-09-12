@@ -27,9 +27,9 @@ class MiraiPDF {
       title: json['title'] ?? '',
       path: json['path'] ?? '',
       size: json['size'] ?? '',
-      // image: json['image'] == null
-      //     ? Uint8List.fromList(<int>[])
-      //     : Uint8List.fromList(base64.decode(json['image'])),
+      image: json['image'] == null
+          ? Uint8List.fromList(<int>[])
+          : Uint8List.fromList(base64.decode(json['image'])),
     );
   }
 
@@ -37,7 +37,7 @@ class MiraiPDF {
         'title': title,
         'path': path,
         'size': size,
-        // 'image': image != null ? base64Encode(image!) : null,
+        'image': image != null ? base64Encode(image!) : null,
       };
 
   @override

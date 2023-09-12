@@ -272,9 +272,8 @@ class HiveDataStore {
     final Box<Map<dynamic, dynamic>> miraiPDFBox = Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName);
     final List<Map<String, dynamic>> castedCategories =
         miraiPDFs.map((MiraiPDF miraiPDF) => miraiPDF.toJson()).toList();
-    miraiPDFs.clear();
+    miraiPDFBox.clear();
     await miraiPDFBox.addAll(castedCategories);
-    log('MiraiPDFs cast: ${miraiPDFs.cast()}');
     miraiPrint('========================================');
     log('\n=> Saved MiraiPDFs: ${miraiPDFs.toString()}\n');
   }

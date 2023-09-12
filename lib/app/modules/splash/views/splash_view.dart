@@ -58,11 +58,11 @@ class _SplashViewState extends State<SplashView> {
               horizontal: 30,
             ),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppTheme.keyAppColor,
               borderRadius: BorderRadius.circular(10),
             ),
             child: SvgPicture.asset(
-              AppIconsKeys.kotobatiIcon,
+              AppIconsKeys.kotobatiWhiteIcon,
               height: 100,
               fit: BoxFit.fill,
             ),

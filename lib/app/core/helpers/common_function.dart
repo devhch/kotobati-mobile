@@ -8,10 +8,10 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
-
+import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:image_cropper/image_cropper.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:kotobati/app/core/utils/app_custom_dialog.dart';
 import 'package:kotobati/app/core/utils/app_theme.dart';
 import 'package:path_provider/path_provider.dart';
@@ -31,6 +31,7 @@ void hideKeyboard(BuildContext context) {
 
 Future<void> requestPermission() async {
   final PermissionStatus status = await Permission.storage.request();
+  //final PermissionStatus manageExternalStorage = await Permission.manageExternalStorage.request();
 
   miraiPrint("isGranted: ${status.isGranted}");
   miraiPrint("PermissionStatus $status");
@@ -44,12 +45,44 @@ Future<void> requestPermission() async {
   }
 }
 
-Future<void> shareFile(String filePath, {String? subject, String? text}) async {
+Future<void> shareBook(String originalFilePath, String title) async {
+  File file = File(originalFilePath);
+
+  // Create a temporary copy of the file with a ".pdf" extension.
+  final String tempCopyPath = '$originalFilePath.pdf';
+
+  //if (!await File(tempCopyPath).exists()) {
+  File newFile = await file.copy(tempCopyPath);
+
+  /// Share File
+  await shareFile(
+    XFile(file.path),
+    subject: title,
+  );
+}
+
+Future<void> shareFile(XFile file, {String? subject, String? text}) async {
   try {
-    await Share.shareXFiles(<XFile>[XFile(filePath)], subject: subject, text: text);
+    await Share.shareXFiles(<XFile>[file], subject: subject, text: text);
   } catch (e) {
     // Handle sharing error
     miraiPrint('Error sharing file: $e');
+  }
+}
+
+// Function to convert a File to XFile
+XFile? convertFileToXFile(File file) {
+  try {
+    // Read the contents of the File as bytes
+    final Uint8List bytes = file.readAsBytesSync();
+
+    // Create an XFile with a unique name and the file's bytes
+    final XFile xFile = XFile.fromData(bytes);
+    miraiPrint('Converting File to XFile: Done');
+    return xFile;
+  } catch (e) {
+    miraiPrint('Error converting File to XFile: $e');
+    return null;
   }
 }
 
@@ -69,44 +102,42 @@ bool deleteFile(String filePath) {
   }
 }
 
-Future<CroppedFile?> cropSquareImage(String path) async => await ImageCropper().cropImage(
-      sourcePath: path,
-      aspectRatioPresets: [
-        CropAspectRatioPreset.square,
-        CropAspectRatioPreset.ratio3x2,
-        CropAspectRatioPreset.original,
-        CropAspectRatioPreset.ratio4x3,
-        CropAspectRatioPreset.ratio16x9
-      ],
-      uiSettings: <PlatformUiSettings>[
-        AndroidUiSettings(
-          /*
-          toolbarTitle: 'Cropper',
-          toolbarColor: AppTheme.keyAppColor,
-          toolbarWidgetColor: Colors.white,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-         */
-          toolbarTitle: 'Cropper',
-          toolbarColor: AppTheme.keyAppColor,
-          toolbarWidgetColor: Colors.white,
-          cropFrameColor: AppTheme.keyAppColor,
-          activeControlsWidgetColor: AppTheme.keyAppColor,
-          initAspectRatio: CropAspectRatioPreset.original,
-          lockAspectRatio: false,
-          backgroundColor: AppTheme.keyAppColor,
-        ),
-        IOSUiSettings(
-          title: 'Cropper',
-        ),
-      ],
-    );
+// Future<CroppedFile?> cropSquareImage(String path) async => await ImageCropper().cropImage(
+//       sourcePath: path,
+//       aspectRatioPresets: <CropAspectRatioPreset>[
+//         CropAspectRatioPreset.square,
+//         CropAspectRatioPreset.ratio3x2,
+//         CropAspectRatioPreset.original,
+//         CropAspectRatioPreset.ratio4x3,
+//         CropAspectRatioPreset.ratio16x9
+//       ],
+//       uiSettings: <PlatformUiSettings>[
+//         AndroidUiSettings(
+//           /*
+//           toolbarTitle: 'Cropper',
+//           toolbarColor: AppTheme.keyAppColor,
+//           toolbarWidgetColor: Colors.white,
+//           initAspectRatio: CropAspectRatioPreset.original,
+//           lockAspectRatio: false,
+//          */
+//           toolbarTitle: 'Cropper',
+//           toolbarColor: AppTheme.keyAppColor,
+//           toolbarWidgetColor: Colors.white,
+//           cropFrameColor: AppTheme.keyAppColor,
+//           activeControlsWidgetColor: AppTheme.keyAppColor,
+//           initAspectRatio: CropAspectRatioPreset.original,
+//           lockAspectRatio: false,
+//           backgroundColor: AppTheme.keyAppColor,
+//         ),
+//         IOSUiSettings(title: 'Cropper'),
+//       ],
+//     );
 
 Future<String> getFileSize(String filepath, int decimals) async {
   File file = File(filepath);
   int bytes = await file.length();
   if (bytes <= 0) return "0 B";
-  const List<String> suffixes = ["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
+  const List<String> suffixes = <String>["B", "KB", "MB", "GB", "TB", "PB", "EB", "ZB", "YB"];
   int i = (log(bytes) / log(1024)).floor();
   return '${(bytes / pow(1024, i)).toStringAsFixed(decimals)} ${suffixes[i]}';
 }
@@ -128,13 +159,16 @@ Future<Size> calculateImageDimension(File fileImage) {
 
 Future<File> uint8ListToFile(Uint8List data, String fileName, {String? tempDir}) async {
   // Get the temporary directory (app cache) or provide a custom temporary directory
-  final tempDirectory = tempDir != null ? Directory(tempDir) : await getTemporaryDirectory();
+  final Directory tempDirectory =
+      tempDir != null ? Directory(tempDir) : await getTemporaryDirectory();
 
   // Create the temporary file
-  final file = File('${tempDirectory.path}/$fileName');
+  final File file = await File('${tempDirectory.path}/$fileName').create();
+
+  final Uint8List bytes = data.buffer.asUint8List();
 
   // Write the Uint8List data to the temporary file
-  await file.writeAsBytes(data);
+  await file.writeAsBytes(bytes);
 
   return file;
 }
@@ -145,6 +179,13 @@ Future<Image> convertFileToImage(File picture) async {
   Uint8List uint8list = base64.decode(imageAsString);
   Image image = Image.memory(uint8list);
   return image;
+}
+
+Future<Uint8List> convertFileToUint8List(File picture) async {
+  List<int> imageBase64 = picture.readAsBytesSync();
+  String imageAsString = base64Encode(imageBase64);
+  Uint8List uint8list = base64.decode(imageAsString);
+  return uint8list;
 }
 
 void precacheImages(List<String> imagePaths, BuildContext context) async {
@@ -209,4 +250,33 @@ bool isArabic(String text) {
   }
   // miraiPrint('Is text Arabic? false');
   return false;
+}
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+void showDownloadNotification({
+  required String title,
+  required int progress,
+}) async {
+  AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
+    'download_channel',
+    'Download Notifications',
+    channelDescription: 'Notifications for file downloads',
+    importance: Importance.high,
+    priority: Priority.high,
+    showProgress: progress != 100,
+    maxProgress: 100,
+    progress: progress,
+  );
+
+  NotificationDetails platformChannelSpecifics =
+      NotificationDetails(android: androidPlatformChannelSpecifics);
+
+  await flutterLocalNotificationsPlugin.show(
+    0,
+    ' جارى تحميل: $title',
+    progress == 100 ? 'تم التحميل بنجاح' : '$progress%',
+    platformChannelSpecifics,
+  );
 }

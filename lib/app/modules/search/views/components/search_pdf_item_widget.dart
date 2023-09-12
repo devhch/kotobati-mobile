@@ -50,7 +50,7 @@ class _SearchPDFItemWidgetState extends State<SearchPDFItemWidget> {
     );
     // log('MiraiPDF ${widget.pdfWidthImage.toString()}');
 
-    // HiveDataStore().clearMiraiPDFs();
+    //HiveDataStore().clearMiraiPDFs();
     return MiraiContainerWidget(
       backgroundColor: Colors.transparent,
       border: Border.all(

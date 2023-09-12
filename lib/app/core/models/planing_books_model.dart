@@ -26,7 +26,6 @@ class PlaningBooksModel {
       id: json['id'],
       name: json['name'],
       icon: json['icon'],
-
     );
   }
 
@@ -34,7 +33,6 @@ class PlaningBooksModel {
         'id': id,
         'name': name,
         'icon': icon,
-
       };
 
   @override
@@ -58,5 +56,5 @@ class PlaningBooksModel {
 RxList<PlaningBooksModel> listPlaningBooks = <PlaningBooksModel>[
   PlaningBooksModel(id: 1, name: "كتب  أقرأها", icon: AppIconsKeys.reading),
   PlaningBooksModel(id: 2, name: "كتب سأقرأها", icon: AppIconsKeys.readLater),
-  PlaningBooksModel(id: 3, name: "كتب قرأتها", icon: AppIconsKeys.reading),
+  PlaningBooksModel(id: 3, name: "كتب قرأتها", icon: AppIconsKeys.readed),
 ].obs;
