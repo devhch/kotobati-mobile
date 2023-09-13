@@ -31,7 +31,7 @@ class SearchPDFItemWidget extends StatefulWidget {
   });
 
   final MiraiPDF pdfWidthImage;
-  final SearchControllerC controller;
+  final SearchPDFController controller;
 
   @override
   State<SearchPDFItemWidget> createState() => _SearchPDFItemWidgetState();

@@ -207,12 +207,46 @@ class HiveDataStore {
   /// --------------------- Search History ---------------------///
   Future<void> saveSearchHistory({required String query}) async {
     final Box<String> searchBox = Hive.box<String>(searchHistoryBoxName);
+    final List<String> list = searchBox.values.toList();
+    if (list.contains(query)) return;
     await searchBox.add(query);
     if (kDebugMode) {
       print('\n<=------------------------------=>');
       print('Save Search History: $query\n');
       print('\n<=------------------------------=>');
     }
+  }
+
+  Future<bool> deleteSearchHistory({required String query}) async {
+    final Box<String> searchBox = Hive.box<String>(searchHistoryBoxName);
+
+    if (searchBox.isNotEmpty) {
+      miraiPrint('\n=> SearchBox isNotEmpty\n');
+      miraiPrint('\n=> Deleting this query $query\n');
+      final int index =
+          searchBox.values.toList().indexWhere((String queryAtIndex) => queryAtIndex == query);
+      miraiPrint('\n=> SearchBox $index\n');
+      if (index >= 0) {
+        await searchBox.deleteAt(index);
+        miraiPrint('\n=> Delete This query: $query\n');
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Future<bool> deleteSearchIndex({required int index}) async {
+    final Box<String> searchBox = Hive.box<String>(searchHistoryBoxName);
+
+    if (searchBox.isNotEmpty) {
+      miraiPrint('\n=> Deleting this query at $index \n');
+      if (index >= 0) {
+        await searchBox.deleteAt(index);
+        miraiPrint('\n=> Delete This query: $index\n');
+        return true;
+      }
+    }
+    return false;
   }
 
   List<String> getSearchHistory() {

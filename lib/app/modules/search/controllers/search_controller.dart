@@ -20,7 +20,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../../../core/utils/app_custom_dialog.dart';
 
-class SearchControllerC extends GetxController {
+class SearchPDFController extends GetxController {
   // Call the native method to get PDF files and wait for the result
   static const MethodChannel platform = MethodChannel('com.kotobati.pdf_reader_channel');
 
@@ -41,11 +41,6 @@ class SearchControllerC extends GetxController {
     miraiPrint('SearchControllerC onReady');
     check();
   }
-
-  // @override
-  // void dispose() {
-  //   super.dispose();
-  // }
 
   Future<void> check() async {
     final List<MiraiPDF> miraiPDFs = HiveDataStore().getMiraiPDfs();
@@ -77,6 +72,7 @@ class SearchControllerC extends GetxController {
       final String normalizedText = Intl.canonicalizedLocale(pdfWidthImage.title.toLowerCase());
       return regex.hasMatch(normalizedText);
     }).toList();
+    pdfFilesForSearch.notifyListeners();
   }
 
   // Native method call using MethodChannel to get PDF files from native code
