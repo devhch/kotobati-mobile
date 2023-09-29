@@ -356,4 +356,13 @@ class HiveDataStore {
   }
 
   /// ----------------------------------------------------///
+  Future<void> clearAllBoxes() async {
+    await Hive.box<Map<dynamic, dynamic>>(booksBoxName).clear();
+    await Hive.box<Map<dynamic, dynamic>>(planingBooksBoxName).clear();
+    await Hive.box<Map<dynamic, dynamic>>(settingBoxName).clear();
+    await Hive.box<Map<dynamic, dynamic>>(pdfFilesBoxName).clear();
+    await Hive.box<String>(searchHistoryBoxName).clear();
+    await Hive.box<String>(keysBoxName).clear();
+    debugPrint('\n=> All Boxes are Deleted.\n');
+  }
 }

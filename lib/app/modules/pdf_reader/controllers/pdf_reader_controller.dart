@@ -27,6 +27,9 @@ import 'package:screenshot/screenshot.dart';
 import 'package:wakelock_plus/wakelock_plus.dart';
 
 class PdfReaderController extends GetxController {
+  // Call the native method to get PDF files and wait for the result
+  static const MethodChannel platform = MethodChannel('com.kotobati.pdf_reader_channel');
+
   String pdfPath = '';
   ValueNotifier<Book?> book = ValueNotifier<Book?>(null);
   ValueNotifier<int?> goToPage = ValueNotifier<int?>(null);
@@ -208,10 +211,10 @@ class PdfReaderController extends GetxController {
       final Uint8List bytes = data!.buffer.asUint8List();
       File croppedImage = await uint8ListToFile(
         bytes,
-        'captured_image_second${savedPage.value.$1}${book.value?.id}',
+        'quote-${book.value?.id}-${savedPage.value.$1}-${DateTime.now().toIso8601String()}',
       );
 
-      croppedImage = await croppedImage.writeAsBytes(bytes, flush: true);
+      // croppedImage = await croppedImage.writeAsBytes(bytes, flush: true);
 
       miraiPrint('<==========================>');
       miraiPrint('takeQuote: croppedImage $croppedImage');
@@ -232,11 +235,11 @@ class PdfReaderController extends GetxController {
         );
         //   imageFile = File(croppedImage.path);
 
-        final Uint8List croppedImageBytes = croppedImage.readAsBytesSync();
+        //  final Uint8List croppedImageBytes = croppedImage.readAsBytesSync();
+        //   List<int> croppedImageBytes = croppedImage.readAsBytesSync();
 
         /// Save Cropped Image to book
-        final Quote quote =
-            Quote.create(content: base64Encode(croppedImageBytes), page: savedPage.value.$1);
+        final Quote quote = Quote.create(content: croppedImage.path, page: savedPage.value.$1);
         miraiPrint('<=======================>');
         miraiPrint('Quote ${quote.toString()}');
         miraiPrint('<=======================>');
@@ -244,7 +247,7 @@ class PdfReaderController extends GetxController {
 
         await HiveDataStore().updateBook(book: book.value!);
 
-        croppedImage.deleteSync();
+        // croppedImage.deleteSync();
         imageFile.deleteSync();
 
         AppMiraiDialog.snackBar(
@@ -327,6 +330,10 @@ class PdfReaderController extends GetxController {
       miraiPrint(e);
       // throw 'Failed to reset brightness';
     }
+  }
+
+  Future<void> toggleNightMode() async {
+    await platform.invokeMethod('nightMode');
   }
 }
 

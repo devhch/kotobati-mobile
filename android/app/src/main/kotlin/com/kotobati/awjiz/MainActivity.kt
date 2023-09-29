@@ -1,7 +1,5 @@
-package com.dghoughi.lahsen.kotobati
+package com.kotobati.awjiz
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -15,7 +13,8 @@ import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import java.io.File
 import android.provider.Settings
-import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.FileProvider
+import com.kotobati.awjiz.nightmode.Command
 
 
 class MainActivity : FlutterActivity() {
@@ -51,9 +50,46 @@ class MainActivity : FlutterActivity() {
                     result.success(pdfFiles)
                 }
 
+                "nightMode" -> {
+                    Command.toggle()
+                }
+
+                "shareFile" -> {
+                    val filePath = call.argument<String>("filePath")
+                    val title = call.argument<String>("title")
+                    val subject = call.argument<String>("subject")
+
+                    if (filePath != null) {
+                        shareFile(filePath, title, subject)
+                        result.success(null)
+                    } else {
+                        result.error("INVALID_ARGUMENT", "File path is null", null)
+                    }
+                }
+
                 else -> result.notImplemented()
             }
         }
+    }
+
+    private fun shareFile(filePath: String, title: String?, subject: String?) {
+        val fileUri = Uri.parse(filePath)
+        val intent = Intent(Intent.ACTION_SEND)
+        intent.type = "*/*"
+        intent.putExtra(Intent.EXTRA_STREAM, fileUri)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+
+        if (title != null) {
+            intent.putExtra(Intent.EXTRA_TITLE, title)
+        }
+
+        if (subject != null) {
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject)
+        }
+
+        val intentChooser = Intent.createChooser(intent, "Share File")
+        intentChooser.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        context.startActivity(intentChooser)
     }
 
     private fun requestStoragePermission(result: MethodChannel.Result) {

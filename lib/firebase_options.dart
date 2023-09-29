@@ -45,7 +45,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions web = FirebaseOptions(
     apiKey: 'AIzaSyDduV7IBaw_cxCDj4A4keWiuvCzvcm2pjI',
-    appId: '1:372770994138:web:f5526cf53dbec9eaffb2e3',
+    appId: '1:372770994138:web:d96d6d16239f2d34ffb2e3',
     messagingSenderId: '372770994138',
     projectId: 'kotobati-app',
     authDomain: 'kotobati-app.firebaseapp.com',
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyC5avEJMyXkesAnKQVKkur6yOFM86w0TA4',
-    appId: '1:372770994138:android:09eff5077225f5e9ffb2e3',
+    appId: '1:372770994138:android:826e96941190723cffb2e3',
     messagingSenderId: '372770994138',
     projectId: 'kotobati-app',
     storageBucket: 'kotobati-app.appspot.com',
@@ -62,17 +62,16 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyCrbYQGFQ4M0Efr4T0nWahZdsq7A0JMIJw',
-    appId: '1:372770994138:ios:8db778b0a8c7729effb2e3',
+    appId: '1:372770994138:ios:b2f3d3886179c3aeffb2e3',
     messagingSenderId: '372770994138',
     projectId: 'kotobati-app',
     storageBucket: 'kotobati-app.appspot.com',
-    iosClientId: '372770994138-j345t6s695cjfbr0664b17cv74i3t8hb.apps.googleusercontent.com',
-    iosBundleId: 'com.dghoughi.lahsen.kotobati',
+    iosBundleId: 'com.kotobati.awjiz',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
     apiKey: 'AIzaSyCrbYQGFQ4M0Efr4T0nWahZdsq7A0JMIJw',
-    appId: '1:372770994138:ios:24f2638f04df96a5ffb2e3',
+    appId: '1:372770994138:ios:d85517734b1678beffb2e3',
     messagingSenderId: '372770994138',
     projectId: 'kotobati-app',
     storageBucket: 'kotobati-app.appspot.com',

@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:372770994138:android:09eff5077225f5e9ffb2e3",
+        "mobilesdk_app_id": "1:372770994138:android:826e96941190723cffb2e3",
         "android_client_info": {
-          "package_name": "com.dghoughi.lahsen.kotobati"
+          "package_name": "com.kotobati.awjiz"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "372770994138-tcisqdgjncr8gbqg1ml5v9knn9dhh56m.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "372770994138-70nd3gu3r3po2s0jgo78uv2qsjfnhhs5.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.dghoughi.lahsen.kotobati.kotobati.RunnerTests"
+              }
             }
           ]
         }

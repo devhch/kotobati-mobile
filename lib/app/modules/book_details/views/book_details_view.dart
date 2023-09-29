@@ -246,51 +246,52 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                                           height: 16,
                                         ),
                                       ),
-                                      const ContainerDivider(),
-                                      InkWell(
-                                        onTap: () async {
-                                          final String originalFilePath = controller.pdfFile!.path;
-                                          await shareBook(
-                                            originalFilePath,
-                                            controller.book!.title!,
-                                          );
-                                          //}
-
-                                          // Rename the file with ".pdf" extension if it's missing.
-                                          // if (!fileNameWithExtension
-                                          //     .toLowerCase()
-                                          //     .endsWith('.pdf')) {
-                                          //   final String newFilePath = '$originalFilePath.pdf';
-                                          //   await file.rename(newFilePath);
-                                          // }
-
-                                          // if (shareResult != null) {
-                                          //   switch (shareResult.status) {
-                                          //     /// The user has selected an action
-                                          //     case ShareResultStatus.success:
-                                          //       miraiPrint(
-                                          //           'ShareFile: The user has selected an action');
-                                          //
-                                          //     /// The user dismissed the share-sheet
-                                          //     case ShareResultStatus.dismissed:
-                                          //       // Delete the temporary copy after sharing.
-                                          //       await File(tempCopyPath).delete();
-                                          //
-                                          //     /// The status can not be determined
-                                          //     case ShareResultStatus.unavailable:
-                                          //       // Delete the temporary copy after sharing.
-                                          //       await File(tempCopyPath).delete();
-                                          //   }
-                                          // } else {
-                                          //   // Delete the temporary copy after sharing.
-                                          //   await File(tempCopyPath).delete();
-                                          // }
-                                        },
-                                        child: SvgPicture.asset(
-                                          AppIconsKeys.share,
-                                          width: 16,
-                                        ),
-                                      ),
+                                      // TODO const ContainerDivider(),
+                                      // InkWell(
+                                      //   onTap: () async {
+                                      //     final String originalFilePath = controller.pdfFile!.path;
+                                      //     await shareBook(
+                                      //       originalFilePath,
+                                      //       controller.book!.title!,
+                                      //       context: context,
+                                      //     );
+                                      //     //}
+                                      //
+                                      //     // Rename the file with ".pdf" extension if it's missing.
+                                      //     // if (!fileNameWithExtension
+                                      //     //     .toLowerCase()
+                                      //     //     .endsWith('.pdf')) {
+                                      //     //   final String newFilePath = '$originalFilePath.pdf';
+                                      //     //   await file.rename(newFilePath);
+                                      //     // }
+                                      //
+                                      //     // if (shareResult != null) {
+                                      //     //   switch (shareResult.status) {
+                                      //     //     /// The user has selected an action
+                                      //     //     case ShareResultStatus.success:
+                                      //     //       miraiPrint(
+                                      //     //           'ShareFile: The user has selected an action');
+                                      //     //
+                                      //     //     /// The user dismissed the share-sheet
+                                      //     //     case ShareResultStatus.dismissed:
+                                      //     //       // Delete the temporary copy after sharing.
+                                      //     //       await File(tempCopyPath).delete();
+                                      //     //
+                                      //     //     /// The status can not be determined
+                                      //     //     case ShareResultStatus.unavailable:
+                                      //     //       // Delete the temporary copy after sharing.
+                                      //     //       await File(tempCopyPath).delete();
+                                      //     //   }
+                                      //     // } else {
+                                      //     //   // Delete the temporary copy after sharing.
+                                      //     //   await File(tempCopyPath).delete();
+                                      //     // }
+                                      //   },
+                                      //   child: SvgPicture.asset(
+                                      //     AppIconsKeys.share,
+                                      //     width: 16,
+                                      //   ),
+                                      // ),
                                       const ContainerDivider(
                                         margin: EdgeInsetsDirectional.only(start: 12),
                                       ),
@@ -395,6 +396,15 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                           }
                         }
 
+                        if (book != null && book.quotes != null) {
+                          for (Quote quote in book.quotes!) {
+                            if (quote.content.isNotEmpty && !File(quote.content).existsSync()) {
+                              book.quotes?.remove(quote);
+                              HiveDataStore().updateBook(book: book);
+                            }
+                          }
+                        }
+
                         //   final Book book = Book.fromJson(bookJson);
                         return TabBarView(
                           controller: _tabController,
@@ -421,29 +431,32 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                               Center(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text(
-                                        'لاتوجد بيانات',
-                                        style: context.textTheme.displayLarge!.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                  child: SingleChildScrollView(
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(
+                                          'لاتوجد بيانات',
+                                          style: context.textTheme.displayLarge!.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'يرجى إضافة بعض الملاحظات إلى هذا الكتاب!',
-                                        style: context.textTheme.displayLarge!.copyWith(
-                                          color: AppTheme.keyAppWhiteGrayColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'يرجى إضافة بعض الملاحظات إلى هذا الكتاب!',
+                                          style: context.textTheme.displayLarge!.copyWith(
+                                            color: AppTheme.keyAppWhiteGrayColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 100),
-                                    ],
+                                        const SizedBox(height: 100),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),
@@ -472,29 +485,32 @@ class _BookDetailsViewState extends State<BookDetailsView> with SingleTickerProv
                               Center(
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(horizontal: 20),
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: <Widget>[
-                                      Text(
-                                        'لاتوجد بيانات',
-                                        style: context.textTheme.displayLarge!.copyWith(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 20,
+                                  child: SingleChildScrollView(
+                                    physics: const NeverScrollableScrollPhysics(),
+                                    child: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: <Widget>[
+                                        Text(
+                                          'لاتوجد بيانات',
+                                          style: context.textTheme.displayLarge!.copyWith(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 20,
+                                          ),
                                         ),
-                                      ),
-                                      const SizedBox(height: 16),
-                                      Text(
-                                        'يرجى إضافة بعض الإقتباسات إلى هذا الكتاب!',
-                                        style: context.textTheme.displayLarge!.copyWith(
-                                          color: AppTheme.keyAppWhiteGrayColor,
-                                          fontWeight: FontWeight.bold,
-                                          fontSize: 16,
+                                        const SizedBox(height: 16),
+                                        Text(
+                                          'يرجى إضافة بعض الإقتباسات إلى هذا الكتاب!',
+                                          style: context.textTheme.displayLarge!.copyWith(
+                                            color: AppTheme.keyAppWhiteGrayColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 16,
+                                          ),
+                                          textAlign: TextAlign.center,
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      const SizedBox(height: 100),
-                                    ],
+                                        const SizedBox(height: 100),
+                                      ],
+                                    ),
                                   ),
                                 ),
                               ),

@@ -1,9 +1,107 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="app_name">Kotobati</string>
+
     <string name="flutter_downloader_notification_started">Download started</string>
     <string name="flutter_downloader_notification_in_progress">Download in progress</string>
     <string name="flutter_downloader_notification_canceled">Download canceled</string>
     <string name="flutter_downloader_notification_failed">Download failed</string>
     <string name="flutter_downloader_notification_complete">Download complete</string>
     <string name="flutter_downloader_notification_paused">Download paused</string>
+
+    <!-- Notification channel slug -->
+    <string name="notification_channel_overlay_id" translatable="false">com.kotobati.awjiz.overlay</string>
+
+    <!-- Notification -->
+    <string name="notification_status_running">Running. Turn off to install apks</string>
+    <string name="notification_status_running_no_warning">Running</string>
+    <string name="notification_status_paused">Paused</string>
+    <string name="notification_status_paused_with_info">Paused. Dismiss notification to stop.</string>
+    <string name="notification_status_off">Off</string>
+    <string name="notification_action_resume">Resume</string>
+    <string name="notification_action_pause">Pause</string>
+    <string name="notification_action_turn_on">Turn on</string>
+    <string name="notification_action_turn_off">Turn off</string>
+    <string name="notification_action_stop">Stop</string>
+    <string name="notification_action_whitelist_add">Exclude app</string>
+    <string name="notification_action_whitelist_remove">Filter app</string>
+    <string name="notification_action_next_filter">Next filter</string>
+    <string name="toast_root_unavailable">Red Moon: Root unavailable. Disabling root mode.</string>
+
+    <string name="dialog_title_permission_overlay">Drawing over other apps</string>
+    <string name="dialog_message_permission_overlay">Permit drawing over other apps in the next screen to allow Red Moon to turn on.</string>
+
+    <string name="dialog_button_ok">OK</string>
+    <string name="dialog_button_cancel">Cancel</string>
+
+    <!-- Profiles -->
+    <string name="filter_name_custom">Custom</string>
+    <string name="filter_name_default">Default</string>
+    <string name="filter_name_bed_reading">Reading</string>
+    <string name="filter_name_dim_only">Dim only</string>
+
+    <!-- Preference Keys -->
+    <string name="pref_key_use_root" translatable="false">pref_key_use_root</string>
+    <string name="pref_key_profile_spinner" translatable="false">pref_key_profile_spinner</string>
+    <string name="pref_key_dim" translatable="false">pref_key_shades_dim_level</string>
+    <string name="pref_key_intensity" translatable="false">pref_key_shades_intensity_level</string>
+    <string name="pref_key_color" translatable="false">pref_key_shades_color_temp</string>
+    <string name="pref_key_lower_brightness" translatable="false">pref_key_control_brightness</string>
+    <string name="pref_key_custom_profile" translatable="false">pref_key_custom_profile</string>
+    <string name="pref_key_keep_running_after_reboot" translatable="false">pref_key_keep_running_after_reboot</string>
+    <string name="pref_key_always_open_on_startup" translatable="false">pref_key_always_open_on_startup</string>
+    <string name="pref_key_filter_is_on" translatable="false">pref_key_shades_power_state</string>
+    <string name="pref_key_shades_pause_state" translatable="false">pref_key_shades_pause_state</string>
+    <string name="pref_key_dark_theme" translatable="false">pref_key_dark_theme</string>
+    <string name="pref_key_schedule" translatable="false">pref_key_automatic_filter</string>
+    <string name="pref_key_schedule_header" translatable="false">pref_key_time_toggle_filter</string>
+    <string name="pref_key_start_time" translatable="false">pref_key_custom_start_time</string>
+    <string name="pref_key_stop_time" translatable="false">pref_key_custom_end_time</string>
+    <string name="pref_key_sunset_time" translatable="false">pref_key_sunset_time</string>
+    <string name="pref_key_sunrise_time" translatable="false">pref_key_sunrise_time</string>
+    <string name="pref_key_location" translatable="false">pref_key_location</string>
+    <string name="pref_key_location_timestamp" translatable="false">pref_key_location_timestamp</string>
+    <string name="pref_key_use_location" translatable="false">pref_key_use_location</string>
+    <string name="pref_key_use_location_start" translatable="false">pref_key_use_location_start</string>
+    <string name="pref_key_use_location_stop" translatable="false">pref_key_use_location_stop</string>
+    <string name="pref_key_github" translatable="false">pref_key_github</string>
+    <string name="pref_key_email" translatable="false">pref_key_email</string>
+    <string name="pref_key_other" translatable="false">pref_key_other</string>
+    <string name="pref_key_translator_credit" translatable="false">pref_key_translator_credit</string>
+    <!-- <string name="pref_key_dim_buttons" translatable="false">pref_key_dim_buttons</string> -->
+    <string name="pref_key_button_backlight" translatable="false">pref_key_button_backlight</string>
+    <string name="pref_key_automatic_brightness" translatable="false">pref_key_brightness_automatic</string>
+    <string name="pref_key_brightness" translatable="false">pref_key_brightness_level</string>
+    <string name="pref_key_num_profiles" translatable="false">pref_key_ammount_profiles</string>
+    <string name="pref_key_intro_shown" translatable="false">pref_key_intro_shown</string>
+    <string name="pref_key_secure_suspend" translatable="false">pref_key_automatic_suspend</string>
+    <string name="pref_key_secure_suspend_header" translatable="false">pref_key_secure_suspend_header</string>
+    <string name="pref_key_brightness_lowered" translatable="false">pref_key_brightness_lowered</string>
+    <string name="pref_key_version" translatable="false">pref_key_version</string>
+    <string name="pref_key_from_version_code" translatable="false">pref_key_from_version_code</string>
+    <string name="pref_key_last_changelog_shown" translatable="false">pref_key_last_changelog_shown</string>
+
+    <!-- button_backlight_entries -->
+    <string name="pref_value_button_backlight_system" translatable="false">system</string>
+    <string name="pref_value_button_backlight_filter_dim_level" translatable="false">dim</string>
+    <string name="pref_value_button_backlight_turn_off" translatable="false">off</string>
+
+    <!-- Other -->
+    <string name="project_page_url" translatable="false">https://github.com/LibreShift/red-moon</string>
+    <string name="translation_url" translatable="false">https://hosted.weblate.org/engage/red-moon/</string>
+
+    <string-array name="time_toggle_values_array" translatable="false">
+        <item>never</item>
+        <item>sun</item>
+        <item>custom</item>
+    </string-array>
+
+    <string name="dialog_title_permission_write_settings">Modifying system settings</string>
+    <string name="dialog_message_permission_write_settings">Permit modifying system settings in the next screen to allow Red Moon to change your brightness level.</string>
+
+    <!-- Notification channel descriptions -->
+    <string name="notification_channel_overlay_name">Overlay Control</string>
+    <string name="notification_channel_overlay_description">The persistent overlay control notification</string>
+
+
 </resources>

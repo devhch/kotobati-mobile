@@ -14,17 +14,6 @@ class BookDetailsController extends GetxController {
   void onInit() {
     book = Get.arguments['book'];
     pdfFile = File(book!.path!.replaceAll('.pdf', ''));
-//     book.notes = <String>[
-//       """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-// نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-//       """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-// نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-//       "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
-//     ];
-//     book.quotes = <String>[
-//       """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-// نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي."""
-//     ];
     super.onInit();
   }
 
@@ -39,19 +28,4 @@ class BookDetailsController extends GetxController {
     super.dispose();
   }
 
-  void checkNotesAndStrings(List<String> notes) {
-    List<String> checkedList = <String>[
-      """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-      """نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.
-نسخة كوتوباتي للقارئ لتنظيم قراءتك و تحسين مستواك الفكري و الثقافي.""",
-      "tttttt tttttt tttttt tttttt tttttt tttttt tttttt",
-    ];
-
-    for (String item in checkedList) {
-      if (notes.contains(item)) {
-        notes.remove(item);
-      }
-    }
-  }
 }

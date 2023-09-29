@@ -184,31 +184,31 @@ class BookWidget extends StatelessWidget {
                                   height: 16,
                                 ),
                               ),
-                              const ContainerDivider(),
-                              InkWell(
-                                onTap: () {
-                                  if (book.path != null) {
-                                    /// ADD PDF extension if it does not exists
-                                    final String pathWithExtension = !book.path!.endsWith('.pdf')
-                                        ? '${book.path!}.pdf'
-                                        : book.path!;
-
-                                    XFile file = XFile(pathWithExtension);
-
-                                    /// Share File
-                                    shareFile(file, subject: book.title!);
-                                  } else {
-                                    AppMiraiDialog.snackBarError(
-                                      title: 'OPS!',
-                                      message: 'Book path not found',
-                                    );
-                                  }
-                                },
-                                child: SvgPicture.asset(
-                                  AppIconsKeys.share,
-                                  width: 16,
-                                ),
-                              ),
+                              // TODO const ContainerDivider(),
+                              // InkWell(
+                              //   onTap: () {
+                              //     if (book.path != null) {
+                              //       /// ADD PDF extension if it does not exists
+                              //       final String pathWithExtension = !book.path!.endsWith('.pdf')
+                              //           ? '${book.path!}.pdf'
+                              //           : book.path!;
+                              //
+                              //       XFile file = XFile(pathWithExtension);
+                              //
+                              //       /// Share File
+                              //       shareFile(file, subject: book.title!, context: context);
+                              //     } else {
+                              //       AppMiraiDialog.snackBarError(
+                              //         title: 'OPS!',
+                              //         message: 'Book path not found',
+                              //       );
+                              //     }
+                              //   },
+                              //   child: SvgPicture.asset(
+                              //     AppIconsKeys.share,
+                              //     width: 16,
+                              //   ),
+                              // ),
                               const ContainerDivider(margin: EdgeInsetsDirectional.only(start: 12)),
                               DeleteOneBookWidget(book: book),
                             ],

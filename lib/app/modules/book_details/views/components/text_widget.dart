@@ -21,7 +21,7 @@ import 'package:share_plus/share_plus.dart';
 
 import 'text_bottom_sheet.dart';
 
-class TextWidget extends StatelessWidget {
+class TextWidget extends StatefulWidget {
   const TextWidget({
     super.key,
     required this.book,
@@ -42,8 +42,25 @@ class TextWidget extends StatelessWidget {
   final bool useCover;
 
   @override
+  State<TextWidget> createState() => _TextWidgetState();
+}
+
+class _TextWidgetState extends State<TextWidget> {
+  late File? imageFile;
+
+  @override
+  void initState() {
+    super.initState();
+
+    if (widget.image != null) {
+      imageFile = File(widget.image!);
+      if (!imageFile!.existsSync()) {}
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    miraiPrint('TextWidget image $image');
+    miraiPrint('TextWidget image ${widget.image}');
     return Padding(
       padding: const EdgeInsets.only(bottom: 35),
       child: SizedBox(
@@ -58,15 +75,15 @@ class TextWidget extends StatelessWidget {
                   Get.toNamed(
                     Routes.pdfReader,
                     arguments: <String, dynamic>{
-                      "book": book,
-                      "page": page,
+                      "book": widget.book,
+                      "page": widget.page,
                     },
                   );
 
                   Future<void>.delayed(
                     const Duration(milliseconds: 100),
                     () {
-                      TextBottomSheet.showTextBottomSheet(text: text, image: image);
+                      TextBottomSheet.showTextBottomSheet(text: widget.text, image: widget.image);
                     },
                   );
                 },
@@ -88,61 +105,87 @@ class TextWidget extends StatelessWidget {
                 backgroundColor: AppTheme.keyAppBlackColor,
                 child: Column(
                   children: <Widget>[
-                    if (text != null)
+                    if (widget.text != null)
                       Expanded(
                         child: Text(
-                          text!,
+                          widget.text!,
                           style: context.textTheme.bodyLarge!.copyWith(
                             height: 1.8,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                       )
-                    else if (image != null)
+                    else if (imageFile != null)
                       Expanded(
                         child: Image.file(
-                          File.fromRawPath(Uint8List.fromList(base64.decode(image!))),
+                          imageFile!,
                           width: double.infinity,
                           // height: 100,
                           fit: BoxFit.contain,
                         ),
                       ),
-                    Align(
-                      alignment: Alignment.bottomRight,
-                      child: InkWell(
-                        onTap: () async {
-                          if (image != null) {
-                            //  TODO final Uint8List convertFileToUint8 = await convertFileToUint8List();
-
-                            // final File file = File(image!);
-                            // Uint8List fileBytes = file.readAsBytesSync();
-                            XFile xFile =
-                                XFile(File.fromRawPath(Uint8List.fromList(image!.codeUnits)).path);
-                            // XFile? xFile = convertFileToXFile(file);
-
-                            // if (xFile == null) return;
-
-                            /// Share File
-                            await shareFile(
-                              xFile,
-                              text:
-                                  'إقتباس من $title تطبيق كتوباتي ، \nلتحميل التطبيق: ${AppConfig.playStoreURL}  ',
-                            );
-                          }
-                        },
-                        child: SvgPicture.asset(
-                          AppIconsKeys.shareCircle,
-                          width: 32,
-                          height: 32,
-                          fit: BoxFit.fill,
-                        ),
-                      ),
-                    ),
+                    // TODO Align(
+                    //   alignment: Alignment.bottomRight,
+                    //   child: InkWell(
+                    //     onTap: () async {
+                    //       if (imageFile != null) {
+                    //         //  TODO final Uint8List convertFileToUint8 = await convertFileToUint8List();
+                    //
+                    //         //  final File file = File(image!);
+                    //         //  Uint8List fileBytes = imageFile!.readAsBytesSync();
+                    //         //  XFile xFile = XFile(imageFile!.path);
+                    //         // XFile? xFile = convertFileToXFile(file);
+                    //
+                    //         // if (xFile == null) return;
+                    //
+                    //         // XFile xFile = XFile.fromData(
+                    //         //   fileBytes.buffer
+                    //         //       .asUint8List(fileBytes.offsetInBytes, fileBytes.lengthInBytes),
+                    //         //   name: 'quote.jpg',
+                    //         //   mimeType: 'image/jpeg',
+                    //         // );
+                    //
+                    //         final String text =
+                    //             'إقتباس من ${widget
+                    //             .title} تطبيق كتوباتي ، \nلتحميل التطبيق: ${AppConfig
+                    //             .playStoreURL}  ';
+                    //
+                    //         /// Share File
+                    //         // await shareFile(
+                    //         //   xFile,
+                    //         //   text:
+                    //         //   text,
+                    //         //   context: context,
+                    //         // );
+                    //
+                    //         // Uint8List imageFileBytes = await fileToUint8List(imageFile!);
+                    //
+                    //         /// New Share
+                    //         // FileChannel.shareFile(
+                    //         //     fileBytes: imageFileBytes, title: text, fileName: 'quote'
+                    //         //   //  "File Subject",
+                    //         // );
+                    //
+                    //         FileChannel.shareFile(
+                    //           imageFile!.path,
+                    //           text,
+                    //           "File Subject",
+                    //         );
+                    //       }
+                    //     },
+                    //     child: SvgPicture.asset(
+                    //       AppIconsKeys.shareCircle,
+                    //       width: 32,
+                    //       height: 32,
+                    //       fit: BoxFit.fill,
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
             ),
-            if (useCover && cover != null)
+            if (widget.useCover && widget.cover != null)
               Positioned(
                 bottom: 0,
                 left: context.width / 2 - 40,
@@ -152,8 +195,8 @@ class TextWidget extends StatelessWidget {
                   child: MiraiCachedImageNetworkWidget(
                     width: 80,
                     height: 118,
-                    imageUrl: '$cover',
-                    title: title,
+                    imageUrl: '${widget.cover}',
+                    title: widget.title,
                   ),
                 ),
               ),

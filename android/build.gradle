@@ -1,5 +1,10 @@
 buildscript {
-    ext.kotlin_version = '1.7.10'
+    ext.kotlin_version = '1.8.0'
+    ext.grgit_version = "5.2.0"
+//
+//    ext.kotlin_version = '1.6.10'
+//    ext.grgit_version = "4.1.0"
+
     repositories {
         google()
         mavenCentral()
@@ -8,16 +13,36 @@ buildscript {
     dependencies {
         classpath 'com.android.tools.build:gradle:7.4.2'
         // START: FlutterFire Configuration
-        classpath 'com.google.gms:google-services:4.3.15'
+        classpath 'com.google.gms:google-services:4.4.0'
         // END: FlutterFire Configuration
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+
+        // 3rd party
+        classpath "org.ajoberstar.grgit:grgit-core:$grgit_version"
+        classpath "org.ajoberstar.grgit:grgit-gradle:$grgit_version"
     }
 }
+
+plugins {
+    id "com.github.ben-manes.versions" version "0.36.0"
+}
+
+dependencyUpdates {
+    gradleReleaseChannel = "current"
+
+    rejectVersionIf {
+        def version = it.candidate.version.toUpperCase()
+        def excluded = ["ALPHA", "BETA", "RC"]
+        return excluded.any { x -> version.contains("-$x") }
+    }
+}
+
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven { url 'https://jitpack.io' }
     }
 }
 

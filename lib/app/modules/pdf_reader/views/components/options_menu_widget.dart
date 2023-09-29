@@ -59,7 +59,7 @@ class OptionsMenuWidget extends StatelessWidget {
               XFile file = XFile(pathWithExtension);
 
               /// Share File
-              shareFile(file, subject: controller.book.value!.title!);
+              shareFile(file, subject: controller.book.value!.title!, context: context);
               break;
 
             case 1:
@@ -104,7 +104,7 @@ class OptionsMenuWidget extends StatelessWidget {
               break;
 
             case 3:
-              //  await controller.overlayWindow();
+              // await controller.toggleNightMode();
               break;
             // case 4:
             //   controller.exitFullScreen();

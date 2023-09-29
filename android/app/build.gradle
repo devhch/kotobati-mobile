@@ -1,3 +1,5 @@
+import org.ajoberstar.grgit.Grgit
+
 def localProperties = new Properties()
 def localPropertiesFile = rootProject.file('local.properties')
 if (localPropertiesFile.exists()) {
@@ -28,9 +30,31 @@ apply plugin: 'com.google.gms.google-services'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
+if (rootProject.file("keystore.properties").exists()) {
+    def keystorePropertiesFile = rootProject.file("keystore.properties")
+    def keystoreProperties = new Properties()
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+
+    android {
+        signingConfigs {
+            release {
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+            }
+        }
+        buildTypes {
+            release {
+                signingConfig signingConfigs.release
+            }
+        }
+    }
+}
+
 android {
-    namespace "com.dghoughi.lahsen.kotobati"
-    compileSdkVersion 33
+    namespace "com.kotobati.awjiz"
+    compileSdkVersion 34
     ndkVersion flutter.ndkVersion
 
     compileOptions {
@@ -48,21 +72,49 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.dghoughi.lahsen.kotobati"
+        applicationId "com.kotobati.awjiz"
         // You can update the following values to match your application needs.
         // For more information, see: https://docs.flutter.dev/deployment/android#reviewing-the-gradle-build-configuration.
         minSdkVersion 21
-        targetSdkVersion 33
+        targetSdkVersion 34
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        multiDexEnabled true
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
             // Signing with the debug keys for now, so `flutter run --release` works.
             signingConfig signingConfigs.debug
+
+            // Enables code shrinking, obfuscation, and optimization for only
+            // your project's release build type. Make sure to use a build
+            // variant with `debuggable false`.
+            minifyEnabled true
+
+            // Enables resource shrinking, which is performed by the
+            // Android Gradle plugin.
+            shrinkResources true
+
+            // Includes the default ProGuard rules files that are packaged with
+            // the Android Gradle plugin. To learn more, go to the section about
+            // R8 configuration files.
+            proguardFiles getDefaultProguardFile(
+                    'proguard-android-optimize.txt'),
+                    'proguard-rules.pro'
         }
+
+//        debug {
+//            applicationIdSuffix '.debug'
+//            def repo = Grgit.open(currentDir: project.rootDir)
+//            def commitId = "${repo.log().get(0).getAbbreviatedId()}"
+//            if (repo.status().isClean()) {
+//                versionNameSuffix "-$commitId"
+//            } else {
+//                versionNameSuffix "-$commitId (dirty)"
+//            }
+//        }
     }
 }
 
@@ -72,4 +124,17 @@ flutter {
 
 dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+
+    implementation 'androidx.core:core-ktx:1.12.0'
+    implementation 'androidx.preference:preference-ktx:1.2.1'
+
+    implementation project(":timepickerpreference")
+
+    // 3rd party
+    implementation 'com.luckycatlabs:SunriseSunsetCalculator:1.2'
+    implementation 'com.github.paolorotolo:appintro:4.1.0'
+    implementation 'org.greenrobot:eventbus:3.2.0'
+    implementation 'com.github.topjohnwu.libsu:core:3.1.1'
+
+    implementation "androidx.multidex:multidex:2.0.1"
 }

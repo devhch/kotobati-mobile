@@ -84,6 +84,7 @@ Future<void> appPreLunch() async {
   /// initialize the HiveDataStore
   final HiveDataStore dataStore = HiveDataStore();
   await dataStore.init();
+  // await dataStore.clearAllBoxes();
 
   /// logic for Planing book list
   List<PlaningBooksModel> list = dataStore.getPlaningBooks();
@@ -158,7 +159,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// flutter pub run change_app_package_name:main com.dghoughi.lahsen.kotobati
+// flutter pub run change_app_package_name:main com.kotobati.awjiz
 // flutter pub global activate get_cli
 // get create page:splash
 // flutter build apk --split-per-abi

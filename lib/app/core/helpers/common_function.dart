@@ -8,6 +8,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:math';
 import 'dart:ui' as ui;
+import 'package:flutter/services.dart';
 import 'package:path/path.dart' as path;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -45,7 +46,11 @@ Future<void> requestPermission() async {
   }
 }
 
-Future<void> shareBook(String originalFilePath, String title) async {
+Future<void> shareBook(
+  String originalFilePath,
+  String title, {
+  required BuildContext context,
+}) async {
   File file = File(originalFilePath);
 
   // Create a temporary copy of the file with a ".pdf" extension.
@@ -55,15 +60,19 @@ Future<void> shareBook(String originalFilePath, String title) async {
   File newFile = await file.copy(tempCopyPath);
 
   /// Share File
-  await shareFile(
-    XFile(file.path),
-    subject: title,
-  );
+  await shareFile(XFile(file.path), subject: title, context: context);
 }
 
-Future<void> shareFile(XFile file, {String? subject, String? text}) async {
+Future<void> shareFile(XFile file,
+    {String? subject, String? text, required BuildContext context}) async {
+  final box = context.findRenderObject() as RenderBox?;
   try {
-    await Share.shareXFiles(<XFile>[file], subject: subject, text: text);
+    await Share.shareXFiles(
+      <XFile>[file],
+      subject: subject,
+      text: text,
+      sharePositionOrigin: box!.localToGlobal(Offset.zero) & box.size,
+    );
   } catch (e) {
     // Handle sharing error
     miraiPrint('Error sharing file: $e');
@@ -280,3 +289,42 @@ void showDownloadNotification({
     platformChannelSpecifics,
   );
 }
+
+class FileChannel {
+  static const MethodChannel _channel = MethodChannel('com.kotobati.pdf_reader_channel');
+
+  // static Future<void> shareFile(
+  //     {required Uint8List fileBytes,
+  //     required String fileName,
+  //     required String title,
+  //     String? subject}) async {
+  //   try {
+  //     await _channel.invokeMethod('shareFile', {
+  //       "fileBytes": fileBytes,
+  //       "title": title,
+  //       "subject": subject,
+  //       "fileName": fileName,
+  //     });
+  //   } catch (e) {
+  //     print('Error sharing file: $e');
+  //   }
+  // }
+
+  static Future<void> shareFile(String filePath, String title, String? subject) async {
+    try {
+      await _channel
+          .invokeMethod('shareFile', {"filePath": filePath, "title": title, "subject": subject});
+    } catch (e) {
+      print('Error sharing file: $e');
+    }
+  }
+}
+
+// Future<Uint8List> fileToUint8List(File file) async {
+//   if (await file.exists()) {
+//     final List<int> bytes = await file.readAsBytes();
+//     return Uint8List.fromList(bytes);
+//   } else {
+//     throw const FileSystemException('File does not exist');
+//   }
+// }
