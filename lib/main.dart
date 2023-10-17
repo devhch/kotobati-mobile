@@ -133,6 +133,7 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         smartManagement: SmartManagement.full,
         theme: AppTheme.themeData,
+        // themeMode: ThemeMode.dark,
         initialRoute: AppPages.initial,
         getPages: AppPages.routes,
         locale: const Locale('ar', '🇲🇦'),

@@ -74,6 +74,7 @@ class NavigationController extends GetxController {
     bool jump = false,
     required int index,
   }) {
+    isFabBarAdding.value = index == 0;
     if (controller == null) {
       _changeBody(index, jump: jump);
     } else {

@@ -91,7 +91,7 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
                 alignment: AlignmentDirectional.bottomCenter,
                 children: <Widget>[
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 100),
+                    duration: const Duration(milliseconds: 150),
                     left: 0,
                     right: 0,
                     bottom: isScrolling ? -100 : 0,
@@ -111,22 +111,23 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
                                         ),
                                       )
                                       .value *
-                                  28.0,
+                                  (28.0),
+                              isFab: isFabBarAdding,
                             ),
                             color: AppTheme.keyBlackGreyColor,
-                            child: buildColumn(context),
+                            child: buildColumn(context, isFabBarAdding),
                           ),
                         );
                       },
                     ),
                   ),
                   AnimatedPositioned(
-                    duration: const Duration(milliseconds: 50),
+                    duration: const Duration(milliseconds: 200),
                     /*  bottom: widget.navHeight -
                         (Platform.isIOS
                             ? MiraiSize.space10
                             : MiraiSize.space24),*/
-                    bottom: isScrolling
+                    bottom: isScrolling || isFabBarAdding
                         ? -(Platform.isIOS
                             ? MiraiSize.bottomNavBarHeight94
                             : MiraiSize.bottomNavBarHeight70)
@@ -156,20 +157,23 @@ class _MiraiBottomBarViewState extends State<MiraiBottomBarView> with TickerProv
     );
   }
 
-  SizedBox buildColumn(BuildContext context) {
+  SizedBox buildColumn(BuildContext context, bool isFabBarAdding) {
     return SizedBox(
       height: Platform.isIOS ? MiraiSize.bottomNavBarHeight94 : MiraiSize.bottomNavBarHeight70,
       child: Row(
         children: <Widget>[
           Expanded(child: _buildTabIcons(index: 0)),
           Expanded(child: _buildTabIcons(index: 1)),
-          SizedBox(
-            width: Tween<double>(begin: 0.0, end: 1.0)
-                    .animate(
-                      CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn),
-                    )
-                    .value *
-                64.0,
+          AnimatedSize(
+            duration: const Duration(milliseconds: 100),
+            child: SizedBox(
+              width: Tween<double>(begin: 0.0, end: 1.0)
+                      .animate(
+                        CurvedAnimation(parent: animationController, curve: Curves.fastOutSlowIn),
+                      )
+                      .value *
+                  (isFabBarAdding ? 0 : 64.0),
+            ),
           ),
           Expanded(child: _buildTabIcons(index: 2)),
           Expanded(child: _buildTabIcons(index: 3)),
@@ -346,6 +350,7 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
               top: 4,
               left: 6,
               right: 0,
+
               child: ScaleTransition(
                 alignment: Alignment.center,
                 scale: Tween<double>(begin: 0.0, end: 1.0).animate(
@@ -362,15 +367,23 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                   width: 8,
                   height: 8,
                   decoration: const BoxDecoration(
-                    color: AppTheme.keyAppBlackColor,
+                    color: AppTheme.keyAppColor,
                     shape: BoxShape.circle,
                   ),
                 ),
               ),
+              // child: Container(
+              //   width: 8,
+              //   height: 8,
+              //   decoration: const BoxDecoration(
+              //     color: AppTheme.keyAppColor,
+              //     shape: BoxShape.circle,
+              //   ),
+              // ),
             ),
             Positioned(
               top: 0,
-              left: 6,
+              left: 16,
               bottom: 8,
               child: ScaleTransition(
                 alignment: Alignment.center,
@@ -393,10 +406,18 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                   ),
                 ),
               ),
+              // child: Container(
+              //   width: 4,
+              //   height: 4,
+              //   decoration: const BoxDecoration(
+              //     color: AppTheme.keyAppColor,
+              //     shape: BoxShape.circle,
+              //   ),
+              // ),
             ),
             Positioned(
               top: 6,
-              right: 8,
+              right: 16,
               bottom: 0,
               child: ScaleTransition(
                 alignment: Alignment.center,
@@ -419,6 +440,14 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
                   ),
                 ),
               ),
+              // child: Container(
+              //   width: 6,
+              //   height: 6,
+              //   decoration: const BoxDecoration(
+              //     color: AppTheme.keyAppColor,
+              //     shape: BoxShape.circle,
+              //   ),
+              // ),
             ),
           ],
         ),
@@ -428,9 +457,13 @@ class _TabIconsState extends State<TabIcons> with TickerProviderStateMixin {
 }
 
 class TabClipper extends CustomClipper<Path> {
-  TabClipper({this.radius = 38.0});
+  TabClipper({
+    this.radius = 38.0,
+    required this.isFab,
+  });
 
   final double radius;
+  final bool isFab;
 
   @override
   Path getClip(Size size) {
@@ -448,8 +481,8 @@ class TabClipper extends CustomClipper<Path> {
       Rect.fromLTWH(
         ((size.width / 2) - v / 2) - radius + v * 0.04 - 10,
         0,
-        radius + 10,
-        radius + 10,
+        (isFab ? 200 : radius) + 10,
+        (isFab ? 1000 : radius) + 10,
       ),
       degreeToRadians(270),
       degreeToRadians(60),
@@ -467,8 +500,8 @@ class TabClipper extends CustomClipper<Path> {
       Rect.fromLTWH(
         (size.width - ((size.width / 2) - v / 2)) - v * 0.04,
         0,
-        radius + 10,
-        radius + 10,
+        (isFab ? 0 : radius) + 10,
+        (isFab ? 0 : radius) + 10,
       ),
       degreeToRadians(200),
       degreeToRadians(60),

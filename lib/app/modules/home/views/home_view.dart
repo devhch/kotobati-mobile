@@ -204,21 +204,22 @@ class _MyHomePageState extends State<MyHomePage> {
         return true;
       },
       child: Scaffold(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.white, //AppTheme.keyAppBlackColor,
         //  appBar: progress < 1.0 ? null : homeAppBar(webViewController),
         body: Padding(
           padding: EdgeInsets.only(
             top: context.topPadding,
             // bottom: context.bottomAdding / 2,
-            bottom: 60,
+            // bottom: 60,
           ),
           child: SizedBox(
-            height: size.height - context.topPadding - 60,
+            height: size.height - context.topPadding,
+            //-20,
             width: size.width,
             child: Stack(
               children: <Widget>[
                 Positioned.fill(
-                  bottom: 60,
+                  bottom: 80,
                   child: InAppWebView(
                     key: webViewKey,
                     // contextMenu: contextMenu,
